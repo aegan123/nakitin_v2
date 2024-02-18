@@ -1,0 +1,11 @@
+package fi.asteriski.nakitin;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class NakitinApplicationTests {
+
+    @Test
+    void contextLoads() {}
+}
