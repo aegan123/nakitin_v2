@@ -1,4 +1,4 @@
 # Nakitin
-© Juhani Vähä-Mäkilä (juhani@fmail.co.uk) 2024.
+© Juhani Vähä-Mäkilä (juhani@fmail.co.uk) 2025.
 
-Licenced under EUROPEAN UNION PUBLIC LICENCE v. 1.2.
+Licenced under EUPL-1.2 or later.

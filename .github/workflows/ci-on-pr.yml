@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
@@ -17,12 +16,10 @@ jobs:
           java-version: '21'
           distribution: 'oracle'
 
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.10.0
-        with:
-          mongodb-version: '5.0.5'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@ec92e829475ac0c2315ea8f9eced72db85bb337a # v3.0.0
+      - name: Spotless check
+        run: ./gradlew spotlessCheck
       - name: Run unit tests
         run: ./gradlew check
       - name: Build with Gradle Wrapper
