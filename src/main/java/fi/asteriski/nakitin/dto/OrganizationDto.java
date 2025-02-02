@@ -4,4 +4,8 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
-public record OrganizationDto(String id, String name) {}
+import java.util.UUID;
+import lombok.Builder;
+
+@Builder
+public record OrganizationDto(UUID id, String name) {}

@@ -6,9 +6,10 @@ package fi.asteriski.nakitin.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,7 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(
         name = "users",
-        indexes = {@Index(name = "idx_username", columnList = "userName")})
+        indexes = {@Index(name = "idx_username", columnList = "username")})
 @Data
 @NoArgsConstructor
 @Builder
@@ -51,7 +52,10 @@ public class UserEntity implements UserDetails {
 
     @NonNull
     @Column(nullable = false)
-    private ZonedDateTime expirationDate;
+    private LocalDate expirationDate;
+
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<EventEntity> events;
 
     @NonNull
     @Column(nullable = false)
@@ -87,7 +91,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return expirationDate == null || expirationDate.isAfter(ZonedDateTime.now());
+        return expirationDate == null || expirationDate.isAfter(LocalDate.now());
     }
 
     @Override
