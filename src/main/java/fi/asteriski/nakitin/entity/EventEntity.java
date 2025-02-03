@@ -4,7 +4,9 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.entity;
 
+import fi.asteriski.nakitin.dto.EventDto;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 import lombok.Data;
@@ -15,7 +17,9 @@ import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "events")
+@Table(
+        name = "events",
+        indexes = {@Index(name = "idx_date", columnList = "date")})
 @Data
 @NoArgsConstructor
 public class EventEntity {
@@ -37,14 +41,16 @@ public class EventEntity {
 
     @NonNull
     @Column(nullable = false)
-    private ZonedDateTime date;
+    private LocalDate date;
 
     @NonNull
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
+    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, updatable = false)
     private OrganizationEntity organizer;
 
     @NonNull
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, updatable = false)
     private UserEntity createdBy;
 
     private UUID signupSystemEvent;
@@ -60,5 +66,16 @@ public class EventEntity {
     @Override
     public String toString() {
         return organizer.getName() + ": " + name;
+    }
+
+    public EventDto toDto() {
+        return EventDto.builder()
+                .id(id)
+                .name(name)
+                .venue(venue)
+                .description(description)
+                .date(date)
+                .organizer(organizer.toDto())
+                .build();
     }
 }

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-2"></div>
+    <div class="column">
+        <table class="table">
+            <thead>
+            <tr>
+                <th><abbr title="UpcomingEvents" th:text="#{index.label.upcoming-events}">Pos</abbr></th>
+                <th><abbr title="UpcomingEvents"></abbr></th>
+                <th><abbr title="UpcomingEvents"></abbr></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="event : ${upcomingEvents}">
+                <!--/*@thymesVar id="event" type="fi.asteriski.nakitin.dto.EventDto"*/-->
+                <td><a th:href="@{/event/{id}(id=${event.id})}" th:text="${event.name}"></a></td>
+                <td th:text="${#temporals.format(event.date, 'dd.MM.yyyy')}"></td>
+                <td th:text="${event.organizer.name}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="column is-desktop">
+        <div class="content">
+            <h3>Tervetuloa Nakittimeen!</h3>
+            <p>
+                Nakitin on tapahtumajärjestäjille suunniteltu työkalu, jossa käyttäjät voivat ilmoittautua
+                vapaaehtoisiksi tapahtumiin.
+                Ensisijaisesti Nakitin on kehitetty Asteriskin tarpeisiin.
+            </p>
+            <p>
+                Mikäli haluat oman yhdistyksesi mukaan Nakittimeen ota yhteyttä <a
+                href="https://www.asteriski.fi/virallista/yhteystiedot/">Asteriskin</a> hallitukseen.
+            </p>
+            <p>Teknisissä ongelmissa tai -kysymyksissä ota yhteyttä ylläpitäjiin: palvelinvastaava[ät]asteriski.fi.</p>
+
+        </div>
+    </div>
+    <div class="column is-2"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<nav class="navbar is-fixed-top has-shadow" role="navigation" aria-label="main navigation"
+     th:fragment="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img
+                src="https://www.asteriski.fi/wp-content/themes/wp-asteriski-theme/assets/img/asteriski-logo.png"
+                width="46" height="46" alt="Asteriski logo"/>
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbar" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item" href="/" th:text="#{index.label.link}">
+                Etusivu
+            </a>
+
+            <a class="navbar-item" href="orgs" th:text="#{index.label.organisations}">
+                Yhdistykset
+            </a>
+            <a class="navbar-item" href="privacy" th:text="#{index.label.privacy}">
+                Yhdistykset
+            </a>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons" th:if="${userIsLoggedIn}">
+                    <a class="button is-primary" th:text="#{form.button.logout}" th:href="@{/logout}">
+                        <strong>Kirjaudu ulos</strong>
+                    </a>
+                </div>
+                <div class="buttons" th:unless="${userIsLoggedIn}">
+                    <a class="button is-primary" th:text="#{form.button.sign-up}" th:href="@{/sign-up}">
+                        <strong>Rekisteröidy</strong>
+                    </a>
+                    <a class="button is-light" th:text="#{form.button.login}" th:href="@{/login}">
+                        Kirjaudu sisään
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
