@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div th:insert="~{fragments/eventColumns.html :: columns }">
+</div>
+<script th:src="@{/js/burgerMenuHandler.js}"></script>
+<script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

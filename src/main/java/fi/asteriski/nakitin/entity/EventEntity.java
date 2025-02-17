@@ -6,15 +6,18 @@ package fi.asteriski.nakitin.entity;
 
 import fi.asteriski.nakitin.dto.EventDto;
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(
@@ -43,29 +46,39 @@ public class EventEntity {
     @Column(nullable = false)
     private LocalDate date;
 
-    @NonNull
-    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private OrganizationEntity organizer;
 
-    @NonNull
-    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity createdBy;
+
+    @NonNull
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EventTaskEntity> tasks = new HashSet<>();
 
     private UUID signupSystemEvent;
 
-    @UpdateTimestamp(source = SourceType.DB)
+    @UpdateTimestamp
     @Column(nullable = false)
     private ZonedDateTime updatedAt;
 
-    @CreationTimestamp(source = SourceType.DB)
+    @CreationTimestamp
     @Column(nullable = false)
     private ZonedDateTime createdAt;
 
     @Override
     public String toString() {
-        return organizer.getName() + ": " + name;
+        return String.format("%s: %s", organizer.getName(), name);
+    }
+
+    public void addTask(EventTaskEntity task) {
+        tasks.add(task);
+        task.setEvent(this);
+    }
+
+    public void removeTask(EventTaskEntity task) {
+        tasks.remove(task);
+        task.setEvent(null);
     }
 
     public EventDto toDto() {
@@ -76,6 +89,7 @@ public class EventEntity {
                 .description(description)
                 .date(date)
                 .organizer(organizer.toDto())
+                .tasks(tasks.stream().map(EventTaskEntity::toDto).collect(Collectors.toSet()))
                 .build();
     }
 }

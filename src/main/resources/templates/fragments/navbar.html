@@ -24,26 +24,28 @@
                 Etusivu
             </a>
 
-            <a class="navbar-item" href="orgs" th:text="#{index.label.organisations}">
+            <a class="navbar-item" href="/orgs" th:text="#{index.label.organisations}">
                 Yhdistykset
             </a>
-            <a class="navbar-item" href="privacy" th:text="#{index.label.privacy}">
-                Yhdistykset
+            <a class="navbar-item" href="/privacy" th:text="#{index.label.privacy}">
+                Tietosuoja
             </a>
         </div>
 
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons" th:if="${userIsLoggedIn}">
-                    <a class="button is-primary" th:text="#{form.button.logout}" th:href="@{/logout}">
+                    <a class="button is-link" th:if="${userIsOrganisationAdmin}" th:text="#{form.button.label.new-event}" th:href="@{/add-event}"></a>
+                    <a class="button is-link" th:text="#{form.button.label.profile}" th:href="@{/profile}"></a>
+                    <a class="button is-primary" th:text="#{form.button.label.logout}" th:href="@{/logout}">
                         <strong>Kirjaudu ulos</strong>
                     </a>
                 </div>
                 <div class="buttons" th:unless="${userIsLoggedIn}">
-                    <a class="button is-primary" th:text="#{form.button.sign-up}" th:href="@{/sign-up}">
+                    <a class="button is-primary" th:text="#{form.button.label.sign-up}" th:href="@{/sign-up}">
                         <strong>Rekisteröidy</strong>
                     </a>
-                    <a class="button is-light" th:text="#{form.button.login}" th:href="@{/login}">
+                    <a class="button is-light" th:text="#{form.button.label.login}" th:href="@{/login}">
                         Kirjaudu sisään
                     </a>
                 </div>

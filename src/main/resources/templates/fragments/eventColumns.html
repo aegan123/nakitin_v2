@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-3"></div>
+    <div class="column">
+        <!--/*@thymesVar id="event" type="fi.asteriski.nakitin.dto.EventDto"*/-->
+        <h1 class="title" th:text="${event.name}"></h1>
+        <div class="block">
+            Järjestäjä: <b th:text="${event.organizer.name}"></b><br>
+            Päivämäärä: <b th:text="${#temporals.format(event.date, 'dd.MM.yyyy')}"></b><br>
+            Venue: <b th:text="${event.venue}"></b><br>
+        </div>
+        <div class="block">
+            <p th:text="${event.description}"></p><br>
+        </div>
+        <div class="block">
+            <p>
+            <h2 class="subtitle">Nakit</h2><br>
+            </p>
+
+            <div class="field has-addons" th:if="${userIsOrganisationAdmin}">
+                <p class="control">
+                    <a href="#" class="button" th:id="${event.id} + ''" onclick="displayModal(this)">
+      <span class="icon is-small">
+        <i class="fa-solid fa-plus"></i>
+      </span>
+                        <span th:text="#{form.button.label.add-task}"></span>
+                    </a>
+                </p>
+                <p th:id="${event.id}" class="control" onclick="fetchCsv(this.getAttribute('id'))">
+                    <a href="#" class="button">
+      <span class="icon is-small">
+          <i class="fa-solid fa-file-export"></i>
+      </span>
+                        <span th:text="#{form.button.label.export}"></span>
+                    </a>
+                </p>
+            </div>
+
+            <div class="content" th:if="${userIsOrganisationAdmin}">
+                <p th:utext="'Huom! Nakittautuneiden tietoja saa käyttää vain <i>'+ ${event.name} +'</i> nakkeihin liittyvässä tiedoituksessa. Tiedot tulee hävittää tapahtuman jälkeen.'"></p>
+                <br>
+            </div>
+
+            <div class="modal" th:if="${userIsOrganisationAdmin}" th:id="${event.id + '_modal'}">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title"></p>
+                        <button class="delete" aria-label="close" onclick="closeModal(this)"></button>
+                    </header>
+                    <section class="modal-card-body">
+                        <p th:text="#{form.button.label.add-task}"></p>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <form th:id="${event.id + '_form'}" class="box" action="#" method="post">
+                            <label class="label" th:text="#{event.task.form.title.add}"></label>
+                            <div class="field is-horizontal">
+                                <div class="field-label is-normal">
+                                    <label for="nameInAdd" class="label"
+                                           th:text="#{event.task.form.label.name}"></label>
+                                </div>
+                                <div class="field-body">
+                                    <div class="field is-narrow">
+                                        <div class="control">
+                                            <input id="nameInAdd" class="input" required="required">
+                                            <p th:id="${event.id + '_nameError'}" class="help is-danger"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field is-horizontal">
+                                <div class="field-label is-normal">
+                                    <label for="dateInAdd" class="label"
+                                           th:text="#{event.task.form.label.date}"></label>
+                                </div>
+                                <div class="field-body">
+                                    <div class="field is-narrow">
+                                        <div class="control">
+                                            <input id="dateInAdd" type="date" class="input" required="required">
+                                            <p th:id="${event.id + '_dateError'}" class="help is-danger"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field is-horizontal">
+                                <div class="field-label is-normal">
+                                    <label for="startTimeInAdd" class="label"
+                                           th:text="#{event.task.form.label.time}"></label>
+                                </div>
+                                <div class="field-body">
+                                    <div class="field is-narrow">
+                                        <p class="control is-normal">
+                                            <input id="startTimeInAdd" class="input" type="time">
+                                        </p>
+                                    </div>
+                                    <div style="text-align: center;">&lowbar;&nbsp;&nbsp;&nbsp;</div>
+                                    <div class="field is-narrow">
+                                        <p class="control is-narrow">
+                                            <input id="endTimeInAdd" class="input" type="time">
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field is-horizontal">
+                                <div class="field-label is-normal">
+                                    <label for="personCountInAdd" class="label"
+                                           th:text="#{event.task.form.label.date}"></label>
+                                </div>
+                                <div class="field-body">
+                                    <div class="field is-narrow">
+                                        <div class="control">
+                                            <input id="personCountInAdd" type="date" class="input" required="required">
+                                            <p th:id="${event.id + '_personCountError'}" class="help is-danger"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="eventId" name="eventId" th:value="${event.id}">
+                            <div class="field is-horizontal">
+                                <div class="field-label">
+                                </div>
+                                <div class="field is-grouped is-left">
+                                    <p class="control">
+                                        <input type="submit" th:value="#{form.button.label.submit}"
+                                               class="button is-primary"
+                                               onclick="addTaskSubmission(event, this)">
+                                    </p>
+                                    <p class="control">
+                                        <input type="reset" th:value="#{form.button.label.reset}"
+                                               class="button is-dark">
+                                    </p>
+                                </div>
+                            </div>
+                        </form>
+                        <br><br><br>
+                        <article class="message is-success" style="display: none;"
+                                 th:id="${event.id + '_success'}">
+                            <div class="message-header">
+                                <p th:text="#{event.task.form.add.success.title}"></p>
+                            </div>
+                            <div class="message-body" th:text="#{event.task.form.add.success.text}"></div>
+                        </article>
+                        <article class="message is-danger" style="display: none;"
+                                 th:id="${event.id + '_fail'}">
+                            <div class="message-header">
+                                <p th:text="#{event.task.form.add.fail.title}"></p>
+                            </div>
+                            <div class="message-body" th:text="#{event.task.form.add.fail.text}"></div>
+                        </article>
+                    </footer>
+                </div>
+            </div>
+
+
+            <div class="columns is-multiline">
+                <div class="column is-half" th:each="task : ${event.tasks}">
+                    <!--/*@thymesVar id="task" type="fi.asteriski.nakitin.dto.EventTaskDto"*/-->
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title" th:text="${task.taskName}"></p>
+                        </header>
+                        <div class="card-content">
+                            <div class="media-content">
+                                <p class="sub-title is-4" th:text="${#temporals.format(task.date, 'E dd.MM.yyyy')}"></p>
+                                <p class="sub-title is-4"
+                                   th:text="'klo ' +${#temporals.format(task.startTime, 'HH:mm')} +' - ' + ${#temporals.format(task.endTime, 'HH:mm')}"></p>
+                            </div>
+                            <div class="content">
+                                <hr>
+                                <p th:text="'Nakissa: ' + ${task.volunteers.size()} + ' / ' + ${task.personCount}"></p>
+                                <br>
+                                <p th:text="${userIsLoggedIn && userHasVolunteered} ? #{event.task.label.user-has-volunteered} : #{event.task.label.user-has-not-volunteered}"/>
+                                <br>
+                                <p th:if="${userIsLoggedIn}" th:each="volunteer : ${task.volunteers}">
+                                    <!--/*@thymesVar id="volunteer" type="fi.asteriski.nakitin.entity.UserEntity"*/-->
+                                    <b th:unless="${volunteer eq null}"
+                                       th:text="${volunteer.firstName} + ' ' + ${volunteer.lastName}"></b>
+                                    <br>
+                                <p th:if="${userIsLoggedIn}">
+                                <article class="message is-danger" th:if="${task.isFull}">
+                                    <div class="message-body" th:text="#{event.task.form.label.full}">
+                                    </div>
+                                </article>
+                                    <form method="post" th:if="${volunteer != null && volunteer.hasVolunteered(task.id)}" th:href="@{/event/{eventId}/task/{taskId}/cancel(eventId=${event.id},taskId=${task.id})}">
+                                        <div class="field">
+                                            <div class="control">
+                                                <button class="button is-danger" th:text="#{form.button.label.volunteer.cancel}"></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <form method="post" th:if="${task.isNotFull}" th:href="@{/event/{eventId}/task/{taskId}/volunteer(eventId=${event.id},taskId=${task.id})}">
+                                        <div class="field">
+                                            <div class="control">
+                                                <button class="button is-primary" th:text="#{form.button.label.volunteer.signup}"></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </p>
+                                </p>
+                                <article class="message is-warning" th:unless="${userIsLoggedIn}">
+                                    <div class="message-body" th:text="#{event.task.label.registration-required-to-volunteer}">
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                        <footer class="card-footer" th:if="${userIsOrganisationAdmin}">
+                            <a href="#" th:id="${task.id + ''}" class="card-footer-item" onclick="displayModal(this)"
+                               th:text="#{form.button.label.edit}"></a>
+                        </footer>
+                    </div>
+
+                    <div class="modal" th:id="${task.id + '_modal'}">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                            <header class="modal-card-head">
+                                <p class="modal-card-title" th:text="${task.taskName}"></p>
+                                <button class="delete" aria-label="close" onclick="closeModal(this)"></button>
+                            </header>
+                            <section class="modal-card-body">
+                                <p th:text="${task.taskName}"></p>
+                            </section>
+                            <footer class="modal-card-foot">
+                                <form th:id="${task.id + '_form'}" class="box" action="#" method="post">
+                                    <label class="label" th:text="#{event.task.form.title.edit}"></label>
+                                    <div class="field is-horizontal">
+                                        <div class="field-label is-normal">
+                                            <label for="nameInEdit" class="label"
+                                                   th:text="#{event.task.form.label.name}"></label>
+                                        </div>
+                                        <div class="field-body">
+                                            <div class="field is-narrow">
+                                                <div class="control">
+                                                    <input id="nameInEdit" class="input" required="required"
+                                                           th:value="${task.taskName}">
+                                                    <p th:id="${task.id + '_nameError'}" class="help is-danger"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field is-horizontal">
+                                        <div class="field-label is-normal">
+                                            <label for="dateInEdit" class="label"
+                                                   th:text="#{event.task.form.label.date}"></label>
+                                        </div>
+                                        <div class="field-body">
+                                            <div class="field is-narrow">
+                                                <div class="control">
+                                                    <input id="dateInEdit" type="date" class="input" required="required"
+                                                           th:value="${task.date}">
+                                                    <p th:id="${task.id + '_dateError'}" class="help is-danger"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="field is-horizontal">
+                                        <div class="field-label is-normal">
+                                            <label for="startTimeInEdit" class="label"
+                                                   th:text="#{event.task.form.label.time}"></label>
+                                        </div>
+                                        <div class="field-body">
+                                            <div class="field is-narrow">
+                                                <p class="control is-normal">
+                                                    <input id="startTimeInEdit" class="input" type="time"
+                                                           th:value="${task.startTime}">
+                                                </p>
+                                                <p th:id="${task.id + '_startTimeError'}" class="help is-danger"></p>
+                                            </div>
+                                            <div style="text-align: center;">&lowbar;&nbsp;&nbsp;&nbsp;</div>
+                                            <div class="field is-narrow">
+                                                <p class="control is-narrow">
+                                                    <input id="endTimeInEdit" class="input" type="time"
+                                                           th:value="${task.endTime}">
+                                                </p>
+                                                <p th:id="${task.id + '_endTimeError'}" class="help is-danger"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="taskId" name="taskId" th:value="${task.id}">
+                                    <input type="hidden" id="eventIdInEdit" name="eventId" th:value="${event.id}">
+                                    <div class="field is-horizontal">
+                                        <div class="field-label">
+                                        </div>
+                                        <div class="field is-grouped is-left">
+                                            <p class="control">
+                                                <input type="submit" th:value="#{form.button.label.submit}"
+                                                       class="button is-primary"
+                                                       onclick="editTaskSubmission(event, this)">
+                                            </p>
+                                            <p class="control">
+                                                <input type="reset" th:value="#{form.button.label.reset}"
+                                                       class="button is-dark">
+                                            </p>
+                                        </div>
+                                    </div>
+                                </form>
+                                <br><br><br>
+                                <article class="message is-success" style="display: none;"
+                                         th:id="${task.id + '_success'}">
+                                    <div class="message-header">
+                                        <p th:text="#{event.task.form.edit.success.title}"></p>
+                                    </div>
+                                    <div class="message-body" th:text="#{event.task.form.edit.success.text}"></div>
+                                </article>
+                                <article class="message is-danger" style="display: none;"
+                                         th:id="${task.id + '_fail'}">
+                                    <div class="message-header">
+                                        <p th:text="#{event.task.form.edit.fail.title}"></p>
+                                    </div>
+                                    <div class="message-body" th:text="#{event.task.form.edit.fail.text}"></div>
+                                </article>
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column is-3"></div>
+</div>
+</body>
+</html>
