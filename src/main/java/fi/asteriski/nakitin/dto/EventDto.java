@@ -4,10 +4,18 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
-import java.time.LocalDate;
-import java.util.UUID;
 import lombok.Builder;
+
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.UUID;
 
 @Builder
 public record EventDto(
-        UUID id, String name, String venue, String description, LocalDate date, OrganizationDto organizer) {}
+        UUID id,
+        String name,
+        String venue,
+        String description,
+        LocalDate date,
+        OrganizationDto organizer,
+        Set<EventTaskDto> tasks) {}

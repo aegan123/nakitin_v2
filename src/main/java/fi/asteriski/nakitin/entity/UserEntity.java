@@ -4,17 +4,16 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.entity;
 
+import fi.asteriski.nakitin.dto.UserDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDate;
+import java.util.*;
 
 @Entity
 @Table(
@@ -54,8 +53,18 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private LocalDate expirationDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private OrganizationEntity organization;
+
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<EventEntity> events;
+    private Set<EventEntity> events;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "nakittautuneet",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_task_id"))
+    private Set<EventTaskEntity> eventsTasks = new HashSet<>();
 
     @NonNull
     @Column(nullable = false)
@@ -64,19 +73,24 @@ public class UserEntity implements UserDetails {
     private UserRole userRole = UserRole.ROLE_USER;
 
     @Builder.Default
+    @Column(nullable = false)
     private Boolean locked = false;
 
     @Builder.Default
+    @Column(nullable = false)
     private Boolean enabled = true;
 
     @Builder.Default
     @Transient
     private boolean isAdmin = false;
 
+    public boolean isOrganisationAdmin() {
+        return userRole == UserRole.ROLE_ORG_ADMIN;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        final var simpleGrantedAuthority = new SimpleGrantedAuthority(userRole.name());
-        return Collections.singletonList(simpleGrantedAuthority);
+        return Collections.singletonList(new SimpleGrantedAuthority(userRole.name()));
     }
 
     @Override
@@ -97,5 +111,51 @@ public class UserEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public void addEventTask(EventTaskEntity eventTask) {
+        eventsTasks.add(eventTask);
+        eventTask.getVolunteers().add(this);
+    }
+
+    public void removeEventTask(EventTaskEntity eventTask) {
+        eventsTasks.remove(eventTask);
+        eventTask.getVolunteers().remove(this);
+    }
+
+    public void addEvent(EventEntity event) {
+        events.add(event);
+        event.setCreatedBy(this);
+    }
+
+    public void removeEvent(EventEntity event) {
+        events.remove(event);
+        event.setCreatedBy(null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserEntity)) return false;
+        return id != null && id.equals(((UserEntity) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    public UserDto toDto() {
+        return UserDto.builder()
+                .email(email)
+                .firstName(firstName)
+                .lastName(lastName)
+                .username(username)
+                .build();
+    }
+
+    public boolean hasVolunteered(UUID taskId) {
+        return eventsTasks.stream()
+            .anyMatch(task -> task.getId().equals(taskId));
     }
 }
