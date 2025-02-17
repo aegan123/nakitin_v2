@@ -35,9 +35,9 @@
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons" th:if="${userIsLoggedIn}">
-                    <a class="button is-primary" th:text="#{form.button.logout}" th:href="@{/logout}">
-                        <strong>Kirjaudu ulos</strong>
-                    </a>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="button is-warning" type="submit" th:text="#{form.button.logout}"></button>
+                    </form>
                 </div>
                 <div class="buttons" th:unless="${userIsLoggedIn}">
                     <a class="button is-primary" th:text="#{form.button.sign-up}" th:href="@{/sign-up}">
