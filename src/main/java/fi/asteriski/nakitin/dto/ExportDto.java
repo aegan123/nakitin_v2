@@ -7,8 +7,4 @@ package fi.asteriski.nakitin.dto;
 import lombok.Builder;
 
 @Builder
-public record ExportDto(
-    String eventName,
-    String csv
-) {
-}
+public record ExportDto(String eventName, String csv) {}

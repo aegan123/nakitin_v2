@@ -6,18 +6,17 @@ package fi.asteriski.nakitin.entity;
 
 import fi.asteriski.nakitin.dto.EventDto;
 import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(
@@ -54,7 +53,7 @@ public class EventEntity {
 
     @NonNull
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EventTaskEntity> tasks = new HashSet<>();
+    private Set<EventTaskEntity> tasks = new LinkedHashSet<>();
 
     private UUID signupSystemEvent;
 

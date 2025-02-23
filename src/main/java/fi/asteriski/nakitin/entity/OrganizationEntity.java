@@ -6,17 +6,13 @@ package fi.asteriski.nakitin.entity;
 
 import fi.asteriski.nakitin.dto.OrganizationDto;
 import jakarta.persistence.*;
+import java.time.ZonedDateTime;
+import java.util.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "organizations")
@@ -33,7 +29,7 @@ public class OrganizationEntity {
 
     @NonNull
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserEntity> users = new HashSet<>();
+    private Set<UserEntity> users = new LinkedHashSet<>();
 
     @NonNull
     @OneToMany(mappedBy = "organizer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

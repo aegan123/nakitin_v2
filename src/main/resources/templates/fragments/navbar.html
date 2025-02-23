@@ -20,14 +20,14 @@
 
     <div id="navbar" class="navbar-menu">
         <div class="navbar-start">
-            <a class="navbar-item" href="/" th:text="#{index.label.link}">
+            <a class="navbar-item" th:href="@{/}" th:text="#{index.label.link}">
                 Etusivu
             </a>
 
-            <a class="navbar-item" href="/orgs" th:text="#{index.label.organisations}">
+            <a class="navbar-item" th:href="@{/orgs}" th:text="#{index.label.organisations}">
                 Yhdistykset
             </a>
-            <a class="navbar-item" href="/privacy" th:text="#{index.label.privacy}">
+            <a class="navbar-item" th:href="@{/privacy}" th:text="#{index.label.privacy}">
                 Tietosuoja
             </a>
         </div>
@@ -38,7 +38,7 @@
                     <a class="button is-link" th:if="${userIsOrganisationAdmin}" th:text="#{form.button.label.new-event}" th:href="@{/add-event}"></a>
                     <a class="button is-link" th:text="#{form.button.label.profile}" th:href="@{/profile}"></a>
                     <form th:action="@{/logout}" method="post">
-                        <button class="button is-warning" type="submit" th:text="#{form.button.logout}"></button>
+                        <button class="button is-warning" type="submit" th:text="#{form.button.label.logout}"></button>
                     </form>
                 </div>
                 <div class="buttons" th:unless="${userIsLoggedIn}">

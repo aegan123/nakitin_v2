@@ -4,6 +4,9 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.config;
 
+import static fi.asteriski.nakitin.entity.UserRole.*;
+import static org.springframework.http.HttpMethod.*;
+
 import fi.asteriski.nakitin.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -30,8 +33,33 @@ public class SecurityConfig {
     public static class DevSecurityConfig {
         @Bean
         public SecurityFilterChain configureDev(@NonNull HttpSecurity http) throws Exception {
-            http.authorizeHttpRequests(authorizeHttpRequests ->
-                            authorizeHttpRequests.anyRequest().permitAll())
+            http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                            .requestMatchers(POST, "/logout")
+                            .hasAnyRole(ROLE_USER.label, ROLE_ADMIN.label, ROLE_ORG_ADMIN.label)
+                            .requestMatchers(POST, "/volunteer/**")
+                            .hasAnyRole(ROLE_USER.label, ROLE_ADMIN.label, ROLE_ORG_ADMIN.label)
+                            .requestMatchers(POST, "/task/add")
+                            .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(GET, "/task/add")
+                            .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(GET, "/task/edit")
+                            .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(POST, "/task/edit")
+                            .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(GET, "/export/**")
+                            .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(
+                                    GET,
+                                    "/",
+                                    "/event/**",
+                                    "/login",
+                                    "/orgs",
+                                    "/privacy",
+                                    "/sign-up",
+                                    "/error",
+                                    "/js/**",
+                                    "favicon.ico")
+                            .permitAll())
                     .formLogin(Customizer.withDefaults())
                     .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
             http.cors(Customizer.withDefaults());

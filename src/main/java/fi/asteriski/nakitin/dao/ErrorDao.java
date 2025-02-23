@@ -7,10 +7,9 @@ package fi.asteriski.nakitin.dao;
 import com.mgnt.utils.TextUtils;
 import fi.asteriski.nakitin.entity.ErrorEntity;
 import fi.asteriski.nakitin.repo.ErrorRepository;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 @AllArgsConstructor

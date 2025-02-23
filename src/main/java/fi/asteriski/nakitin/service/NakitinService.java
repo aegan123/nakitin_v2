@@ -13,18 +13,15 @@ import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.exceptions.CsvExportException;
 import fi.asteriski.nakitin.exceptions.EventNotFoundException;
 import jakarta.validation.Valid;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,12 +35,15 @@ public class NakitinService {
     }
 
     public EventDto fetchEvent(UUID eventId) {
-        return nakitinDao.fetchEvent(eventId);
+        return nakitinDao.fetchEvent(eventId).sorted();
     }
 
     @Transactional
-    public void addEventTask(UUID eventId, @Valid EventTaskForm eventTaskDto) {
-        nakitinDao.createNewEventTask(eventTaskDto, eventId);
+    public void addEventTask(@Valid EventTaskForm eventTaskDto) {
+        if (eventTaskDto.getDate() == null) {
+            eventTaskDto.setDate(nakitinDao.fetchEventDate(eventTaskDto.getEventId()));
+        }
+        nakitinDao.createNewEventTask(eventTaskDto);
     }
 
     @Transactional
@@ -53,14 +53,16 @@ public class NakitinService {
 
     @Transactional
     public void volunteerToTask(UUID taskId, UserEntity loggedInUser) {
-        loggedInUser.addEventTask(nakitinDao.getEventTaskById(taskId));
-        nakitinDao.saveUser(loggedInUser);
+        var user = nakitinDao.fetchUser(loggedInUser.getUsername());
+        user.addEventTask(nakitinDao.getEventTaskById(taskId));
+        nakitinDao.saveUser(user);
     }
 
     @Transactional
     public void cancelVolunteeringToTask(UUID taskId, UserEntity loggedInUser) {
-        loggedInUser.removeEventTask(nakitinDao.getEventTaskById(taskId));
-        nakitinDao.saveUser(loggedInUser);
+        var user = nakitinDao.fetchUser(loggedInUser.getUsername());
+        user.removeEventTask(nakitinDao.getEventTaskById(taskId));
+        nakitinDao.saveUser(user);
     }
 
     public ExportDto exportVolunteers(UUID eventId) {
@@ -71,22 +73,29 @@ public class NakitinService {
             throw new CsvExportException("Could not find event with id: " + eventId, e);
         }
         return ExportDto.builder()
-            .eventName(event.name())
-            .csv(generateCsv(event.tasks()))
-            .build();
+                .eventName(event.name())
+                .csv(generateCsv(event.tasks()))
+                .build();
     }
 
     private String generateCsv(Set<EventTaskDto> tasks) {
         var sw = new StringWriter();
 
-        var csvFormat = CSVFormat.EXCEL.builder()
-            .setHeader("Nakki", "Pvm", "Klo", "Etunimi", "Sukunimi", "Sähköposti")
-            .get();
+        var csvFormat = CSVFormat.EXCEL
+                .builder()
+                .setHeader("Nakki", "Pvm", "Klo", "Etunimi", "Sukunimi", "Sähköposti")
+                .get();
 
         try (final var printer = new CSVPrinter(sw, csvFormat)) {
             tasks.forEach(dto -> dto.volunteers().forEach(volunteer -> {
                 try {
-                    printer.printRecord(dto.taskName(), dto.date(), String.format("%s - %s", dto.startTime(), dto.endTime()), volunteer.firstName(), volunteer.lastName(), volunteer.email());
+                    printer.printRecord(
+                            dto.taskName(),
+                            dto.date(),
+                            String.format("%s - %s", dto.startTime(), dto.endTime()),
+                            volunteer.firstName(),
+                            volunteer.lastName(),
+                            volunteer.email());
                 } catch (IOException | IllegalArgumentException e) {
                     log.debug("Error printing record", e);
                 }

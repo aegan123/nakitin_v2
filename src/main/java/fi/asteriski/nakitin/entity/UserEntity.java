@@ -7,13 +7,12 @@ package fi.asteriski.nakitin.entity;
 import fi.asteriski.nakitin.dto.UserDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import java.time.LocalDate;
+import java.util.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.time.LocalDate;
-import java.util.*;
 
 @Entity
 @Table(
@@ -64,7 +63,8 @@ public class UserEntity implements UserDetails {
             name = "nakittautuneet",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "event_task_id"))
-    private Set<EventTaskEntity> eventsTasks = new HashSet<>();
+    @Builder.Default
+    private Set<EventTaskEntity> eventsTasks = new LinkedHashSet<>();
 
     @NonNull
     @Column(nullable = false)
@@ -105,7 +105,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return expirationDate == null || expirationDate.isAfter(LocalDate.now());
+        return expirationDate.isAfter(LocalDate.now());
     }
 
     @Override
@@ -147,15 +147,11 @@ public class UserEntity implements UserDetails {
 
     public UserDto toDto() {
         return UserDto.builder()
+                .id(id)
                 .email(email)
                 .firstName(firstName)
                 .lastName(lastName)
                 .username(username)
                 .build();
-    }
-
-    public boolean hasVolunteered(UUID taskId) {
-        return eventsTasks.stream()
-            .anyMatch(task -> task.getId().equals(taskId));
     }
 }

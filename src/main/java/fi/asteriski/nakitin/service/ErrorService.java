@@ -5,11 +5,10 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.service;
 
 import fi.asteriski.nakitin.dao.ErrorDao;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor

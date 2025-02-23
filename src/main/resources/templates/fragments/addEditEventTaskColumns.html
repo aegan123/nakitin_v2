@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-3 is-desktop"></div>
+    <div class="column">
+        <!--/*@thymesVar id="event" type="fi.asteriski.nakitin.dto.EventDto"*/-->
+        <!--/*@thymesVar id="isEdit" type="java.lang.Boolean"*/-->
+        <div class="block">
+            <h1 class="title" th:if="${isEdit == true}" th:text="#{event.page.label.task.edit}"></h1><br>
+            <h1 class="title" th:if="${isEdit == false}" th:text="#{event.page.label.task.add}"></h1><br>
+            <div class="content">
+                <p th:if="${isEdit == true}" th:text="#{event.page.label.edit} + ' ' + ${event.name} + '.'"></p><br>
+                <p th:if="${isEdit == false}" th:text="#{event.page.label.add} + ' ' + ${event.name} + '.'"></p><br>
+                <h3 class="sub-title" th:text="#{event.page.label.help.title}"></h3><br>
+                <p th:text="#{event.page.label.help.text}"></p>
+                <a th:href="@{/event/{eventId}(eventId=${event.id})}" th:text="#{event.page.label.back}"></a>
+            </div>
+            <form class="box" th:action="@{/task/{url}(url=${isEdit ? 'edit' : 'add'},eventId=${event.id},id=${eventTaskForm.id})}" method="post" th:object="${eventTaskForm}">
+                <!--/*@thymesVar id="eventTaskForm" type="fi.asteriski.nakitin.dto.EventTaskForm"*/-->
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="taskName" class="label" th:text="#{event.task.form.field.label.taskName}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{taskName}" id="taskName" class="input" th:value="${eventTaskForm.taskName}" required="required">
+                            <p th:if="${#fields.hasErrors('taskName')}" class="help is-danger" th:errors="*{taskName}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="personCount" class="label" th:text="#{event.task.form.field.label.personCount}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{personCount}" id="personCount" class="input" type="number" min="1" th:value="${eventTaskForm.personCount}" required="required">
+                            <p th:if="${#fields.hasErrors('personCount')}" class="help is-danger" th:errors="*{personCount}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="date" class="label" th:text="#{event.task.form.field.label.date}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{date}" id="date" class="input" type="date" th:value="${eventTaskForm.date}" th:min="${event.date}">
+                            <p th:if="${#fields.hasErrors('date')}" class="help is-danger" th:errors="*{date}"></p>
+                            </p>
+                            <p class="help" th:text="#{event.task.form.field.label.help.date}"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="startTime" class="label" th:text="#{event.task.form.field.label.startTime}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{startTime}" id="startTime" type="time" class="input" th:value="${eventTaskForm.startTime}" required="required">
+                            <p th:if="${#fields.hasErrors('startTime')}" class="help is-danger" th:errors="*{startTime}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="endTime" class="label" th:text="#{event.task.form.field.label.endTime}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{endTime}" id="endTime" class="input" type="time" th:value="${eventTaskForm.endTime}" required="required">
+                            <p th:if="${#fields.hasErrors('endTime')}" class="help is-danger" th:errors="*{endTime}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="eventId" th:name="eventId" th:field="*{eventId}" th:value="${event.id}">
+                <input type="hidden" id="id" th:name="id" th:field="*{id}" th:value="${eventTaskForm.id}">
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                    </div>
+                    <div class="field is-grouped is-left">
+                        <p class="control">
+                            <input type="submit" th:if="${isEdit == false}" th:value="#{form.button.label.add-task}" class="button is-primary">
+                            <input type="submit" th:if="${isEdit == true}" th:value="#{form.button.label.edit-task}" class="button is-primary">
+                        </p>
+                        <p class="control">
+                            <input type="reset" th:value="#{form.button.label.reset}" class="button is-dark">
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="column is-3 is-desktop"></div>
+</div>
+</body>
+</html>

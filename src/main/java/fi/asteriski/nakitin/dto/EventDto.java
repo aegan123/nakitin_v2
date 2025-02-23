@@ -4,11 +4,10 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
-import lombok.Builder;
-
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import lombok.Builder;
 
 @Builder
 public record EventDto(
@@ -18,4 +17,18 @@ public record EventDto(
         String description,
         LocalDate date,
         OrganizationDto organizer,
-        Set<EventTaskDto> tasks) {}
+        Set<EventTaskDto> tasks) {
+    public EventDto sorted() {
+        return EventDto.builder()
+                .id(id)
+                .name(name)
+                .venue(venue)
+                .description(description)
+                .date(date)
+                .organizer(organizer)
+                .tasks(tasks.stream()
+                        .sorted(Comparator.comparing(EventTaskDto::date).thenComparing(EventTaskDto::startTime))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
+                .build();
+    }
+}

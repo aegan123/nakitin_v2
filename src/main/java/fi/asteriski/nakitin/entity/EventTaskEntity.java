@@ -5,20 +5,16 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.entity;
 
 import fi.asteriski.nakitin.dto.EventTaskDto;
-import jakarta.persistence.Table;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
-import lombok.*;
-import org.hibernate.annotations.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+import lombok.*;
+import org.hibernate.annotations.*;
 
 @Entity
 @Table(name = "tasks")
@@ -56,10 +52,12 @@ public class EventTaskEntity {
     @NonNull
     @Column(nullable = false)
     @Min(value = 1)
+    @Builder.Default
     private Integer personCount = 1;
 
     @ManyToMany(mappedBy = "eventsTasks")
-    private Set<UserEntity> volunteers = new HashSet<>();
+    @Builder.Default
+    private Set<UserEntity> volunteers = new LinkedHashSet<>();
 
     @UpdateTimestamp
     @Column(nullable = false)
@@ -72,7 +70,7 @@ public class EventTaskEntity {
     @Override
     public String toString() {
         return String.format(
-                "% @ % by %", taskName, event.getName(), event.getOrganizer().getName());
+                "%s @ %s by %s", taskName, event.getName(), event.getOrganizer().getName());
     }
 
     public EventTaskDto toDto() {

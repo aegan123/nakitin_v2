@@ -5,14 +5,13 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.entity;
 
 import jakarta.persistence.*;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.ZonedDateTime;
-import java.util.UUID;
 
 @Entity
 @Data
