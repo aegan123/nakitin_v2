@@ -4,34 +4,37 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.entity;
 
+import fi.asteriski.nakitin.dto.EventTaskDto;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.UUID;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SourceType;
-import org.hibernate.annotations.UpdateTimestamp;
+import java.util.*;
+import java.util.stream.Collectors;
+import lombok.*;
+import org.hibernate.annotations.*;
 
 @Entity
 @Table(name = "tasks")
 @Data
 @NoArgsConstructor
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@NaturalIdCache
+@Builder
+@AllArgsConstructor
 public class EventTaskEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NonNull
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private EventEntity event;
 
     @NonNull
     @Column(nullable = false)
+    @NaturalId
     private String taskName;
 
     @NonNull
@@ -49,19 +52,48 @@ public class EventTaskEntity {
     @NonNull
     @Column(nullable = false)
     @Min(value = 1)
+    @Builder.Default
     private Integer personCount = 1;
 
-    @UpdateTimestamp(source = SourceType.DB)
+    @ManyToMany(mappedBy = "eventsTasks")
+    @Builder.Default
+    private Set<UserEntity> volunteers = new LinkedHashSet<>();
+
+    @UpdateTimestamp
     @Column(nullable = false)
     private ZonedDateTime updatedAt;
 
-    @CreationTimestamp(source = SourceType.DB)
+    @CreationTimestamp
     @Column(nullable = false)
     private ZonedDateTime createdAt;
 
     @Override
     public String toString() {
-        return taskName + " @ " + event.getName() + " by "
-                + event.getOrganizer().getName();
+        return String.format(
+                "%s @ %s by %s", taskName, event.getName(), event.getOrganizer().getName());
+    }
+
+    public EventTaskDto toDto() {
+        return EventTaskDto.builder()
+                .id(id)
+                .date(date)
+                .startTime(startTime)
+                .endTime(endTime)
+                .personCount(personCount)
+                .taskName(taskName)
+                .volunteers(volunteers.stream().map(UserEntity::toDto).collect(Collectors.toSet()))
+                .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return Objects.equals(taskName, ((EventTaskEntity) o).taskName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskName);
     }
 }

@@ -5,9 +5,16 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.entity;
 
 public enum UserRole {
-    ROLE_ADMIN,
-    ROLE_USER,
-    ROLE_ORG_ADMIN,
-    ADMIN,
-    USER
+    ROLE_ADMIN("ADMIN"),
+    ROLE_USER("USER"),
+    ROLE_ORG_ADMIN("ORG_ADMIN"),
+    ADMIN("ADMIN"),
+    USER("USER"),
+    ORG_ADMIN("ORG_ADMIN");
+
+    public final String label;
+
+    UserRole(String label) {
+        this.label = label;
+    }
 }

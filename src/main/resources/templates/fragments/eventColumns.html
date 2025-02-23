@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-2 is-desktop"></div>
+    <div class="column">
+        <!--/*@thymesVar id="event" type="fi.asteriski.nakitin.dto.EventDto"*/-->
+        <!--/*@thymesVar id="userIsLoggedIn" type="java.lang.Boolean"*/-->
+        <!--/*@thymesVar id="userIsOrganisationAdmin" type="java.lang.Boolean"*/-->
+        <!--/*@thymesVar id="user" type="fi.asteriski.nakitin.entity.UserEntity"*/-->
+        <h1 class="title" th:text="${event.name}"></h1>
+        <div class="block">
+            Järjestäjä: <b th:text="${event.organizer.name}"></b><br>
+            Päivämäärä: <b th:text="${#temporals.format(event.date, 'dd.MM.yyyy')}"></b><br>
+            Venue: <b th:text="${event.venue}"></b><br>
+        </div>
+        <div class="block">
+            <p th:text="${event.description}"></p><br>
+        </div>
+        <div class="block">
+            <h2 class="subtitle" th:text="#{event.page.label.tasks}"></h2><br>
+
+            <div class="field has-addons" th:if="${userIsOrganisationAdmin}">
+                <p class="control">
+                    <a th:href="@{/task/add(eventId=${event.id})}" class="button">
+      <span class="icon is-small">
+        <i class="fa-solid fa-plus"></i>
+      </span>
+                        <span th:text="#{form.button.label.add-task}"></span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a th:href="@{/export(eventId=${event.id})}" class="button" th:id="${event.id}">
+      <span class="icon is-small">
+          <i class="fa-solid fa-file-export"></i>
+      </span>
+                        <span th:text="#{form.button.label.export}"></span>
+                    </a>
+                </p>
+            </div>
+
+            <div class="content" th:if="${userIsOrganisationAdmin}">
+                <p th:utext="'Huom! Nakittautuneiden tietoja saa käyttää vain <i>'+ ${event.name} +'</i> nakkeihin liittyvässä tiedoituksessa. Tiedot tulee hävittää tapahtuman jälkeen.'"></p>
+                <br>
+            </div>
+
+            <div class="columns is-multiline">
+                <div class="column is-half" th:each="task : ${event.tasks}">
+                    <!--/*@thymesVar id="task" type="fi.asteriski.nakitin.dto.EventTaskDto"*/-->
+                    <div class="card">
+                        <header class="card-header">
+                            <p class="card-header-title" th:text="${task.taskName}"></p>
+                        </header>
+                        <div class="card-content">
+                            <div class="media-content">
+                                <p class="sub-title is-4" th:text="${#temporals.format(task.date, 'E dd.MM.yyyy')}"></p>
+                                <p class="sub-title is-4"
+                                   th:text="'klo ' +${#temporals.format(task.startTime, 'HH:mm')} +' - ' + ${#temporals.format(task.endTime, 'HH:mm')}"></p>
+                            </div>
+                            <div class="content">
+                                <hr>
+                                <p th:text="'Nakissa: ' + ${task.volunteers.size()} + ' / ' + ${task.personCount}"></p>
+                                <br>
+                                <p th:text="${userIsLoggedIn && task.userHasVolunteered(user)} ? #{event.task.label.user-has-volunteered} : #{event.task.label.user-has-not-volunteered}"/>
+                                <br>
+                                <p th:if="${userIsLoggedIn}" th:each="volunteer : ${task.volunteers}">
+                                    <!--/*@thymesVar id="volunteer" type="fi.asteriski.nakitin.entity.UserEntity"*/-->
+                                    Henkilöt:<br>
+                                    <b th:unless="${volunteer eq null}"
+                                       th:text="${volunteer.firstName} + ' ' + ${volunteer.lastName}"></b>
+                                    <br>
+                                <p th:if="${userIsLoggedIn}">
+                                <article class="message is-danger" th:if="${task.isFull}">
+                                    <div class="message-body" th:text="#{event.task.form.label.full}">
+                                    </div>
+                                </article>
+                                    <form method="post" th:if="${userIsLoggedIn && task.isNotFull}" th:action="@{/volunteer/{eventId}/task/{taskId}(eventId=${event.id},taskId=${task.id},cancel=${task.userHasVolunteered(user)})}">
+                                        <div class="field">
+                                            <div class="control">
+                                                <button class="button is-primary" th:if="${task.userHasNotVolunteered(user)}" th:text="#{form.button.label.volunteer.signup}"></button>
+                                                <button class="button is-danger" th:if="${task.userHasVolunteered(user)}" th:text="#{form.button.label.volunteer.cancel}"></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </p>
+                                </p>
+
+                                <article class="message is-warning" th:unless="${userIsLoggedIn}">
+                                    <div class="message-body" th:text="#{event.task.label.registration-required-to-volunteer}">
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                        <footer class="card-footer" th:if="${userIsOrganisationAdmin}">
+                            <a th:href="@{/task/edit(eventId=${event.id},taskId=${task.id})}" th:id="${task.id + ''}" class="card-footer-item"
+                               th:text="#{form.button.label.edit}"></a>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column is-2 is-desktop"></div>
+</div>
+</body>
+</html>

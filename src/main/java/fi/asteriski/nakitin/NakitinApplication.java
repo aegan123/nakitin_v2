@@ -29,8 +29,8 @@ public class NakitinApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // FIXME remove before prod
         if (!userRepository.getClass().getSimpleName().contains("Mockito")) {
-            var adminUsername = System.getenv("ADMIN_USERNAME");
-            var adminPassword = System.getenv("ADMIN_PASSWORD");
+            var adminUsername = System.getenv("ADMIN_USERNAME") != null ? System.getenv("ADMIN_USERNAME") : "admin";
+            var adminPassword = System.getenv("ADMIN_PASSWORD") != null ? System.getenv("ADMIN_PASSWORD") : "admin";
             var admin = UserEntity.builder()
                     .username(adminUsername)
                     .password(bCryptPasswordEncoder.encode(adminPassword))

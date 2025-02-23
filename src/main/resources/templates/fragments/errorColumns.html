@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-3"></div>
+    <div class="column">
+        <div class="block"><h2 class="title is-2" th:text="${errorTitle}"></h2></div>
+        <div class="block" th:text="${errorText}"></div>
+        <div class="block" th:if="${contactAdmin}" th:text="${contactAdminText}"></div>
+    </div>
+    <div class="column is-3"></div>
+</div>
+</body>
+</html>
