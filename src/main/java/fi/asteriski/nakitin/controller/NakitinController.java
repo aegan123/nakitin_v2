@@ -27,7 +27,7 @@ public class NakitinController {
     @GetMapping("/")
     public String index(Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
         model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
-        model.addAttribute("upcomingEvents", nakitinService.fetchUpcomingEvents());
+        model.addAttribute(MODEL_LABEL_UPCOMING_EVENTS, nakitinService.fetchUpcomingEvents());
         return "index";
     }
 
