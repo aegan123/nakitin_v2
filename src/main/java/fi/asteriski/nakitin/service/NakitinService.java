@@ -107,4 +107,12 @@ public class NakitinService {
 
         return sw.toString().trim();
     }
+
+    public List<EventDto> fetchUpcomingEvents(UUID organizationId) {
+        return nakitinDao.fetchUpcomingEvents(organizationId);
+    }
+
+    public List<EventDto> fetchPastEvents(UUID organizationId) {
+        return nakitinDao.fetchPastEvents(organizationId);
+    }
 }

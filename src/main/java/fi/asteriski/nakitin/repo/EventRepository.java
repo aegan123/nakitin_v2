@@ -16,4 +16,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EventRepository extends JpaRepository<EventEntity, UUID> {
     List<EventEntity> findAllByDateBetween(LocalDate dateAfter, LocalDate dateBefore, Limit limit, Sort sort);
+
+    List<EventEntity> findAllByOrganizer_IdAndDateBefore(
+            UUID organizerId, LocalDate dateBefore, Sort sort, Limit limit);
+
+    List<EventEntity> findAllByOrganizer_IdAndDateAfter(UUID organizerId, LocalDate dateAfter, Sort sort);
 }

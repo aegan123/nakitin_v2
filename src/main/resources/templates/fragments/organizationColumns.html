@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-2 is-desktop"></div>
+    <div class="column is-4">
+        <table class="table">
+            <thead>
+            <tr>
+                <th><abbr title="Organizations" th:text="#{organizations.label.title}"></abbr></th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--/*@thymesVar id="organizations" type="java.util.List<fi.asteriski.nakitin.dto.OrganizationDto>"*/-->
+            <tr th:each="organization : ${organizations}">
+                <td><a th:href="@{/organizations(id=${organization.id})}" th:text="${organization.name}"></a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="column is-half">
+        <!--/*@thymesVar id="upcomingEvents" type="java.util.List<fi.asteriski.nakitin.dto.EventDto>"*/-->
+        <!--/*@thymesVar id="pastEvents" type="java.util.List<fi.asteriski.nakitin.dto.EventDto>"*/-->
+        <!--/*@thymesVar id="isOrgInfo" type="java.lang.Boolean"*/-->
+        <div class="content" th:if="${isOrgInfo}">
+            <h4 class="title is-4" th:text="#{organizations.label.upcoming-events}"></h4>
+            <ul>
+                <li th:each="event : ${upcomingEvents}" th:text="${event.name} + ', ' + ${#temporals.format(event.date, 'dd.MM.yyyy')}"></li>
+                <li th:if="${upcomingEvents.isEmpty()}" th:text="#{organizations.label.no-upcoming-events}"></li>
+            </ul>
+            <h4 class="title is-4" th:text="#{organizations.label.past-events}"></h4>
+            <ul>
+                <li th:each="event : ${pastEvents}" th:text="${event.name} + ', ' + ${#temporals.format(event.date, 'dd.MM.yyyy')}"></li>
+                <li th:if="${pastEvents.isEmpty()}" th:text="#{organizations.label.no-past-events}"></li>
+            </ul>
+        </div>
+    </div>
+    <div class="column is-3 is-desktop"></div>
+</div>
+</body>
+</html>

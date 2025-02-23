@@ -4,6 +4,8 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dao;
 
+import static fi.asteriski.nakitin.utils.Constants.SORT_BY_DATE_ASC;
+
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.EventTaskForm;
 import fi.asteriski.nakitin.entity.EventEntity;
@@ -23,7 +25,6 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Limit;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -37,9 +38,7 @@ public class NakitinDao {
 
     public List<EventDto> fetchUpcomingEvents() {
         var now = LocalDate.now();
-        return eventRepository
-                .findAllByDateBetween(now, now.plusYears(1L), Limit.of(20), Sort.by(Sort.Direction.ASC, "date"))
-                .stream()
+        return eventRepository.findAllByDateBetween(now, now.plusYears(1L), Limit.of(20), SORT_BY_DATE_ASC).stream()
                 .map(EventEntity::toDto)
                 .toList();
     }
@@ -106,5 +105,21 @@ public class NakitinDao {
                 .findById(eventId)
                 .map(EventEntity::getDate)
                 .orElseThrow(() -> new EventNotFoundException("Event not found by id: " + eventId + "."));
+    }
+
+    public List<EventDto> fetchUpcomingEvents(UUID organizationId) {
+        return eventRepository
+                .findAllByOrganizer_IdAndDateAfter(organizationId, LocalDate.now(), SORT_BY_DATE_ASC)
+                .stream()
+                .map(EventEntity::toDto)
+                .toList();
+    }
+
+    public List<EventDto> fetchPastEvents(UUID organizationId) {
+        return eventRepository
+                .findAllByOrganizer_IdAndDateBefore(organizationId, LocalDate.now(), SORT_BY_DATE_ASC, Limit.of(50))
+                .stream()
+                .map(EventEntity::toDto)
+                .toList();
     }
 }

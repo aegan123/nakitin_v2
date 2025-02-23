@@ -53,7 +53,7 @@ public class SecurityConfig {
                                     "/",
                                     "/event/**",
                                     "/login",
-                                    "/orgs",
+                                    "/organizations",
                                     "/privacy",
                                     "/sign-up",
                                     "/error",
