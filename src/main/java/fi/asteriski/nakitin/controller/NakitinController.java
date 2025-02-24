@@ -34,7 +34,8 @@ public class NakitinController {
     @GetMapping("/event/{eventId}")
     public String eventPage(@PathVariable UUID eventId, Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
         model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
-        model.addAttribute("userIsOrganisationAdmin", loggedInUser != null && loggedInUser.isOrganisationAdmin());
+        model.addAttribute(
+                MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, loggedInUser != null && loggedInUser.isOrganisationAdmin());
         model.addAttribute(MODEL_LABEL_EVENT, nakitinService.fetchEvent(eventId));
         model.addAttribute("user", loggedInUser);
 
