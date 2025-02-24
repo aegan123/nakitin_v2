@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless is-centered" th:fragment="columns">
+    <div class="column is-half">
+        <div class="content">
+            <h1 class="title" th:text="#{privacy.label.title}"></h1>
+            <p th:utext="#{privacy.paragraph.first}"></p>
+            <p th:text="#{privacy.paragraph.second}"></p>
+            <ul>
+                <li th:text="#{privacy.list.email}"></li>
+                <li th:text="#{privacy.list.firstName}"></li>
+                <li th:text="#{privacy.list.lastName}"></li>
+                <li th:text="#{privacy.list.userName}"></li>
+            </ul>
+            <p th:text="#{privacy.paragraph.third}"></p>
+            <p th:text="#{privacy.paragraph.fourth}"></p>
+            <p th:text="#{privacy.paragraph.fifth}"></p>
+            <p th:text="#{privacy.paragraph.sixth}"></p>
+            <p th:utext="#{privacy.paragraph.seventh}"></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
