@@ -4,7 +4,9 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.service;
 
+import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.repo.UserRepository;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,5 +30,11 @@ public class UserService implements UserDetailsService {
         return userRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", username)));
+    }
+
+    public UserEntity fetchUserById(UUID id) {
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", id)));
     }
 }

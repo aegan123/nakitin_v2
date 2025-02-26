@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-3"></div>
+    <div class="column is-half">
+        <!--/*@thymesVar id="isEdit" type="java.lang.Boolean"*/-->
+        <h3 class="title is-3" th:if="${!isEdit}" th:text="#{addEvent.label.title.add}"></h3>
+        <h3 class="title is-3" th:if="${isEdit}" th:text="#{addEvent.label.title.edit}"></h3>
+        <!--/*@thymesVar id="eventForm" type="fi.asteriski.nakitin.dto.EventForm"*/-->
+        <form class="box" th:action="@{/{url}-event(url=${isEdit ? 'edit' : 'add'})}" method="post" th:object="${eventForm}">
+            <div class="field">
+                <label for="name" class="label" th:text="#{addEvent.form.label.name}"></label>
+                <div class="control">
+                    <input th:field="*{name}" id="name" class="input" required="required" th:value="${eventForm.name}">
+                <p th:if="${#fields.hasErrors('name')}" class="help is-danger" th:errors="*{name}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="organizer" class="label" th:text="#{addEvent.form.label.organizer}"></label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select th:field="*{organizer}" id="organizer">
+                            <!--/*@thymesVar id="user" type="fi.asteriski.nakitin.entity.UserEntity"*/-->
+                            <option th:each="organization : ${user.organizations}" th:value="${organization.name}"
+                                    th:text="${organization.name}" th:selected="${eventForm.organizer}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label for="venue" class="label" th:text="#{addEvent.form.label.venue}"></label>
+                <div class="control is-expanded">
+                    <input th:field="*{venue}" id="venue" class="input" required="required" th:value="${eventForm.venue}">
+                <p th:if="${#fields.hasErrors('venue')}" class="help is-danger" th:errors="*{venue}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="description" class="label" th:text="#{addEvent.form.label.description}"></label>
+                <div class="control is-expanded">
+                    <textarea th:field="*{description}" id="description" class="textarea is-medium" required="required" th:value="${eventForm.description}"></textarea>
+                <p th:if="${#fields.hasErrors('description')}" class="help is-danger" th:errors="*{description}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="date" class="label" th:text="#{addEvent.form.label.date}"></label>
+                <div class="control is-expanded">
+                    <input th:field="*{date}" id="date" type="date" class="input" required="required" th:value="${eventForm.date}">
+                    <p class="help is-small" th:text="#{addEvent.form.label.dateHelp}"></p>
+                <p th:if="${#fields.hasErrors('date')}" class="help is-danger" th:errors="*{date}"></p>
+                </div>
+            </div>
+            <input type="hidden" th:if="${isEdit}" th:field="*{eventId}" id="id" th:value="${eventForm.eventId}">
+            <div class="field is-horizontal">
+                <div class="field-label">
+                </div>
+                <div class="field is-grouped is-left">
+                    <p class="control">
+                        <input type="submit" th:if="${isEdit == false}" th:value="#{form.button.label.new-event}" class="button is-primary">
+                        <input type="submit" th:if="${isEdit == true}" th:value="#{form.button.label.edit-event}" class="button is-primary">
+                    </p>
+                    <p class="control">
+                        <input type="reset" th:value="#{form.button.label.reset}" class="button is-dark">
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="column is-5">
+        <div class="content">
+            <h3 class="title is-3" th:text="#{addEvent.label.help.title}"></h3>
+            <p th:text="#{addEvent.label.help.text}"></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

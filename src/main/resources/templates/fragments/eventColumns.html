@@ -17,6 +17,18 @@
         <div class="block">
             <p th:text="${event.description}"></p><br>
         </div>
+        <div class="block" th:if="${userIsOrganisationAdmin}">
+            <div class="field has-addons">
+                <p class="control">
+                    <a th:href="@{/edit-event(eventId=${event.id})}" class="button">
+      <span class="icon is-small">
+        <i class="fa-regular fa-pen-to-square"></i>
+      </span>
+                        <span th:text="#{form.button.label.edit-event}"></span>
+                    </a>
+                </p>
+            </div>
+        </div>
         <div class="block">
             <h2 class="subtitle" th:text="#{event.page.label.tasks}"></h2><br>
 

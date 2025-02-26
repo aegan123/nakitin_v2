@@ -52,8 +52,15 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private LocalDate expirationDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private OrganizationEntity organization;
+    @ManyToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "organizationadmins",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "organization_id"))
+    @Builder.Default
+    private Set<OrganizationEntity> organizations = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<EventEntity> events;
@@ -64,7 +71,7 @@ public class UserEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "event_task_id"))
     @Builder.Default
-    private Set<EventTaskEntity> eventsTasks = new LinkedHashSet<>();
+    private List<EventTaskEntity> eventsTasks = new ArrayList<>();
 
     @NonNull
     @Column(nullable = false)

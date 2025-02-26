@@ -14,7 +14,9 @@ public class Constants {
     public static final String MODEL_LABEL_EVENT = "event";
     public static final String MODEL_LABEL_IS_EDIT = "isEdit";
     public static final String MODEL_LABEL_USER_IS_ORGANISATION_ADMIN = "userIsOrganisationAdmin";
-    public static final Sort SORT_BY_DATE_ASC = Sort.by(Sort.Direction.ASC, "date");
     public static final String MODEL_LABEL_UPCOMING_EVENTS = "upcomingEvents";
     public static final String MODEL_LABEL_PAST_EVENTS = "pastEvents";
+    public static final String MODEL_LABEL_EVENT_FORM = "eventForm";
+    public static final String MODEL_LABEL_USER = "user";
+    public static final Sort SORT_BY_DATE_ASC = Sort.by(Sort.Direction.ASC, "date");
 }
