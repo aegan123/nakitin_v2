@@ -4,9 +4,10 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
+import fi.asteriski.nakitin.entity.EventEntity;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 import lombok.Builder;
 
 @Builder
@@ -17,7 +18,8 @@ public record EventDto(
         String description,
         LocalDate date,
         OrganizationDto organizer,
-        Set<EventTaskDto> tasks) {
+        List<EventTaskDto> tasks,
+        ZonedDateTime createdAt) {
     public EventDto sorted() {
         return EventDto.builder()
                 .id(id)
@@ -28,7 +30,31 @@ public record EventDto(
                 .organizer(organizer)
                 .tasks(tasks.stream()
                         .sorted(Comparator.comparing(EventTaskDto::date).thenComparing(EventTaskDto::startTime))
-                        .collect(Collectors.toCollection(LinkedHashSet::new)))
+                        .toList())
+                .build();
+    }
+
+    public EventEntity toEntity() {
+        return EventEntity.builder()
+                .id(id)
+                .name(name)
+                .venue(venue)
+                .description(description)
+                .date(date)
+                .organizer(organizer.toEntity())
+                .createdAt(createdAt)
+                .build();
+    }
+
+    public EventDto copy(EventForm eventForm, OrganizationDto org) {
+        return EventDto.builder()
+                .id(eventForm.getEventId())
+                .name(eventForm.getName())
+                .venue(eventForm.getVenue())
+                .description(eventForm.getDescription())
+                .date(eventForm.getDate())
+                .organizer(org)
+                .createdAt(createdAt)
                 .build();
     }
 }

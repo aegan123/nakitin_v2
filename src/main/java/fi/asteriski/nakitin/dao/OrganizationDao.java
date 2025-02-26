@@ -6,6 +6,7 @@ package fi.asteriski.nakitin.dao;
 
 import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
+import fi.asteriski.nakitin.exceptions.OrganizationNotFoundException;
 import fi.asteriski.nakitin.repo.OrganizationRepository;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,13 @@ public class OrganizationDao {
         return organizationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")).stream()
                 .map(OrganizationEntity::toDto)
                 .toList();
+    }
+
+    public OrganizationDto fetchOrganizationByName(String organizer) {
+        return organizationRepository
+                .findByName(organizer)
+                .map(OrganizationEntity::toDto)
+                .orElseThrow(() ->
+                        new OrganizationNotFoundException(String.format("Organization %s not found.", organizer)));
     }
 }

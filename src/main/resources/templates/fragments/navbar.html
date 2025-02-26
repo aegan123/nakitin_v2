@@ -33,9 +33,13 @@
         </div>
 
         <div class="navbar-end">
+            <!--/*@thymesVar id="userIsOrganisationAdmin" type="java.lang.Boolean"*/-->
+            <!--/*@thymesVar id="userIsLoggedIn" type="java.lang.Boolean"*/-->
+            <div class="navbar-item">
+                <a th:if="${userIsOrganisationAdmin}" th:text="#{form.button.label.new-event}" th:href="@{/add-event}"></a>
+            </div>
             <div class="navbar-item">
                 <div class="buttons" th:if="${userIsLoggedIn}">
-                    <a class="button is-link" th:if="${userIsOrganisationAdmin}" th:text="#{form.button.label.new-event}" th:href="@{/add-event}"></a>
                     <a class="button is-link" th:text="#{form.button.label.profile}" th:href="@{/profile}"></a>
                     <form th:action="@{/logout}" method="post">
                         <button class="button is-warning" type="submit" th:text="#{form.button.label.logout}"></button>

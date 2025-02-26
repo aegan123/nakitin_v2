@@ -28,6 +28,9 @@ public class NakitinController {
     public String index(Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
         model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
         model.addAttribute(MODEL_LABEL_UPCOMING_EVENTS, nakitinService.fetchUpcomingEvents());
+        model.addAttribute(
+                MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, loggedInUser != null && loggedInUser.isOrganisationAdmin());
+
         return "index";
     }
 
@@ -37,7 +40,7 @@ public class NakitinController {
         model.addAttribute(
                 MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, loggedInUser != null && loggedInUser.isOrganisationAdmin());
         model.addAttribute(MODEL_LABEL_EVENT, nakitinService.fetchEvent(eventId));
-        model.addAttribute("user", loggedInUser);
+        model.addAttribute(MODEL_LABEL_USER, loggedInUser);
 
         return "eventPage";
     }

@@ -78,7 +78,7 @@ public class NakitinService {
                 .build();
     }
 
-    private String generateCsv(Set<EventTaskDto> tasks) {
+    private String generateCsv(List<EventTaskDto> tasks) {
         var sw = new StringWriter();
 
         var csvFormat = CSVFormat.EXCEL

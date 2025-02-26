@@ -8,13 +8,8 @@ import fi.asteriski.nakitin.dto.EventDto;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import java.util.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -24,6 +19,8 @@ import org.hibernate.annotations.UpdateTimestamp;
         indexes = {@Index(name = "idx_date", columnList = "date")})
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class EventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -51,9 +48,9 @@ public class EventEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity createdBy;
 
-    @NonNull
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EventTaskEntity> tasks = new LinkedHashSet<>();
+    @Builder.Default
+    private List<EventTaskEntity> tasks = new ArrayList<>();
 
     private UUID signupSystemEvent;
 
@@ -88,7 +85,8 @@ public class EventEntity {
                 .description(description)
                 .date(date)
                 .organizer(organizer.toDto())
-                .tasks(tasks.stream().map(EventTaskEntity::toDto).collect(Collectors.toSet()))
+                .tasks(tasks.stream().map(EventTaskEntity::toDto).toList())
+                .createdAt(createdAt)
                 .build();
     }
 }

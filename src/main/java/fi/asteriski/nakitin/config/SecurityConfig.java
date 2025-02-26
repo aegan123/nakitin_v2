@@ -48,6 +48,14 @@ public class SecurityConfig {
                             .hasRole(ROLE_ORG_ADMIN.label)
                             .requestMatchers(GET, "/export/**")
                             .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(GET, "/add-event")
+                            .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(POST, "/add-event")
+                            .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(GET, "/edit-event")
+                            .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(POST, "/edit-event")
+                            .hasRole(ROLE_ORG_ADMIN.label)
                             .requestMatchers(
                                     GET,
                                     "/",

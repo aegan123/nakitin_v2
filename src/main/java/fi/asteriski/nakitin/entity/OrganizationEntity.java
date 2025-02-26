@@ -8,9 +8,7 @@ import fi.asteriski.nakitin.dto.OrganizationDto;
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,21 +16,22 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Table(name = "organizations")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OrganizationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @NonNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @NonNull
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(mappedBy = "organizations")
+    @Builder.Default
     private Set<UserEntity> users = new LinkedHashSet<>();
 
-    @NonNull
-    @OneToMany(mappedBy = "organizer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "organizer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<EventEntity> events;
 
     @UpdateTimestamp
@@ -45,12 +44,12 @@ public class OrganizationEntity {
 
     public void addUser(UserEntity user) {
         users.add(user);
-        user.setOrganization(this);
+        user.getOrganizations().add(this);
     }
 
     public void removeUser(UserEntity user) {
         users.remove(user);
-        user.setOrganization(null);
+        user.getOrganizations().remove(this);
     }
 
     public void addEvent(EventEntity comment) {
@@ -64,6 +63,6 @@ public class OrganizationEntity {
     }
 
     public OrganizationDto toDto() {
-        return OrganizationDto.builder().id(id).name(name).build();
+        return OrganizationDto.builder().id(id).name(name).users(users).build();
     }
 }
