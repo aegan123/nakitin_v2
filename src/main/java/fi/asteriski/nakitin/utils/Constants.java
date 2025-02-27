@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 
 @UtilityClass
 public class Constants {
+    public static final Sort SORT_BY_DATE_ASC = Sort.by(Sort.Direction.ASC, "date");
     public static final String MODEL_LABEL_EVENT_TASK_FORM = "eventTaskForm";
     public static final String MODEL_LABEL_USER_IS_LOGGED_IN = "userIsLoggedIn";
     public static final String MODEL_LABEL_EVENT = "event";
@@ -18,5 +19,8 @@ public class Constants {
     public static final String MODEL_LABEL_PAST_EVENTS = "pastEvents";
     public static final String MODEL_LABEL_EVENT_FORM = "eventForm";
     public static final String MODEL_LABEL_USER = "user";
-    public static final Sort SORT_BY_DATE_ASC = Sort.by(Sort.Direction.ASC, "date");
+    public static final String MODEL_LABEL_SIGNUP_FORM = "signupForm";
+    public static final String MODEL_LABEL_CUSTOM_VALIDATION_ERROR = "customValidationError";
+    public static final String MODEL_LABEL_CUSTOM_ERROR_MESSAGE = "customValidationErrorMessage";
+    public static final String PASSWORDS_MUST_MATCH = "Salasanojen tulee täsmätä";
 }

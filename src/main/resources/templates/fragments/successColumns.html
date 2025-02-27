@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless is-centered" th:fragment="columns">
+    <div class="column is-half">
+        <article class="message is-success">
+            <div class="message-header">
+                <p th:text="#{register.success.title}"></p>
+            </div>
+            <div class="message-body" th:text="#{register.success.text}">
+            </div>
+        </article>
+    </div>
+</div>
+</body>
+</html>

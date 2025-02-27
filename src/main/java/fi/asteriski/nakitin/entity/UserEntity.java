@@ -17,7 +17,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Table(
         name = "users",
-        indexes = {@Index(name = "idx_username", columnList = "username")})
+        indexes = {
+            @Index(name = "idx_username", columnList = "username"),
+            @Index(name = "idx_email", columnList = "email")
+        })
 @Data
 @NoArgsConstructor
 @Builder
@@ -112,7 +115,7 @@ public class UserEntity implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return expirationDate.isAfter(LocalDate.now());
+        return !expirationDate.isBefore(LocalDate.now());
     }
 
     @Override

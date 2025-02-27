@@ -9,18 +9,26 @@ import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.UserRole;
 import fi.asteriski.nakitin.repo.UserRepository;
 import java.time.LocalDate;
-import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NakitinApplication implements CommandLineRunner {
 
+    @NonNull
     private final UserRepository userRepository;
+
+    @NonNull
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
+    private Long maxPasswordAgeInDays;
 
     public static void main(String[] args) {
         SpringApplication.run(NakitinApplication.class, args);
@@ -44,7 +52,7 @@ public class NakitinApplication implements CommandLineRunner {
                     .firstName(firstName)
                     .lastName(lastName)
                     .userRole(UserRole.ROLE_ORG_ADMIN)
-                    .expirationDate(LocalDate.now().plusDays(5))
+                    .expirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays))
                     .build();
             if (!userRepository.existsByUsername(adminUsername)) {
                 admin.getOrganizations().add(org);

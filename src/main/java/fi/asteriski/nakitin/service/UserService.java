@@ -4,19 +4,25 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.service;
 
+import fi.asteriski.nakitin.dao.UserDao;
+import fi.asteriski.nakitin.dto.SignupForm;
+import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.entity.UserEntity;
-import fi.asteriski.nakitin.repo.UserRepository;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class UserService implements UserDetailsService {
-    private UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final UserDao userDao;
 
     /**
      * Fetches a user from database on login. Called automatically by Spring.
@@ -27,14 +33,31 @@ public class UserService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository
-                .findByUsername(username)
+        return userDao.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", username)));
     }
 
     public UserEntity fetchUserById(UUID id) {
-        return userRepository
-                .findById(id)
+        return userDao.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", id)));
+    }
+
+    @Transactional
+    public void createNewUser(SignupForm signupForm) {
+        userDao.saveUser(UserDto.builder()
+                .username(signupForm.getUsername())
+                .password(passwordEncoder.encode(signupForm.getPassword()))
+                .email(signupForm.getEmail())
+                .firstName(signupForm.getFirstName())
+                .lastName(signupForm.getLastName())
+                .build());
+    }
+
+    public boolean existsByEmail(String email) {
+        return userDao.existsByEmail(email);
+    }
+
+    public boolean existsByUserName(String username) {
+        return userDao.existsByUserName(username);
     }
 }
