@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless is-centered" th:fragment="columns">
+    <div class="column is-half">
+        <div class="block">
+            <h1 class="title" th:text="#{register.label.title}"></h1><br>
+            <div class="content">
+                <p th:utext="#{register.label.helpText}"></p>
+            </div>
+            <!--/*@thymesVar id="customValidationError" type="java.lang.Boolean"*/-->
+            <article class="message is-danger" th:if="${customValidationError}">
+                <div class="message-header">
+                    <p th:text="#{register.label.validationError}"></p>
+                </div>
+                <!--/*@thymesVar id="errorMessage" type="java.lang.String"*/-->
+                <div class="message-body" th:utext="${customValidationErrorMessage}">
+                </div>
+            </article>
+            <!--/*@thymesVar id="signupForm" type="fi.asteriski.nakitin.dto.SignupForm"*/-->
+            <form class="box" th:action="@{/signup}" method="post" th:object="${signupForm}">
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="username" class="label" th:text="#{register.form.label.username}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{username}" id="username" class="input" required="required">
+                            <p th:if="${#fields.hasErrors('username')}" class="help is-danger" th:errors="*{username}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="firstName" class="label" th:text="#{register.form.label.firstName}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{firstName}" id="firstName" class="input" required="required">
+                            <p th:if="${#fields.hasErrors('firstName')}" class="help is-danger" th:errors="*{firstName}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="lastName" class="label" th:text="#{register.form.label.lastName}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{lastName}" id="lastName" class="input">
+                            <p th:if="${#fields.hasErrors('lastName')}" class="help is-danger" th:errors="*{lastName}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="email" class="label" th:text="#{register.form.label.email}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{email}" id="email" type="email" class="input" required="required">
+                            <p th:if="${#fields.hasErrors('email')}" class="help is-danger" th:errors="*{email}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="password" class="label" th:text="#{register.form.label.password}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{password}" id="password" class="input" type="password" required="required" min="8" oninput="checkPassword(this)">
+                            <p th:if="${#fields.hasErrors('password')}" class="help is-danger" th:errors="*{password}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                        <label for="confirmPassword" class="label" th:text="#{register.form.label.password}"></label>
+                    </div>
+                    <div class="field-body is-normal">
+                        <div class="field is-narrow">
+                            <p class="control is-expanded">
+                                <input th:field="*{confirmPassword}" id="confirmPassword" class="input" type="password" required="required" min="8" oninput="checkPassword(this)">
+                            <p th:if="${#fields.hasErrors('confirmPassword')}" class="help is-danger" th:errors="*{confirmPassword}"></p>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                    </div>
+                    <div class="field is-grouped is-left">
+                        <p class="control">
+                            <input type="submit" th:value="#{form.button.label.sign-up}" class="button is-primary">
+                        </p>
+                        <p class="control">
+                            <input type="reset" th:value="#{form.button.label.reset}" class="button is-dark">
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

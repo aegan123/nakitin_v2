@@ -57,13 +57,13 @@ public class SecurityConfig {
                             .requestMatchers(POST, "/edit-event")
                             .hasRole(ROLE_ORG_ADMIN.label)
                             .requestMatchers(
-                                    GET,
                                     "/",
                                     "/event/**",
                                     "/login",
                                     "/organizations",
                                     "/privacy",
-                                    "/sign-up",
+                                    "/signup",
+                                    "/success",
                                     "/error",
                                     "/js/**",
                                     "favicon.ico")

@@ -4,17 +4,8 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
 import lombok.Builder;
 
 @Builder
-public record UserDto(
-        UUID id,
-        @NotBlank(message = "Käyttäjätunnus ei saa olla tyhjä.") String username,
-        @NotBlank(message = "Salasana ei saa olla tyhjä.") String password,
-        String firstName,
-        String lastName,
-        @Email(message = "Virheellinen sähköpostiosoite.") @NotBlank(message = "Etunimi ei saa olla tyhjä.")
-                String email) {}
+public record UserDto(UUID id, String username, String password, String firstName, String lastName, String email) {}
