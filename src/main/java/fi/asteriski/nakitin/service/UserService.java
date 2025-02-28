@@ -33,18 +33,16 @@ public class UserService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userDao.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", username)));
+        return userDao.findByUsername(username);
     }
 
     public UserEntity fetchUserById(UUID id) {
-        return userDao.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", id)));
+        return userDao.findById(id);
     }
 
     @Transactional
     public void createNewUser(SignupForm signupForm) {
-        userDao.saveUser(UserDto.builder()
+        userDao.saveNewUser(UserDto.builder()
                 .username(signupForm.getUsername())
                 .password(passwordEncoder.encode(signupForm.getPassword()))
                 .email(signupForm.getEmail())
@@ -59,5 +57,10 @@ public class UserService implements UserDetailsService {
 
     public boolean existsByUserName(String username) {
         return userDao.existsByUserName(username);
+    }
+
+    @Transactional
+    public void updateUser(UserDto userDto) {
+        userDao.editUser(userDto);
     }
 }

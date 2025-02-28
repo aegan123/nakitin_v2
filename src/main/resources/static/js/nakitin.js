@@ -21,3 +21,9 @@ function checkPassword(element) {
         otherPasswordElement.classList.add("is-danger")
     }
 }
+
+function toggleDropdown(event) {
+    event.stopPropagation();
+    const element = document.getElementById("dropdown")
+    element.classList.toggle("is-active")
+}

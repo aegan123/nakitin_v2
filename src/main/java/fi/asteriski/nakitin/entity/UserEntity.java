@@ -68,7 +68,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<EventEntity> events;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            fetch = FetchType.EAGER)
     @JoinTable(
             name = "nakittautuneet",
             joinColumns = @JoinColumn(name = "user_id"),

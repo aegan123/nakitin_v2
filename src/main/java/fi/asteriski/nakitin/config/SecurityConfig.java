@@ -56,6 +56,10 @@ public class SecurityConfig {
                             .hasRole(ROLE_ORG_ADMIN.label)
                             .requestMatchers(POST, "/edit-event")
                             .hasRole(ROLE_ORG_ADMIN.label)
+                            .requestMatchers(GET, "/profile")
+                            .hasAnyRole(ROLE_USER.label, ROLE_ADMIN.label, ROLE_ORG_ADMIN.label)
+                            .requestMatchers(POST, "/profile")
+                            .hasAnyRole(ROLE_USER.label, ROLE_ADMIN.label, ROLE_ORG_ADMIN.label)
                             .requestMatchers(
                                     "/",
                                     "/event/**",

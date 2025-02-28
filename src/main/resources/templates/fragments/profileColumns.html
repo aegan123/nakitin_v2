@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div class="columns is-gapless" th:fragment="columns">
+    <!--/*@thymesVar id="user" type="fi.asteriski.nakitin.entity.UserEntity"*/-->
+    <!--/*@thymesVar id="success" type="java.lang.Boolean"*/-->
+    <div class="column is-3 is-desktop"></div>
+    <div class="column">
+        <article class="message is-success" th:if="${success}">
+            <div class="message-header">
+                <p th:text="#{profile.label.update.success.title}"></p>
+            </div>
+            <div class="message-body" th:text="#{profile.label.update.success.text}">
+            </div>
+        </article>
+        <div class="block">
+            <div class="content">
+                <h3 class="title is-3" th:text="#{profile.label.userData}"></h3>
+                <p th:utext="#{profile.label.username} + ' ' + ${user.username}"></p>
+                <p th:utext="#{profile.label.firstName} + ' ' + ${user.firstName}"></p>
+                <p th:utext="#{profile.label.lastName} + ' ' + ${user.lastName}"></p>
+                <p th:utext="#{profile.label.email} + ' ' + ${user.email}"></p>
+            </div>
+            <!--/*@thymesVar id="failed" type="java.lang.Boolean"*/-->
+            <div id="dropdown" th:class="'dropdown ' + ${failed ? 'is-active' : ''}">
+                <div class="dropdown-trigger">
+                    <button class="button" aria-haspopup="true" aria-controls="edit-dropdown" onclick="toggleDropdown(event)">
+                        <span th:text="#{profile.label.edit}"></span>
+                        <span class="icon is-small">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+                    </button>
+                </div>
+                <div class="dropdown-menu" id="edit-dropdown" role="menu">
+                    <div class="dropdown-content">
+                        <div class="dropdown-item">
+                            <!--/*@thymesVar id="userDto" type="fi.asteriski.nakitin.dto.UserDto"*/-->
+                            <form class="box" th:action="@{/profile}" method="post" th:object="${userDto}">
+<!--                                <input type="hidden" id="id" name="id" th:value="*{id}">-->
+                                <div class="field">
+                                    <label for="firstName" class="label" th:text="#{register.form.label.firstName}"></label>
+                                    <div class="control">
+                                        <input th:field="*{firstName}" id="firstName" class="input" required="required" th:value="*{firstName}">
+                                        <p th:if="${#fields.hasErrors('firstName')}" class="help is-danger" th:errors="*{firstName}"></p>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="lastName" class="label" th:text="#{register.form.label.lastName}"></label>
+                                    <div class="control">
+                                        <input th:field="*{lastName}" id="lastName" class="input" required="required" th:value="*{lastName}">
+                                        <p th:if="${#fields.hasErrors('lastName')}" class="help is-danger" th:errors="*{lastName}"></p>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="email" class="label" th:text="#{register.form.label.email}"></label>
+                                    <div class="control">
+                                        <input th:field="*{email}" id="email" class="input" type="email" required="required" th:value="*{email}">
+                                        <p th:if="${#fields.hasErrors('email')}" class="help is-danger" th:errors="*{email}"></p>
+                                    </div>
+                                </div>
+                                <div class="field is-horizontal">
+                                    <div class="field-label">
+                                    </div>
+                                    <div class="field is-grouped is-left">
+                                        <p class="control">
+                                            <input type="submit" th:value="#{form.button.label.updateInfo}" class="button is-primary">
+                                        </p>
+                                        <p class="control">
+                                            <input type="reset" th:value="#{form.button.label.reset}" class="button is-dark">
+                                        </p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="block">
+            <div class="content">
+                <h4 class="sub-title is-4" th:text="#{profile.label.title.organizations}"></h4>
+                <ul>
+                    <li th:each="org : ${user.organizations}" th:text="${org.name}"></li>
+                    <li th:if="${user.organizations.isEmpty()}" th:text="#{profile.label.notAnOrgAdmin}"></li>
+                </ul>
+            </div>
+        </div>
+        <div class="block">
+            <div class="content">
+                <h4 class="sub-title is-4" th:text="#{profile.label.title.statistics}"></h4>
+                <p th:utext="#{profile.label.totalEventTask} + ${user.eventsTasks.size()} + ' ' + #{profile.label.numberOf}"></p>
+                <ul>
+                    <li th:each="task : ${user.eventsTasks}" th:text="${task}"></li>
+                    <li th:if="${user.eventsTasks.isEmpty()}" th:text="#{profile.label.noTasks}"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="column is-2 is-desktop"></div>
+</div>
+</body>
+</html>
