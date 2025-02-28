@@ -29,7 +29,7 @@ public class EventTaskEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private EventEntity event;
 
     @NonNull

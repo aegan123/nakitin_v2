@@ -93,9 +93,9 @@ public class NakitinService {
                             dto.taskName(),
                             dto.date(),
                             String.format("%s - %s", dto.startTime(), dto.endTime()),
-                            volunteer.firstName(),
-                            volunteer.lastName(),
-                            volunteer.email());
+                            volunteer.getFirstName(),
+                            volunteer.getLastName(),
+                            volunteer.getEmail());
                 } catch (IOException | IllegalArgumentException e) {
                     log.debug("Error printing record", e);
                 }

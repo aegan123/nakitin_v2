@@ -42,7 +42,7 @@ public class EventEntity {
     @Column(nullable = false)
     private LocalDate date;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private OrganizationEntity organizer;
 
     @ManyToOne(fetch = FetchType.LAZY)

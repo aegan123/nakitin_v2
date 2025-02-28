@@ -9,11 +9,11 @@ import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.UserRole;
 import fi.asteriski.nakitin.repo.UserRepository;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,24 +25,28 @@ public class UserDao {
     @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
     private Long maxPasswordAgeInDays;
 
-    public void saveUser(UserDto dto) {
+    public void saveNewUser(UserDto dto) {
         userRepository.save(UserEntity.builder()
-                .username(dto.username())
-                .email(dto.email())
-                .password(dto.password())
-                .firstName(dto.firstName())
-                .lastName(dto.lastName())
+                .username(dto.getUsername())
+                .email(dto.getEmail())
+                .password(dto.getPassword())
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
                 .userRole(UserRole.ROLE_USER)
                 .expirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays))
                 .build());
     }
 
-    public Optional<UserEntity> findById(UUID id) {
-        return userRepository.findById(id);
+    public UserEntity findById(UUID id) {
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", id)));
     }
 
-    public Optional<UserEntity> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public UserEntity findByUsername(String username) {
+        return userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", username)));
     }
 
     public boolean existsByEmail(String email) {
@@ -51,5 +55,13 @@ public class UserDao {
 
     public boolean existsByUserName(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    public void editUser(UserDto userDto) {
+        var user = findById(userDto.getId());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setEmail(userDto.getEmail());
+        userRepository.save(user);
     }
 }
