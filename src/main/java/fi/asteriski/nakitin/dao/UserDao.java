@@ -4,11 +4,15 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dao;
 
+import static fi.asteriski.nakitin.entity.UserRole.ROLE_ADMIN;
+import static fi.asteriski.nakitin.utils.Constants.SORT_BY_LASTNAME_ASC;
+
 import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.UserRole;
 import fi.asteriski.nakitin.repo.UserRepository;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +29,8 @@ public class UserDao {
     @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
     private Long maxPasswordAgeInDays;
 
-    public void saveNewUser(UserDto dto) {
-        userRepository.save(UserEntity.builder()
+    public UserEntity saveNewUser(UserDto dto) {
+        return userRepository.save(UserEntity.builder()
                 .username(dto.getUsername())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
@@ -35,6 +39,10 @@ public class UserDao {
                 .userRole(UserRole.ROLE_USER)
                 .expirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays))
                 .build());
+    }
+
+    public void saveNewUser(UserEntity newUserEntity) {
+        userRepository.save(newUserEntity);
     }
 
     public UserEntity findById(UUID id) {
@@ -63,5 +71,27 @@ public class UserDao {
         user.setLastName(userDto.getLastName());
         user.setEmail(userDto.getEmail());
         userRepository.save(user);
+    }
+
+    public List<UserEntity> fetchAllUsers() {
+        return userRepository.findAll(SORT_BY_LASTNAME_ASC);
+    }
+
+    public boolean emailNotInUseByAnotherUser(String email, UUID id) {
+        return userRepository.emailInUseByAnotherUser(email, id) == null;
+    }
+
+    public void updatePasswordForUser(UserDto userDto) {
+        var user = findById(userDto.getId());
+        user.setPassword(userDto.getPassword());
+        userRepository.save(user);
+    }
+
+    public boolean userIsTheOnlyAdmin(UUID id) {
+        return userRepository.countAllByUserRoleAndIdNot(ROLE_ADMIN, id) == 0;
+    }
+
+    public void deleteUser(UserEntity user) {
+        userRepository.delete(user);
     }
 }

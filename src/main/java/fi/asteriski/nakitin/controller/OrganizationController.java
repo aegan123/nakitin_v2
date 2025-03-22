@@ -30,6 +30,8 @@ public class OrganizationController {
         model.addAttribute(MODEL_LABEL_UPCOMING_EVENTS, List.of());
         model.addAttribute(MODEL_LABEL_PAST_EVENTS, List.of());
         model.addAttribute("isOrgInfo", id != null);
+        model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, loggedInUser != null && loggedInUser.isAdmin());
+
         if (id != null) {
             model.addAttribute(MODEL_LABEL_UPCOMING_EVENTS, nakitinService.fetchUpcomingEvents(id));
             model.addAttribute(MODEL_LABEL_PAST_EVENTS, nakitinService.fetchPastEvents(id));

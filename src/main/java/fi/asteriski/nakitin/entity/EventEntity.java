@@ -21,6 +21,15 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@NamedEntityGraphs(
+        value = {
+            @NamedEntityGraph(
+                    name = "graph_event_organization",
+                    attributeNodes = {@NamedAttributeNode(value = "organizer")}),
+            @NamedEntityGraph(
+                    name = "graph_event_eventTasks",
+                    attributeNodes = {@NamedAttributeNode(value = "tasks")})
+        })
 public class EventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

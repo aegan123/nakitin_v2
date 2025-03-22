@@ -9,6 +9,7 @@ import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.exceptions.OrganizationNotFoundException;
 import fi.asteriski.nakitin.repo.OrganizationRepository;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -30,5 +31,23 @@ public class OrganizationDao {
                 .map(OrganizationEntity::toDto)
                 .orElseThrow(() ->
                         new OrganizationNotFoundException(String.format("Organization %s not found.", organizer)));
+    }
+
+    public void deleteOrganizations(List<OrganizationEntity> organizationsToDelete) {
+        organizationRepository.deleteAll(organizationsToDelete);
+    }
+
+    public OrganizationEntity fetchOrganizationById(UUID id) {
+        return organizationRepository
+                .findById(id)
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
+    }
+
+    public void save(OrganizationEntity organization) {
+        organizationRepository.save(organization);
+    }
+
+    public List<OrganizationEntity> fetchOrganizationsByIds(List<UUID> organizationIds) {
+        return organizationRepository.findAllById(organizationIds);
     }
 }

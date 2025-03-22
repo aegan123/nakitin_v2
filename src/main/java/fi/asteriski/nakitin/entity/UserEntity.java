@@ -4,6 +4,8 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.entity;
 
+import static fi.asteriski.nakitin.entity.UserRole.*;
+
 import fi.asteriski.nakitin.dto.UserDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -25,6 +27,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@NamedEntityGraphs(
+        value = {
+            @NamedEntityGraph(
+                    name = "graph_user_organizations",
+                    attributeNodes = {@NamedAttributeNode(value = "organizations")}),
+            @NamedEntityGraph(
+                    name = "graph_user_tasks",
+                    attributeNodes = {@NamedAttributeNode(value = "eventTasks")}),
+            @NamedEntityGraph(
+                    name = "graph_user_events",
+                    attributeNodes = {@NamedAttributeNode(value = "events")})
+        })
 public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -76,13 +90,13 @@ public class UserEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "event_task_id"))
     @Builder.Default
-    private List<EventTaskEntity> eventsTasks = new ArrayList<>();
+    private List<EventTaskEntity> eventTasks = new ArrayList<>();
 
     @NonNull
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private UserRole userRole = UserRole.ROLE_USER;
+    private UserRole userRole = ROLE_USER;
 
     @Builder.Default
     @Column(nullable = false)
@@ -92,12 +106,12 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private Boolean enabled = true;
 
-    @Builder.Default
-    @Transient
-    private boolean isAdmin = false;
-
     public boolean isOrganisationAdmin() {
-        return userRole == UserRole.ROLE_ORG_ADMIN;
+        return userRole == ROLE_ORG_ADMIN;
+    }
+
+    public boolean isAdmin() {
+        return userRole == ROLE_ADMIN;
     }
 
     @Override
@@ -126,12 +140,12 @@ public class UserEntity implements UserDetails {
     }
 
     public void addEventTask(EventTaskEntity eventTask) {
-        eventsTasks.add(eventTask);
+        eventTasks.add(eventTask);
         eventTask.getVolunteers().add(this);
     }
 
     public void removeEventTask(EventTaskEntity eventTask) {
-        eventsTasks.remove(eventTask);
+        eventTasks.remove(eventTask);
         eventTask.getVolunteers().remove(this);
     }
 

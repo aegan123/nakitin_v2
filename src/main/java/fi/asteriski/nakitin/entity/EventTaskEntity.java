@@ -24,6 +24,15 @@ import org.hibernate.annotations.*;
 @NaturalIdCache
 @Builder
 @AllArgsConstructor
+@NamedEntityGraphs(
+        value = {
+            @NamedEntityGraph(
+                    name = "graph_eventTask_volunteers",
+                    attributeNodes = {@NamedAttributeNode(value = "volunteers")}),
+            @NamedEntityGraph(
+                    name = "graph_eventTask_event",
+                    attributeNodes = {@NamedAttributeNode(value = "event")})
+        })
 public class EventTaskEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -55,7 +64,7 @@ public class EventTaskEntity {
     @Builder.Default
     private Integer personCount = 1;
 
-    @ManyToMany(mappedBy = "eventsTasks")
+    @ManyToMany(mappedBy = "eventTasks")
     @Builder.Default
     private Set<UserEntity> volunteers = new LinkedHashSet<>();
 

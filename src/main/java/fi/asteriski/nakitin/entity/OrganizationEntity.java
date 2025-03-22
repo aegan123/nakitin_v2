@@ -18,6 +18,15 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedEntityGraphs(
+        value = {
+            @NamedEntityGraph(
+                    name = "graph_organizations_events",
+                    attributeNodes = {@NamedAttributeNode(value = "events")}),
+            @NamedEntityGraph(
+                    name = "graph_organizations_users",
+                    attributeNodes = {@NamedAttributeNode(value = "users")}),
+        })
 public class OrganizationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -60,6 +69,10 @@ public class OrganizationEntity {
     public void removeEvent(EventEntity comment) {
         events.remove(comment);
         comment.setOrganizer(null);
+    }
+
+    public boolean hasNoUsers() {
+        return users.isEmpty();
     }
 
     public OrganizationDto toDto() {

@@ -2,14 +2,13 @@
 Copyright Juhani Vähä-Mäkilä (juhani@fmail.co.uk) 2025.
 Licenced under EUPL-1.2 or later.
  */
-package fi.asteriski.nakitin.dto;
+package fi.asteriski.nakitin.dto.admin;
 
+import static fi.asteriski.nakitin.utils.Constants.CANNOT_BE_ADMIN_AND_ORG_ADMIN;
 import static fi.asteriski.nakitin.utils.Constants.PASSWORDS_MUST_MATCH;
 
-import fi.asteriski.nakitin.validation.EmailNotInUse;
-import fi.asteriski.nakitin.validation.IsNotAllTheSameCharacter;
-import fi.asteriski.nakitin.validation.PasswordMatch;
-import fi.asteriski.nakitin.validation.UsernameNotInUse;
+import fi.asteriski.nakitin.dto.FormWithPassword;
+import fi.asteriski.nakitin.validation.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -19,29 +18,33 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @PasswordMatch(message = PASSWORDS_MUST_MATCH)
-public class SignupForm extends FormWithPassword {
+@CannotBeAdminAndOrgAdmin(message = CANNOT_BE_ADMIN_AND_ORG_ADMIN)
+public class AddUserForm extends FormWithPassword {
     @NotBlank(message = "Käyttäjänimi on pakollinen tieto")
     @UsernameNotInUse(message = "Käyttäjätunnus on jo varattu")
-    String username;
+    private String username;
 
     @NotBlank(message = "Etunimi on pakollinen tieto")
-    String firstName;
+    private String firstName;
 
     @NotBlank(message = "Sukunimi on pakollinen tieto")
-    String lastName;
+    private String lastName;
 
     @Email(message = "Virheellinen sähköpostiosoite")
     @NotBlank(message = "Sähköpostiosoite on pakollinen tieto")
     @EmailNotInUse(message = "Sähköpostiosoitteella on jo rekisteröity")
-    String email;
+    private String email;
 
     @NotBlank(message = "Salasana on pakollinen tieto")
     @Size(min = 8, message = "Salasanan tulee olla vähintään kahdeksan merkkiä pitkä")
     @IsNotAllTheSameCharacter(message = "Salasana ei saa koostua pelkästään yhdestä ja samasta merkistä")
-    String password;
+    private String password;
 
     @NotBlank(message = "Salasana on pakollinen tieto")
     @Size(min = 8, message = "Salasanan tulee olla vähintään kahdeksan merkkiä pitkä")
     @IsNotAllTheSameCharacter(message = "Salasana ei saa koostua pelkästään yhdestä ja samasta merkistä")
-    String confirmPassword;
+    private String confirmPassword;
+
+    private Boolean isAdmin;
+    private String organization;
 }

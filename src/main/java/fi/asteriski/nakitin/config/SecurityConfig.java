@@ -60,6 +60,10 @@ public class SecurityConfig {
                             .hasAnyRole(ROLE_USER.label, ROLE_ADMIN.label, ROLE_ORG_ADMIN.label)
                             .requestMatchers(POST, "/profile")
                             .hasAnyRole(ROLE_USER.label, ROLE_ADMIN.label, ROLE_ORG_ADMIN.label)
+                            .requestMatchers(GET, "/admin/**")
+                            .hasRole(ROLE_ADMIN.label)
+                            .requestMatchers(POST, "/admin/**")
+                            .hasRole(ROLE_ADMIN.label)
                             .requestMatchers(
                                     "/",
                                     "/event/**",
@@ -70,7 +74,7 @@ public class SecurityConfig {
                                     "/success",
                                     "/error",
                                     "/js/**",
-                                    "favicon.ico")
+                                    "/favicon.ico")
                             .permitAll())
                     .formLogin(Customizer.withDefaults())
                     .logout(logout -> logout.logoutSuccessUrl("/").permitAll());

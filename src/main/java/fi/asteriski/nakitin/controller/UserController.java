@@ -63,20 +63,22 @@ public class UserController {
     public String profile(Model model, @AuthenticationPrincipal UserEntity user, Boolean success) {
         model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, user != null);
         model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
-        model.addAttribute("userDto", user.toDto());
+        model.addAttribute(MODEL_LABEL_USER_DTO, user.toDto());
         model.addAttribute("success", success);
         model.addAttribute("failed", false);
+        model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, user != null && user.isAdmin());
 
         return "profile";
     }
 
     @PostMapping("/profile")
     public String profile(
-            @Valid @ModelAttribute("userDto") UserDto userDto,
+            @Valid @ModelAttribute(MODEL_LABEL_USER_DTO) UserDto userDto,
             BindingResult result,
             @AuthenticationPrincipal UserEntity user,
             Model model) {
         if (result.hasErrors()) {
+            model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, user != null && user.isAdmin());
             model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, user != null);
             model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
             model.addAttribute("failed", true);

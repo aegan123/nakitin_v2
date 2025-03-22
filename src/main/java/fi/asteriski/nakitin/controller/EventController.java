@@ -31,6 +31,7 @@ public class EventController {
     public String addEvent(Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonAttributesForAddEditPage(new EventForm(), model, user);
         model.addAttribute(MODEL_LABEL_IS_EDIT, false);
+        model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, user != null && user.isAdmin());
 
         return "addEditEvent";
     }
@@ -78,5 +79,6 @@ public class EventController {
         model.addAttribute(MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, user != null && user.isOrganisationAdmin());
         model.addAttribute(MODEL_LABEL_EVENT_FORM, eventForm);
         model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
+        model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, user != null && user.isAdmin());
     }
 }
