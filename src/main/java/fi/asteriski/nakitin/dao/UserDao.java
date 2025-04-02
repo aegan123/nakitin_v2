@@ -4,16 +4,19 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dao;
 
-import static fi.asteriski.nakitin.entity.UserRole.ROLE_ADMIN;
+import static fi.asteriski.nakitin.entity.UserRole.*;
 import static fi.asteriski.nakitin.utils.Constants.SORT_BY_LASTNAME_ASC;
 
+import fi.asteriski.nakitin.dto.IdFirstLastNameDto;
 import fi.asteriski.nakitin.dto.UserDto;
+import fi.asteriski.nakitin.dto.admin.UserInfoForm;
+import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.UserRole;
 import fi.asteriski.nakitin.repo.UserRepository;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,6 +68,32 @@ public class UserDao {
         return userRepository.existsByUsername(username);
     }
 
+    public void editUser(
+            UserInfoForm userInfoForm,
+            OrganizationEntity currentOrganization,
+            Optional<OrganizationEntity> newOrganization) {
+        var user = findById(userInfoForm.getId());
+        user.setFirstName(userInfoForm.getFirstName());
+        user.setLastName(userInfoForm.getLastName());
+        user.setEmail(userInfoForm.getEmail());
+        if (!Objects.equals(userInfoForm.getCurrentOrganization(), userInfoForm.getNewOrganization())) {
+            newOrganization.ifPresentOrElse(
+                    newOrg -> {
+                        if (currentOrganization != null) {
+                            currentOrganization.removeUser(user);
+                        }
+                        newOrg.addUser(user);
+                        user.setUserRole(ROLE_ORG_ADMIN);
+                    },
+                    () -> {
+                        currentOrganization.removeUser(user);
+                        user.setUserRole(ROLE_USER);
+                    });
+        }
+
+        userRepository.save(user);
+    }
+
     public void editUser(UserDto userDto) {
         var user = findById(userDto.getId());
         user.setFirstName(userDto.getFirstName());
@@ -93,5 +122,23 @@ public class UserDao {
 
     public void deleteUser(UserEntity user) {
         userRepository.delete(user);
+    }
+
+    public List<UserEntity> fetchUsersByIds(List<UUID> userIds) {
+        return userRepository.findAllById(userIds);
+    }
+
+    public void save(List<UserEntity> users) {
+        userRepository.saveAll(users);
+    }
+
+    public Set<IdFirstLastNameDto> fetchUsers() {
+        return userRepository.fetchAllUsers().stream()
+                .map(user -> new IdFirstLastNameDto(user.getId(), user.getFirstName(), user.getLastName()))
+                .collect(Collectors.toSet());
+    }
+
+    public UserEntity fetchUserReferencesById(UUID userId) {
+        return userRepository.getReferenceById(userId);
     }
 }

@@ -180,4 +180,8 @@ public class UserEntity implements UserDetails {
                 .username(username)
                 .build();
     }
+
+    public void removeOrganizationAdminRights() {
+        setUserRole(ROLE_USER);
+    }
 }

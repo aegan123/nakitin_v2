@@ -6,6 +6,7 @@ package fi.asteriski.nakitin.dao;
 
 import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
+import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.exceptions.OrganizationNotFoundException;
 import fi.asteriski.nakitin.repo.OrganizationRepository;
 import java.util.List;
@@ -21,7 +22,7 @@ public class OrganizationDao {
 
     public List<OrganizationDto> fetchAll() {
         return organizationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")).stream()
-                .map(OrganizationEntity::toDto)
+                .map(OrganizationEntity::toAdminDto)
                 .toList();
     }
 
@@ -49,5 +50,30 @@ public class OrganizationDao {
 
     public List<OrganizationEntity> fetchOrganizationsByIds(List<UUID> organizationIds) {
         return organizationRepository.findAllById(organizationIds);
+    }
+
+    public void createNewOrganization(OrganizationDto dto) {
+        var organization = dto.toEntity();
+        dto.users().forEach(organization::addUser);
+        save(organization);
+    }
+
+    public void editOrganization(OrganizationDto dto, UserEntity oldAdmin) {
+        var organization = fetchOrganizationById(dto.id());
+        organization.setName(dto.name());
+        if (!dto.users().isEmpty()) {
+            organization.removeUser(oldAdmin);
+            dto.users().forEach(organization::addUser);
+        }
+        save(organization);
+    }
+
+    public List<OrganizationDto> fetchOrganizationsByName(String name) {
+        return organizationRepository.readAllByName(name).stream()
+                .map(org -> OrganizationDto.builder()
+                        .id(org.getId())
+                        .name(org.getName())
+                        .build())
+                .toList();
     }
 }

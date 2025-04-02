@@ -21,4 +21,6 @@ public interface EventRepository extends JpaRepository<EventEntity, UUID> {
             UUID organizerId, LocalDate dateBefore, Sort sort, Limit limit);
 
     List<EventEntity> findAllByOrganizer_IdAndDateAfter(UUID organizerId, LocalDate dateAfter, Sort sort);
+
+    List<EventEntity> readAllByIdIn(List<UUID> ids);
 }

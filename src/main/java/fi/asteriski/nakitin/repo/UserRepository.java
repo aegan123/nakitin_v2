@@ -6,8 +6,8 @@ package fi.asteriski.nakitin.repo;
 
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.UserRole;
-import java.util.Optional;
-import java.util.UUID;
+import fi.asteriski.nakitin.repo.projection.IdFirstLastNameProjection;
+import java.util.*;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.NativeQuery;
@@ -30,4 +30,9 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     UUID emailInUseByAnotherUser(@Param("email") String email, @Param("id") UUID id);
 
     long countAllByUserRoleAndIdNot(@NonNull UserRole userRole, UUID id);
+
+    @NativeQuery(value = """
+            select id, first_name, last_name from users
+            """)
+    Set<IdFirstLastNameProjection> fetchAllUsers();
 }

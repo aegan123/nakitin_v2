@@ -5,6 +5,7 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.entity;
 
 import fi.asteriski.nakitin.dto.EventDto;
+import fi.asteriski.nakitin.dto.UpcomingEventDto;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -97,5 +98,34 @@ public class EventEntity {
                 .tasks(tasks.stream().map(EventTaskEntity::toDto).toList())
                 .createdAt(createdAt)
                 .build();
+    }
+
+    public EventDto toEventPageDto() {
+        return EventDto.builder()
+                .id(id)
+                .name(name)
+                .venue(venue)
+                .description(description)
+                .date(date)
+                .organizer(organizer.toEventPageDto())
+                .tasks(tasks.stream().map(EventTaskEntity::toDto).toList())
+                .createdAt(createdAt)
+                .build();
+    }
+
+    public EventDto toAdminDto() {
+        return EventDto.builder()
+                .id(id)
+                .name(name)
+                .venue(venue)
+                .description(description)
+                .date(date)
+                .tasks(tasks.stream().map(EventTaskEntity::toDto).toList())
+                .createdAt(createdAt)
+                .build();
+    }
+
+    public UpcomingEventDto toUpcomingEventDto() {
+        return new UpcomingEventDto(id, name, organizer.getName(), date);
     }
 }

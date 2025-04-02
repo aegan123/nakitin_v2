@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns">
+    <div class="column is-1 is-desktop"></div>
+    <div class="column is-4">
+        <div class="content">
+            <h3 class="title is-3" th:text="#{event.page.label.help.title}"></h3>
+            <p th:text="#{admin.organization.add.help.text}"></p>
+        </div>
+    </div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <article class="message is-danger" th:if="${customValidationError}">
+            <div class="message-header">
+                <p th:text="#{register.label.validationError}"></p>
+            </div>
+            <!--/*@thymesVar id="customValidationErrorMessage" type="java.lang.String"*/-->
+            <div class="message-body" th:utext="${customValidationErrorMessage}">
+            </div>
+        </article>
+        <h4 class="subtitle is-4" th:if="${isEdit}" th:text="#{admin.title.editOrganization}"></h4>
+        <h4 class="subtitle is-4" th:unless="${isEdit}" th:text="#{admin.title.addOrganization}"></h4>
+        <form class="box" th:action="@{/admin/{url}-organization(url=${isEdit ? 'edit' : 'add'})}" method="post" th:object="${adminAddEditOrganization}">
+            <input type="hidden" name="organizationId" th:value="*{organizationId}">
+            <input type="hidden" name="currentAdmin" th:value="*{currentAdmin}">
+            <div class="field">
+                <label for="name" class="label" th:text="#{admin.organization.add.form.label.name}"></label>
+                <div class="control">
+                    <input th:field="*{name}" id="name" class="input" required="required" th:value="*{name}">
+                    <p th:if="${#fields.hasErrors('name')}" class="help is-danger" th:errors="*{name}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="newAdmin" class="label" th:text="#{admin.organization.add.form.label.users}"></label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select th:field="*{newAdmin}" id="newAdmin">
+                            <option value=""></option>
+                            <option th:each="user : ${adminAddEditOrganization.getUsers()}" th:value="${user.id}"
+                                    th:text="${user.firstName} + ' ' + ${user.lastName}" th:selected="${adminAddEditOrganization.newAdmin}"></option>
+                        </select>
+                        <p th:if="${#fields.hasErrors('newAdmin')}" class="help is-danger" th:errors="*{newAdmin}"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label">
+                </div>
+                <div class="field is-grouped is-left">
+                    <p class="control">
+                        <input type="submit" th:if="${isEdit}" th:value="#{form.button.label.editOrganization}" class="button is-primary">
+                        <input type="submit" th:unless="${isEdit}" th:value="#{form.button.label.newOrganization}" class="button is-primary">
+                    </p>
+                    <p class="control">
+                        <input type="reset" th:value="#{form.button.label.reset}" class="button is-dark">
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="column is-3 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

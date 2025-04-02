@@ -4,14 +4,15 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.controller.admin;
 
+import static fi.asteriski.nakitin.controller.admin.AdminControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
-import fi.asteriski.nakitin.dto.admin.DeleteUserForm;
+import fi.asteriski.nakitin.dto.admin.DeleteForm;
 import fi.asteriski.nakitin.dto.admin.PasswordForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.UserEntity;
-import fi.asteriski.nakitin.service.AdminUserService;
+import fi.asteriski.nakitin.service.admin.AdminUserService;
 import jakarta.validation.Valid;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,21 +36,11 @@ public class AdminUserController {
         model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
         model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
-        model.addAttribute("users", adminUserService.fetchAllUsers());
-        model.addAttribute("success", success);
-        model.addAttribute("from", from);
+        model.addAttribute(MODEL_LABEL_USERS, adminUserService.fetchAllUsers());
+        model.addAttribute(MODEL_LABEL_SUCCESS, success);
+        model.addAttribute(MODEL_LABEL_FROM, from);
 
         return "admin/users";
-    }
-
-    @GetMapping("/admin/organizations")
-    public String adminOrganizations(Model model, @AuthenticationPrincipal UserEntity user) {
-        setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
-
-        return "admin/organizations";
     }
 
     @GetMapping("/admin/events")
@@ -70,6 +61,7 @@ public class AdminUserController {
         model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_ADMIN_USER_INFO, adminUserService.fetchUserForm(id));
         model.addAttribute(MODEL_LABEL_ADMIN_PASSWORD_FORM, adminUserService.fetchPasswordForm(id));
+        model.addAttribute(MODEL_LABEL_ADMIN_ADD_USER_ORGANIZATIONS, adminUserService.fetchAllOrganizations());
 
         return "admin/editUser";
     }
@@ -88,6 +80,7 @@ public class AdminUserController {
             model.addAttribute(MODEL_LABEL_ADMIN_USER_INFO, userInfoForm);
             model.addAttribute(
                     MODEL_LABEL_ADMIN_PASSWORD_FORM, adminUserService.fetchPasswordForm(userInfoForm.getId()));
+            model.addAttribute(MODEL_LABEL_ADMIN_ADD_USER_ORGANIZATIONS, adminUserService.fetchAllOrganizations());
             return "admin/editUser";
         }
 
@@ -155,15 +148,15 @@ public class AdminUserController {
         model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_USER, adminUserService.fetchUser(id));
-        model.addAttribute("userIsTheOnlyAdmin", adminUserService.userIsTheOnlyAdmin(user.getId()));
-        model.addAttribute(MODEL_LABEL_ADMIN_DELETE_USER_FORM, new DeleteUserForm(id));
+        model.addAttribute(MODEL_LABEL_USER_IS_THE_ONLY_ADMIN, adminUserService.userIsTheOnlyAdmin(user.getId()));
+        model.addAttribute(MODEL_LABEL_ADMIN_DELETE_FORM, new DeleteForm(id));
 
         return "admin/deleteUserConfirmation";
     }
 
     @PostMapping("/admin/delete-user")
     public String adminDeleteUser(
-            @Valid @ModelAttribute(MODEL_LABEL_ADMIN_DELETE_USER_FORM) DeleteUserForm deleteUserForm,
+            @Valid @ModelAttribute(MODEL_LABEL_ADMIN_DELETE_FORM) DeleteForm deleteUserForm,
             BindingResult result,
             Model model,
             @AuthenticationPrincipal UserEntity user) {
@@ -172,28 +165,23 @@ public class AdminUserController {
             model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
             model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
             model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_ADMIN_DELETE_USER_FORM, deleteUserForm);
+            model.addAttribute(MODEL_LABEL_ADMIN_DELETE_FORM, deleteUserForm);
             return "admin/deleteUserConfirmation";
         }
-        adminUserService.deleteUser(deleteUserForm.userId());
+        adminUserService.deleteUser(deleteUserForm.id());
 
         return "redirect:/admin/users?success=true&from=delete";
-    }
-
-    private void setCommonUserAttributes(Model model, UserEntity user) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, user != null);
-        model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, user != null && user.isAdmin());
     }
 
     private void addCustomErrorIfNeeded(BindingResult result, Model model) {
         var errorMsg = "";
         if (isPasswordError(result)) {
             model.addAttribute(MODEL_LABEL_CUSTOM_VALIDATION_ERROR, true);
-            errorMsg += "Salasanat eivät täsmää.";
+            errorMsg += ERROR_MESSAGE_PASSWORDS_DO_NOT_MATCH;
         }
         if (isAdminAndOrgAdminError(result)) {
             model.addAttribute(MODEL_LABEL_CUSTOM_VALIDATION_ERROR, true);
-            errorMsg += "<br/>Käyttäjä ei voi olla sekä järjestön että Nakittimen admin.";
+            errorMsg += "<br/>" + CANNOT_BE_ADMIN_AND_ORG_ADMIN;
         }
         model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, errorMsg);
     }

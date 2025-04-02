@@ -28,9 +28,9 @@
                 <li th:if="${user.isOrganisationAdmin}" th:text="#{admin.deleteUser.text.events}"></li>
                 <li th:if="${user.isOrganisationAdmin}" th:text="#{admin.deleteUser.text.organization}"></li>
             </ul>
-            <p th:utext="#{admin.deleteUser.text.p4}"></p>
-            <form th:action="@{/admin/delete-user}" method="post" th:object="${adminDeleteUserForm}">
-                <input type="hidden" th:field="*{userId}" name="userId" th:value="${user.id}"/>
+            <p th:utext="#{admin.deleteConfirmation.text}"></p>
+            <form th:action="@{/admin/delete-user}" method="post" th:object="${adminDeleteForm}">
+                <input type="hidden" th:field="*{id}" name="userId" th:value="${user.id}"/>
                 <div class="field is-grouped is-left">
                     <p class="control">
                         <input type="submit" th:value="#{form.button.label.delete}" class="button is-danger">

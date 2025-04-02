@@ -6,4 +6,4 @@ package fi.asteriski.nakitin.dto.admin;
 
 import java.util.UUID;
 
-public record DeleteUserForm(UUID userId) {}
+public record DeleteForm(UUID id) {}

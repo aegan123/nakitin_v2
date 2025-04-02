@@ -41,7 +41,7 @@ public record EventDto(
                 .venue(venue)
                 .description(description)
                 .date(date)
-                .organizer(organizer.toEntity())
+                .organizer(organizer != null ? organizer.toEntity() : null)
                 .createdAt(createdAt)
                 .build();
     }

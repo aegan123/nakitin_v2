@@ -6,7 +6,6 @@ package fi.asteriski.nakitin.dto.admin;
 
 import static fi.asteriski.nakitin.utils.Constants.EMAIL_IN_USE_BY_ANOTHER_USER;
 
-import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.validation.EmailNotInUseByAnotherUser;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -30,12 +29,6 @@ public class UserInfoForm {
     @NotBlank(message = "Sähköpostiosoite on pakollinen tieto")
     private String email;
 
-    public UserDto toUserDto() {
-        return UserDto.builder()
-                .id(id)
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .build();
-    }
+    private UUID newOrganization;
+    private UUID currentOrganization;
 }

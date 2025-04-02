@@ -11,6 +11,7 @@
         <h4 class="subtitle is-4" th:text="#{admin.title.userInfo}"></h4>
         <form class="box" th:action="@{/admin/edit-user}" method="post" th:object="${adminUserInfo}">
             <input type="hidden" th:field="*{id}" id="id" th:value="${adminUserInfo.id}"/>
+            <input type="hidden" th:field="*{currentOrganization}" id="currentOrganization" th:value="${adminUserInfo.id}"/>
             <div class="field">
                 <label for="firstName" class="label" th:text="#{register.form.label.firstName}"></label>
                 <div class="control">
@@ -32,6 +33,21 @@
                     <p th:if="${#fields.hasErrors('email')}" class="help is-danger" th:errors="*{email}"></p>
                 </div>
             </div>
+            <div class="field">
+                <label for="newOrganization" class="label" th:text="#{admin.addUser.label.organization}"></label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select th:field="*{newOrganization}" id="newOrganization">
+                            <option value=""></option>
+                            <!--/*@thymesVar id="organization" type="fi.asteriski.nakitin.dto.OrganizationDto"*/-->
+                            <option th:each="organization : ${adminAddUserOrganizations}" th:value="${organization.id}"
+                                    th:text="${organization.name}" th:selected="${adminUserInfo.currentOrganization}"></option>
+                        </select>
+                        <p class="help" th:text="#{admin.addUser.label.organizationHelpText}"></p>
+                        <p th:if="${#fields.hasErrors('newOrganization')}" class="help is-danger" th:errors="*{newOrganization}"></p>
+                    </div>
+                </div>
+            </div><br/><br/>
             <div class="field is-horizontal">
                 <div class="field-label">
                 </div>

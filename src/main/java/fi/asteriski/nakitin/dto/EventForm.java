@@ -35,13 +35,12 @@ public class EventForm {
 
     private UUID eventId;
 
-    public EventDto toDto(OrganizationDto org) {
+    public EventDto toDto() {
         return EventDto.builder()
                 .name(name)
                 .venue(venue)
                 .description(description)
                 .date(date)
-                .organizer(org)
                 .build();
     }
 }

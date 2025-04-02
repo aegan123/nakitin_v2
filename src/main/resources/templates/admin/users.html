@@ -5,7 +5,7 @@
 <body>
 <nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
 <div class="columns is-gapless">
-    <div class="column is-2"></div>
+    <div class="column is-2 is-desktop"></div>
     <div class="column">
         <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
         <article th:if="${success}" id="success-message" class="message is-success">
@@ -65,7 +65,7 @@
             </div>
         </div>
     </div>
-    <div class="column is-2"></div>
+    <div class="column is-2 is-desktop"></div>
 </div>
 <script th:src="@{/js/nakitin.js}"></script>
 </body>
