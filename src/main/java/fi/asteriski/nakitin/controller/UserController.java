@@ -4,6 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.controller;
 
+import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.SignupForm;
@@ -61,12 +62,11 @@ public class UserController {
 
     @GetMapping("/profile")
     public String profile(Model model, @AuthenticationPrincipal UserEntity user, Boolean success) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, user != null);
+        setCommonUserAttributes(model, user);
         model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
         model.addAttribute(MODEL_LABEL_USER_DTO, user.toDto());
         model.addAttribute("success", success);
         model.addAttribute("failed", false);
-        model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, user != null && user.isAdmin());
 
         return "profile";
     }
@@ -78,8 +78,7 @@ public class UserController {
             @AuthenticationPrincipal UserEntity user,
             Model model) {
         if (result.hasErrors()) {
-            model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, user != null && user.isAdmin());
-            model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, user != null);
+            setCommonUserAttributes(model, user);
             model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
             model.addAttribute("failed", true);
             return "profile";

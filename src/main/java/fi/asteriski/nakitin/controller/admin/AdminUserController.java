@@ -4,7 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.controller.admin;
 
-import static fi.asteriski.nakitin.controller.admin.AdminControllerHelper.setCommonUserAttributes;
+import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.admin.AddUserForm;

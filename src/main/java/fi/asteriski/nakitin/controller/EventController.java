@@ -4,6 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.controller;
 
+import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.EventForm;
@@ -75,10 +76,9 @@ public class EventController {
     }
 
     private void setCommonAttributesForAddEditPage(EventForm eventForm, Model model, UserEntity user) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, user != null);
+        setCommonUserAttributes(model, user);
         model.addAttribute(MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, user != null && user.isOrganisationAdmin());
         model.addAttribute(MODEL_LABEL_EVENT_FORM, eventForm);
         model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
-        model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, user != null && user.isAdmin());
     }
 }

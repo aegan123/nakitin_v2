@@ -4,6 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.controller;
 
+import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.entity.UserEntity;
@@ -25,12 +26,11 @@ public class OrganizationController {
 
     @GetMapping("/organizations")
     public String organizations(UUID id, Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
+        setCommonUserAttributes(model, loggedInUser);
         model.addAttribute("organizations", organizationService.fetchAllOrganization());
         model.addAttribute(MODEL_LABEL_UPCOMING_EVENTS, List.of());
         model.addAttribute(MODEL_LABEL_PAST_EVENTS, List.of());
         model.addAttribute("isOrgInfo", id != null);
-        model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, loggedInUser != null && loggedInUser.isAdmin());
 
         if (id != null) {
             model.addAttribute(MODEL_LABEL_UPCOMING_EVENTS, nakitinService.fetchUpcomingEvents(id));
