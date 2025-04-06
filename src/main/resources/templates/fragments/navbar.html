@@ -35,6 +35,10 @@
         <div class="navbar-end">
             <!--/*@thymesVar id="userIsOrganisationAdmin" type="java.lang.Boolean"*/-->
             <!--/*@thymesVar id="userIsLoggedIn" type="java.lang.Boolean"*/-->
+            <!--/*@thymesVar id="userIsAdmin" type="java.lang.Boolean"*/-->
+            <div class="navbar-item">
+                <a th:if="${userIsAdmin}" th:text="#{navbar.links.label.admin}" th:href="@{/admin}"></a>
+            </div>
             <div class="navbar-item">
                 <a th:if="${userIsOrganisationAdmin}" th:text="#{form.button.label.new-event}" th:href="@{/add-event}"></a>
             </div>

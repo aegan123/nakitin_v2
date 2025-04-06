@@ -4,7 +4,27 @@
 </head>
 <body>
 <nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
-<div th:insert="~{fragments/eventColumns.html :: columns }">
+<div class="columns is-gapless">
+    <div class="column is-2 is-desktop"></div>
+    <div class="column">
+        <h1 th:replace="~{fragments/event/event.html :: title}"></h1>
+        <div th:replace="~{fragments/event/event.html :: infoBox}"></div>
+        <div th:replace="~{fragments/event/event.html :: description}"></div>
+        <div class="block" th:if="${userIsOrganisationAdmin}">
+            <div class="field has-addons">
+                <p class="control">
+                    <a th:href="@{/edit-event(eventId=${event.id})}" class="button">
+      <span class="icon is-small">
+        <i class="fa-regular fa-pen-to-square"></i>
+      </span>
+                        <span th:text="#{form.button.label.edit-event}"></span>
+                    </a>
+                </p>
+            </div>
+        </div>
+        <div th:replace="~{fragments/event/event.html :: tasks}"></div>
+    </div>
+    <div class="column is-2 is-desktop"></div>
 </div>
 <script type="application/javascript" th:src="@{/js/nakitin.js}"></script>
 </body>

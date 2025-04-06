@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-4 is-desktop"></div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <div class="content">
+            <h1 class="title has-text-centered" th:text="#{admin.deleteOrganization.title}"></h1>
+            <p th:text="#{admin.deleteOrganization.text.p1}"></p>
+            <span th:utext="#{admin.label.organizationName} + ' <strong>' + ${organization.name} + '</strong>'"></span><br/><br/>
+            <p th:if="${!organization.users.isEmpty()}" th:text="#{admin.deleteOrganization.text.p2}"></p>
+            <ul th:if="${!organization.users.isEmpty()}" th:each="user : ${organization.users()}">
+                <li th:text="${user.firstName} + ' ' + ${user.lastName}"></li>
+            </ul>
+            <p th:if="${!organization.events.isEmpty()}" th:text="#{admin.deleteOrganization.text.p3}"></p>
+            <ul th:if="${!organization.events.isEmpty()}" th:each="event : ${organization.events()}">
+                <li th:text="${event.name} + ' (' + ${#temporals.format(event.date, 'dd.MM.yyyy')} + ')'"></li>
+            </ul>
+            <p th:text="#{admin.deleteOrganization.text.p4}"></p>
+            <ul>
+                <li th:text="#{admin.deleteOrganization.text.events}"></li>
+                <li th:text="#{admin.deleteOrganization.text.users}"></li>
+            </ul>
+            <p th:utext="#{admin.deleteConfirmation.text}"></p>
+            <form th:action="@{/admin/delete-organization}" method="post" th:object="${adminDeleteForm}">
+                <input type="hidden" th:field="*{id}" name="userId" th:value="${organization.id}"/>
+                <div class="field is-grouped is-left">
+                    <p class="control">
+                        <input type="submit" th:value="#{form.button.label.delete}" class="button is-danger">
+                    </p>
+                    <p class="control">
+                        <a th:href="@{/admin/organizations}" th:text="#{form.button.label.back}" class="button is-primary"></a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="column is-4 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

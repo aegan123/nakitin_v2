@@ -14,10 +14,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @PasswordMatch(message = PASSWORDS_MUST_MATCH)
-public class SignupForm {
+public class SignupForm extends FormWithPassword {
     @NotBlank(message = "Käyttäjänimi on pakollinen tieto")
     @UsernameNotInUse(message = "Käyttäjätunnus on jo varattu")
     String username;

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-4 is-desktop"></div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <div class="content">
+            <h1 class="title has-text-centered" th:text="#{admin.deleteEvent.title}"></h1>
+            <p th:text="#{admin.deleteEvent.text.p1}"></p>
+            <div th:replace="~{fragments/event/event.html :: infoBox}"></div>
+            <p th:text="#{admin.deleteEvent.text.p2}"></p>
+            <ul>
+                <li th:text="#{admin.deleteEvent.text.volunteers}"></li>
+                <li th:text="#{admin.deleteEvent.text.tasks}"></li>
+            </ul>
+            <p th:utext="#{admin.deleteConfirmation.text}"></p>
+            <form th:action="@{/admin/delete-event}" method="post" th:object="${adminDeleteForm}">
+                <input type="hidden" th:field="*{id}" name="userId" th:value="${event.id}"/>
+                <div class="field is-grouped is-left">
+                    <p class="control">
+                        <input type="submit" th:value="#{form.button.label.delete}" class="button is-danger">
+                    </p>
+                    <p class="control">
+                        <a th:href="@{/admin/events}" th:text="#{form.button.label.back}" class="button is-primary"></a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="column is-4 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

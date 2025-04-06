@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns is-gapless">
+    <div class="column is-2 is-desktop"></div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <article th:if="${success}" id="success-message" class="message is-success">
+            <div class="message-header">
+                <p th:if="${from == 'add'}" th:text="#{admin.events.add.success.title}"></p>
+                <p th:if="${from == 'edit'}" th:text="#{admin.events.edit.success.title}"></p>
+                <p th:if="${from == 'delete'}" th:text="#{admin.events.delete.success.title}"></p>
+                <button class="delete" aria-label="delete" onclick="hideMessage()"></button>
+            </div>
+            <div th:if="${from == 'add'}" class="message-body" th:text="#{admin.events.add.success.text}"></div>
+            <div th:if="${from == 'edit'}" class="message-body" th:text="#{admin.events.edit.success.text}"></div>
+            <div th:if="${from == 'delete'}" class="message-body" th:text="#{admin.events.delete.success.text}"></div>
+        </article>
+        <br/>
+        <nav th:replace="~{fragments/admin/pagination.html :: pagination(path='events')}"></nav>
+        <span th:if="${data.getContent().isEmpty()}" th:text="#{admin.events.noEvents}"></span>
+        <div th:if="${!data.getContent().isEmpty()}" class="columns is-multiline">
+            <!--/*@thymesVar id="event" type="fi.asteriski.nakitin.entity.EventEntity"*/-->
+            <div class="column is-half" th:each="event : ${data.getContent()}">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title" th:text="${event.name}"></p>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            <p>
+                                <span th:text="#{addEvent.form.label.organizer} + ': ' + ${event.organizer.name}"></span><br/>
+                                <span th:text="#{addEvent.form.label.venue} + ': ' + ${event.venue}"></span><br/>
+                                <span th:text="#{addEvent.form.label.date} + ': ' + ${#temporals.format(event.date, 'dd.MM.yyyy')}"></span><br/>
+                                <span th:text="#{addEvent.form.label.description} + ': ' + ${event.abbreviatedDescription}"></span>
+                            </p>
+                            <p>
+                                <hr th:if="${!event.tasks.isEmpty()}">
+                                <span th:if="${!event.tasks.isEmpty()}" th:text="#{event.page.label.tasks}"></span>
+                                <span th:unless="${!event.tasks.isEmpty()}" th:text="#{admin.events.noEventTasks}"></span>
+                            <ul th:if="${!event.tasks.isEmpty()}" th:each="task : ${event.tasks}">
+                                <li th:text="${task.taskName} + ', ' + ${task.personCount} + ${task.personCount > 1 ? ' hlöä, ' : ' hlö, '} + ${#temporals.format(task.date, 'dd.MM.yyyy')} + ', ' + ${#temporals.format(task.startTime, 'HH:mm')} +' - ' + ${#temporals.format(task.endTime, 'HH:mm')}"></li>
+                            </ul>
+                            </p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a th:href="@{/admin/view-event(id=${event.id})}" th:id="${event.id + ''}" class="card-footer-item"
+                           th:text="#{form.button.label.view}"></a>
+                        <a th:href="@{/admin/delete-event-confirmation(id=${event.id})}" th:id="${event.id + ''}" class="card-footer-item"
+                           th:text="#{form.button.label.delete}"></a>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column is-2 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

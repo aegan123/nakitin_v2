@@ -5,9 +5,13 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.repo;
 
 import fi.asteriski.nakitin.entity.UserEntity;
-import java.util.Optional;
-import java.util.UUID;
+import fi.asteriski.nakitin.entity.UserRole;
+import fi.asteriski.nakitin.repo.projection.IdFirstLastNameProjection;
+import java.util.*;
+import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.NativeQuery;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,4 +21,18 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    @NativeQuery(
+            value = """
+            select id from users
+            where email = :email and id != :id
+            """)
+    UUID emailInUseByAnotherUser(@Param("email") String email, @Param("id") UUID id);
+
+    long countAllByUserRoleAndIdNot(@NonNull UserRole userRole, UUID id);
+
+    @NativeQuery(value = """
+            select id, first_name, last_name from users
+            """)
+    Set<IdFirstLastNameProjection> fetchAllUsers();
 }

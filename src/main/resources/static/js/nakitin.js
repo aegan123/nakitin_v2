@@ -27,3 +27,7 @@ function toggleDropdown(event) {
     const element = document.getElementById("dropdown")
     element.classList.toggle("is-active")
 }
+
+function hideMessage() {
+    document.getElementById("success-message").classList.add("is-hidden")
+}

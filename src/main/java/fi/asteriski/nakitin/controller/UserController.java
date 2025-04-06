@@ -4,6 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.controller;
 
+import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.SignupForm;
@@ -61,9 +62,9 @@ public class UserController {
 
     @GetMapping("/profile")
     public String profile(Model model, @AuthenticationPrincipal UserEntity user, Boolean success) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, user != null);
+        setCommonUserAttributes(model, user);
         model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
-        model.addAttribute("userDto", user.toDto());
+        model.addAttribute(MODEL_LABEL_USER_DTO, user.toDto());
         model.addAttribute("success", success);
         model.addAttribute("failed", false);
 
@@ -72,12 +73,12 @@ public class UserController {
 
     @PostMapping("/profile")
     public String profile(
-            @Valid @ModelAttribute("userDto") UserDto userDto,
+            @Valid @ModelAttribute(MODEL_LABEL_USER_DTO) UserDto userDto,
             BindingResult result,
             @AuthenticationPrincipal UserEntity user,
             Model model) {
         if (result.hasErrors()) {
-            model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, user != null);
+            setCommonUserAttributes(model, user);
             model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
             model.addAttribute("failed", true);
             return "profile";

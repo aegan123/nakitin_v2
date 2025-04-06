@@ -5,10 +5,7 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.service;
 
 import fi.asteriski.nakitin.dao.NakitinDao;
-import fi.asteriski.nakitin.dto.EventDto;
-import fi.asteriski.nakitin.dto.EventTaskDto;
-import fi.asteriski.nakitin.dto.EventTaskForm;
-import fi.asteriski.nakitin.dto.ExportDto;
+import fi.asteriski.nakitin.dto.*;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.exceptions.CsvExportException;
 import fi.asteriski.nakitin.exceptions.EventNotFoundException;
@@ -30,12 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class NakitinService {
     private final NakitinDao nakitinDao;
 
-    public List<EventDto> fetchUpcomingEvents() {
+    public List<UpcomingEventDto> fetchUpcomingEvents() {
         return nakitinDao.fetchUpcomingEvents();
     }
 
     public EventDto fetchEvent(UUID eventId) {
-        return nakitinDao.fetchEvent(eventId).sorted();
+        return nakitinDao.fetchEventForEventPage(eventId).sorted();
+    }
+
+    public EventDto fetchEventForEventPage(UUID eventId) {
+        return nakitinDao.fetchEventForEventPage(eventId).sorted();
     }
 
     @Transactional

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns is-gapless">
+    <div class="column is-2 is-desktop"></div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <article th:if="${success}" id="success-message" class="message is-success">
+            <div class="message-header">
+                <p th:if="${from == 'add'}" th:text="#{admin.organization.add.success.title}"></p>
+                <p th:if="${from == 'edit'}" th:text="#{admin.organization.edit.success.title}"></p>
+                <p th:if="${from == 'delete'}" th:text="#{admin.organization.delete.success.title}"></p>
+                <button class="delete" aria-label="delete" onclick="hideMessage()"></button>
+            </div>
+            <div th:if="${from == 'add'}" class="message-body" th:text="#{admin.organization.add.success.text}"></div>
+            <div th:if="${from == 'edit'}" class="message-body" th:text="#{admin.organization.edit.success.text}"></div>
+            <div th:if="${from == 'delete'}" class="message-body" th:text="#{admin.organization.delete.success.text}"></div>
+        </article>
+        <nav th:replace="~{fragments/admin/pagination.html :: pagination(path='organizations')}"></nav>
+        <a th:href="@{/admin/add-organization}">
+            <span class="icon">
+  <i class="fa-solid fa-plus"></i>
+</span>
+            <span th:text="#{admin.label.addOrganization}"></span>
+        </a>
+        <br/>
+        <span th:if="${data.getContent().isEmpty()}" th:text="#{admin.organization.noOrgs}"></span>
+        <div th:if="${!data.getContent().isEmpty()}" class="columns is-multiline">
+            <!--/*@thymesVar id="users" type="java.util.List<fi.asteriski.nakitin.dto.OrganizationDto>"*/-->
+            <div class="column is-half" th:each="organization : ${data.getContent()}">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title" th:text="${organization.name}"></p>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            <p>
+                                <span th:if="${!organization.users.isEmpty()}" th:text="#{admin.label.users}"></span><br/>
+                            <ul th:if="${!organization.users.isEmpty()}" th:each="user : ${organization.users}">
+                                <li th:text="${user.firstName} + ' ' + ${user.lastName}"></li>
+                            </ul>
+                            </p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a th:href="@{/admin/edit-organization(id=${organization.id})}" th:id="${organization.id + ''}" class="card-footer-item"
+                           th:text="#{form.button.label.edit}"></a>
+                        <a th:href="@{/admin/delete-organization-confirmation(id=${organization.id})}" th:id="${organization.id + ''}" class="card-footer-item"
+                           th:text="#{form.button.label.delete}"></a>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column is-2 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

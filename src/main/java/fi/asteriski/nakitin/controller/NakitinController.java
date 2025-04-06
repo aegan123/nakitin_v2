@@ -4,6 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.controller;
 
+import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.EventTaskForm;
@@ -26,7 +27,7 @@ public class NakitinController {
 
     @GetMapping("/")
     public String index(Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
+        setCommonUserAttributes(model, loggedInUser);
         model.addAttribute(MODEL_LABEL_UPCOMING_EVENTS, nakitinService.fetchUpcomingEvents());
         model.addAttribute(
                 MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, loggedInUser != null && loggedInUser.isOrganisationAdmin());
@@ -36,10 +37,10 @@ public class NakitinController {
 
     @GetMapping("/event/{eventId}")
     public String eventPage(@PathVariable UUID eventId, Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
+        setCommonUserAttributes(model, loggedInUser);
         model.addAttribute(
                 MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, loggedInUser != null && loggedInUser.isOrganisationAdmin());
-        model.addAttribute(MODEL_LABEL_EVENT, nakitinService.fetchEvent(eventId));
+        model.addAttribute(MODEL_LABEL_EVENT, nakitinService.fetchEventForEventPage(eventId));
         model.addAttribute(MODEL_LABEL_USER, loggedInUser);
 
         return "eventPage";
@@ -47,7 +48,7 @@ public class NakitinController {
 
     @GetMapping("/task/add")
     public String addEventTaskForm(UUID eventId, Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
+        setCommonUserAttributes(model, loggedInUser);
         model.addAttribute(MODEL_LABEL_EVENT_TASK_FORM, new EventTaskForm());
         model.addAttribute(MODEL_LABEL_EVENT, nakitinService.fetchEvent(eventId));
         model.addAttribute(MODEL_LABEL_IS_EDIT, false);
@@ -61,10 +62,11 @@ public class NakitinController {
             BindingResult result,
             Model model,
             @AuthenticationPrincipal UserEntity loggedInUser) {
+        setCommonUserAttributes(model, loggedInUser);
         model.addAttribute(MODEL_LABEL_EVENT_TASK_FORM, eventTaskForm);
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
         model.addAttribute(MODEL_LABEL_EVENT, nakitinService.fetchEvent(eventTaskForm.getEventId()));
         model.addAttribute(MODEL_LABEL_IS_EDIT, false);
+
         if (result.hasErrors()) {
             return "addEditEventTaskPage";
         }
@@ -81,7 +83,6 @@ public class NakitinController {
                 .filter(t -> t.id().equals(taskId))
                 .findFirst()
                 .orElseThrow(() -> new EventTaskNotFoundException("No task found with id " + taskId));
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
         model.addAttribute(
                 MODEL_LABEL_EVENT_TASK_FORM,
                 EventTaskForm.builder()
@@ -95,6 +96,7 @@ public class NakitinController {
                         .build());
         model.addAttribute(MODEL_LABEL_EVENT, event);
         model.addAttribute(MODEL_LABEL_IS_EDIT, true);
+        setCommonUserAttributes(model, loggedInUser);
 
         return "addEditEventTaskPage";
     }
@@ -105,7 +107,7 @@ public class NakitinController {
             BindingResult result,
             Model model,
             @AuthenticationPrincipal UserEntity loggedInUser) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, loggedInUser != null);
+        setCommonUserAttributes(model, loggedInUser);
         model.addAttribute(MODEL_LABEL_EVENT_TASK_FORM, eventTaskForm);
         model.addAttribute(MODEL_LABEL_EVENT, nakitinService.fetchEvent(eventTaskForm.getEventId()));
         model.addAttribute(MODEL_LABEL_IS_EDIT, true);

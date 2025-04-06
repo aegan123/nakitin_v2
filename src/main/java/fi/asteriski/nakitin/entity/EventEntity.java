@@ -5,6 +5,7 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.entity;
 
 import fi.asteriski.nakitin.dto.EventDto;
+import fi.asteriski.nakitin.dto.UpcomingEventDto;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -21,6 +22,15 @@ import org.hibernate.annotations.UpdateTimestamp;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@NamedEntityGraphs(
+        value = {
+            @NamedEntityGraph(
+                    name = "graph_event_organization",
+                    attributeNodes = {@NamedAttributeNode(value = "organizer")}),
+            @NamedEntityGraph(
+                    name = "graph_event_eventTasks",
+                    attributeNodes = {@NamedAttributeNode(value = "tasks")})
+        })
 public class EventEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -48,7 +58,7 @@ public class EventEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity createdBy;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<EventTaskEntity> tasks = new ArrayList<>();
 
@@ -61,6 +71,9 @@ public class EventEntity {
     @CreationTimestamp
     @Column(nullable = false)
     private ZonedDateTime createdAt;
+
+    @Transient
+    private String abbreviatedDescription;
 
     @Override
     public String toString() {
@@ -88,5 +101,43 @@ public class EventEntity {
                 .tasks(tasks.stream().map(EventTaskEntity::toDto).toList())
                 .createdAt(createdAt)
                 .build();
+    }
+
+    public EventDto toEventPageDto() {
+        return EventDto.builder()
+                .id(id)
+                .name(name)
+                .venue(venue)
+                .description(description)
+                .date(date)
+                .organizer(organizer.toEventPageDto())
+                .tasks(tasks.stream().map(EventTaskEntity::toDto).toList())
+                .abbreviatedDescription(getAbbreviatedDescription())
+                .createdAt(createdAt)
+                .build();
+    }
+
+    public EventDto toAdminDto() {
+        return EventDto.builder()
+                .id(id)
+                .name(name)
+                .venue(venue)
+                .description(description)
+                .date(date)
+                .tasks(tasks.stream().map(EventTaskEntity::toDto).toList())
+                .createdAt(createdAt)
+                .build();
+    }
+
+    public UpcomingEventDto toUpcomingEventDto() {
+        return new UpcomingEventDto(id, name, organizer.getName(), date);
+    }
+
+    public String getAbbreviatedDescription() {
+        abbreviatedDescription = description.substring(0, Math.min(100, description.length()));
+        if (abbreviatedDescription.length() != description.length()) {
+            abbreviatedDescription += "...";
+        }
+        return abbreviatedDescription;
     }
 }

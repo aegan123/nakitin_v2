@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns">
+    <div class="column is-1 is-desktop"></div>
+    <div class="column is-4">
+        <div class="content">
+            <h3 class="title is-3" th:text="#{event.page.label.help.title}"></h3>
+            <h4 class="sub-title is-4" th:text="#{admin.addUser.label.organization}"></h4>
+            <p th:text="#{admin.addUser.label.help.orgAdmin.text}"></p>
+            <h4 class="sub-title is-4" th:text="#{admin.addUser.label.isAdmin}"></h4>
+            <p th:utext="#{admin.addUser.label.help.isAdminHelpText}"></p>
+        </div>
+    </div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <article class="message is-danger" th:if="${customValidationError}">
+            <div class="message-header">
+                <p th:text="#{register.label.validationError}"></p>
+            </div>
+            <!--/*@thymesVar id="customValidationErrorMessage" type="java.lang.String"*/-->
+            <div class="message-body" th:utext="${customValidationErrorMessage}">
+            </div>
+        </article>
+        <h4 class="subtitle is-4" th:text="#{admin.title.userInfo}"></h4>
+        <form class="box" th:action="@{/admin/add-user}" method="post" th:object="${adminAddUserForm}">
+            <div class="field">
+                <label for="username" class="label" th:text="#{register.form.label.username}"></label>
+                <div class="control">
+                    <input th:field="*{username}" id="username" class="input" required="required">
+                    <p th:if="${#fields.hasErrors('username')}" class="help is-danger" th:errors="*{username}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="firstName" class="label" th:text="#{register.form.label.firstName}"></label>
+                <div class="control">
+                    <input th:field="*{firstName}" id="firstName" class="input" required="required">
+                    <p th:if="${#fields.hasErrors('firstName')}" class="help is-danger" th:errors="*{firstName}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="lastName" class="label" th:text="#{register.form.label.lastName}"></label>
+                <div class="control">
+                    <input th:field="*{lastName}" id="lastName" class="input" required="required">
+                    <p th:if="${#fields.hasErrors('lastName')}" class="help is-danger" th:errors="*{lastName}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="email" class="label" th:text="#{register.form.label.email}"></label>
+                <div class="control">
+                    <input th:field="*{email}" id="email" class="input" type="email" required="required">
+                    <p th:if="${#fields.hasErrors('email')}" class="help is-danger" th:errors="*{email}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="password" class="label" th:text="#{register.form.label.password}"></label>
+                <div class="control">
+                    <input th:field="*{password}" id="password" class="input" type="password" required="required" oninput="checkPassword(this)">
+                    <p th:if="${#fields.hasErrors('password')}" class="help is-danger" th:errors="*{password}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="confirmPassword" class="label" th:text="#{register.form.label.passwordConfirm}"></label>
+                <div class="control">
+                    <input th:field="*{confirmPassword}" id="confirmPassword" class="input" type="password" required="required" oninput="checkPassword(this)">
+                    <p th:if="${#fields.hasErrors('confirmPassword')}" class="help is-danger" th:errors="*{confirmPassword}"></p>
+                </div>
+            </div>
+            <div class="field">
+                <label for="organization" class="label" th:text="#{admin.addUser.label.organization}"></label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select th:field="*{organization}" id="organization">
+                            <option value=""></option>
+                            <!--/*@thymesVar id="organization" type="fi.asteriski.nakitin.dto.OrganizationDto"*/-->
+                            <option th:each="organization : ${adminAddUserOrganizations}" th:value="${organization.id}"
+                                    th:text="${organization.name}"></option>
+                        </select>
+                        <p class="help" th:text="#{admin.addUser.label.organizationHelpText}"></p>
+                        <p th:if="${#fields.hasErrors('organization')}" class="help is-danger" th:errors="*{organization}"></p>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="field">
+                <label for="isAdmin" class="label" th:text="#{admin.addUser.label.isAdmin}"></label>
+                <div class="control">
+                    <label class="checkbox" >
+                        <input type="checkbox" id="isAdmin" th:field="*{isAdmin}">
+                    </label>
+                    <p class="help is-danger" th:text="#{admin.addUser.label.isAdminHelpText}"></p>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label">
+                </div>
+                <div class="field is-grouped is-left">
+                    <p class="control">
+                        <input type="submit" th:value="#{form.button.label.newUser}" class="button is-primary">
+                    </p>
+                    <p class="control">
+                        <input type="reset" th:value="#{form.button.label.reset}" class="button is-dark">
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="column is-3 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns is-gapless" th:fragment="columns">
+    <div class="column is-4 is-desktop"></div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <div th:if="${user.isAdmin() && userIsTheOnlyAdmin}" class="content">
+            <p class="title" th:text="#{admin.deleteUser.cannotRemoveSingleAdmin}"></p>
+            <a th:href="@{/admin/users}" th:text="#{admin.deleteUser.back}"></a>
+        </div>
+        <div th:unless="${user.isAdmin() && userIsTheOnlyAdmin}" class="content">
+            <h1 class="title has-text-centered" th:text="#{admin.deleteUser.title}"></h1>
+            <p th:text="#{admin.deleteUser.text.p1}"></p>
+            <span th:text="#{admin.label.usersName} + ' ' + ${user.firstName} + ' ' + ${user.lastName}"></span><br/>
+            <span th:text="#{admin.label.usersUserName} + ' ' + ${user.username}"></span><br/>
+            <span th:text="#{admin.label.usersEmail} + ' ' + ${user.email}"></span><br/><br/>
+            <p th:if="${user.isOrganisationAdmin()}" th:text="#{admin.deleteUser.text.p2}"></p>
+            <ul th:if="${!user.organizations.isEmpty()}" th:each="org : ${user.organizations}">
+                <li th:text="${org.name}"></li>
+            </ul>
+            <p th:text="#{admin.deleteUser.text.p3}"></p>
+            <ul>
+                <li th:text="#{admin.deleteUser.text.tasks}"></li>
+                <li th:if="${user.isOrganisationAdmin}" th:text="#{admin.deleteUser.text.events}"></li>
+                <li th:if="${user.isOrganisationAdmin}" th:text="#{admin.deleteUser.text.organization}"></li>
+            </ul>
+            <p th:utext="#{admin.deleteConfirmation.text}"></p>
+            <form th:action="@{/admin/delete-user}" method="post" th:object="${adminDeleteForm}">
+                <input type="hidden" th:field="*{id}" name="userId" th:value="${user.id}"/>
+                <div class="field is-grouped is-left">
+                    <p class="control">
+                        <input type="submit" th:value="#{form.button.label.delete}" class="button is-danger">
+                    </p>
+                    <p class="control">
+                        <a th:href="@{/admin/users}" th:text="#{form.button.label.back}" class="button is-primary"></a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="column is-4 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

@@ -16,6 +16,7 @@ public record EventDto(
         String name,
         String venue,
         String description,
+        String abbreviatedDescription,
         LocalDate date,
         OrganizationDto organizer,
         List<EventTaskDto> tasks,
@@ -41,7 +42,7 @@ public record EventDto(
                 .venue(venue)
                 .description(description)
                 .date(date)
-                .organizer(organizer.toEntity())
+                .organizer(organizer != null ? organizer.toEntity() : null)
                 .createdAt(createdAt)
                 .build();
     }

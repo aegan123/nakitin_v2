@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<div th:fragment="tabs">
+    <div class="tabs is-boxed is-toggle is-centered">
+        <!--/*@thymesVar id="isUserManagementTab" type="java.lang.Boolean"*/-->
+        <!--/*@thymesVar id="isOrganizationManagementTab" type="java.lang.Boolean"*/-->
+        <!--/*@thymesVar id="isEventManagementTab" type="java.lang.Boolean"*/-->
+        <ul>
+            <li class="" th:classappend="${isUserManagementTab} ? 'is-active' : ''">
+                <a th:href="@{/admin/users}">
+        <span class="icon is-small">
+            <i class="fa-solid fa-user-pen"></i>
+        </span>
+                    <span th:text="#{admin.tabs.label.userManagement}"></span>
+                </a>
+            </li>
+            <li class="" th:classappend="${isOrganizationManagementTab} ? 'is-active' : ''">
+                <a th:href="@{/admin/organizations}">
+        <span class="icon is-small">
+            <i class="fa-solid fa-building-ngo"></i>
+        </span>
+                    <span th:text="#{admin.tabs.label.organizationManagement}"></span>
+                </a>
+            </li>
+            <li class="" th:classappend="${isEventManagementTab} ? 'is-active' : ''">
+                <a th:href="@{/admin/events}">
+        <span class="icon is-small">
+            <i class="fa-solid fa-calendar"></i>
+        </span>
+                    <span th:text="#{admin.tabs.label.eventManagement}"></span>
+                </a>
+            </li>
+        </ul>
+
+    </div>
+</div>
+</body>
+</html>

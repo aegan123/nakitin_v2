@@ -8,8 +8,11 @@ import fi.asteriski.nakitin.dao.EventDao;
 import fi.asteriski.nakitin.dao.OrganizationDao;
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.EventForm;
+import fi.asteriski.nakitin.entity.EventEntity;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +26,7 @@ public class EventService {
     @Transactional
     public UUID createNewEvent(EventForm eventForm) {
         var org = organizationDao.fetchOrganizationByName(eventForm.getOrganizer());
-        return eventDao.saveEvent(eventForm.toDto(org));
+        return eventDao.saveEvent(eventForm.toDto(), org);
     }
 
     @Transactional
@@ -31,7 +34,7 @@ public class EventService {
         var org = organizationDao.fetchOrganizationByName(eventForm.getOrganizer());
         var event = fetchEventById(eventForm.getEventId()).copy(eventForm, org);
 
-        return eventDao.saveEvent(event);
+        return eventDao.saveEvent(event, org);
     }
 
     public EventForm generateEventFormForEvent(UUID eventId) {
@@ -45,7 +48,24 @@ public class EventService {
                 .build();
     }
 
-    private EventDto fetchEventById(UUID eventId) {
+    public EventDto fetchEventById(UUID eventId) {
         return eventDao.fetchEventById(eventId);
+    }
+
+    public List<EventEntity> fetchEventsById(List<UUID> eventIds) {
+        return eventDao.fetchEventsByIds(eventIds);
+    }
+
+    public Page<EventEntity> fetchAllEventsForAdmin(int page) {
+        return eventDao.fetchAllEventsForAdmin(page);
+    }
+
+    @Transactional
+    public void deleteEventById(UUID event) {
+        eventDao.deleteEvent(event);
+    }
+
+    public EventEntity fetchEventEntityById(UUID id) {
+        return eventDao.fetchEventEntityById(id);
     }
 }

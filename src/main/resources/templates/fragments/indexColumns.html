@@ -17,7 +17,7 @@
                 <!--/*@thymesVar id="event" type="fi.asteriski.nakitin.dto.EventDto"*/-->
                 <td><a th:href="@{/event/{id}(id=${event.id})}" th:text="${event.name}"></a></td>
                 <td th:text="${#temporals.format(event.date, 'dd.MM.yyyy')}"></td>
-                <td th:text="${event.organizer.name}"></td>
+                <td th:text="${event.organizer}"></td>
             </tr>
             </tbody>
         </table>

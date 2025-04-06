@@ -13,11 +13,22 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "organizations")
+@Table(
+        name = "organizations",
+        indexes = {@Index(name = "idx_organization_name", columnList = "name", unique = true)})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedEntityGraphs(
+        value = {
+            @NamedEntityGraph(
+                    name = "graph_organizations_events",
+                    attributeNodes = {@NamedAttributeNode(value = "events")}),
+            @NamedEntityGraph(
+                    name = "graph_organizations_users",
+                    attributeNodes = {@NamedAttributeNode(value = "users")}),
+        })
 public class OrganizationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,11 +38,11 @@ public class OrganizationEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "organizations")
+    @ManyToMany(mappedBy = "organizations", fetch = FetchType.EAGER)
     @Builder.Default
     private Set<UserEntity> users = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "organizer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "organizer", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventEntity> events;
 
     @UpdateTimestamp
@@ -49,20 +60,45 @@ public class OrganizationEntity {
 
     public void removeUser(UserEntity user) {
         users.remove(user);
-        user.getOrganizations().remove(this);
+        user.getOrganizations().removeIf(this::equals);
     }
 
-    public void addEvent(EventEntity comment) {
-        events.add(comment);
-        comment.setOrganizer(this);
+    public void addEvent(EventEntity event) {
+        if (events == null) {
+            events = new ArrayList<>();
+        }
+        events.add(event);
+        event.setOrganizer(this);
     }
 
-    public void removeEvent(EventEntity comment) {
-        events.remove(comment);
-        comment.setOrganizer(null);
+    public void removeEvent(EventEntity event) {
+        events.remove(event);
+        event.setOrganizer(null);
+    }
+
+    public boolean hasNoUsers() {
+        return users.isEmpty();
     }
 
     public OrganizationDto toDto() {
-        return OrganizationDto.builder().id(id).name(name).users(users).build();
+        return OrganizationDto.builder()
+                .id(id)
+                .name(name)
+                .users(users)
+                .events(events.stream().map(EventEntity::toDto).toList())
+                .build();
+    }
+
+    public OrganizationDto toEventPageDto() {
+        return OrganizationDto.builder().id(id).name(name).build();
+    }
+
+    public OrganizationDto toAdminDto() {
+        return OrganizationDto.builder()
+                .id(id)
+                .name(name)
+                .users(users)
+                .events(events.stream().map(EventEntity::toAdminDto).toList())
+                .build();
     }
 }

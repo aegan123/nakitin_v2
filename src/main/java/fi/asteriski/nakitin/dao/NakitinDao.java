@@ -8,6 +8,7 @@ import static fi.asteriski.nakitin.utils.Constants.SORT_BY_DATE_ASC;
 
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.EventTaskForm;
+import fi.asteriski.nakitin.dto.UpcomingEventDto;
 import fi.asteriski.nakitin.entity.EventEntity;
 import fi.asteriski.nakitin.entity.EventTaskEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
@@ -36,10 +37,10 @@ public class NakitinDao {
     private final UserRepository userRepository;
     private final MessageSource messageSource;
 
-    public List<EventDto> fetchUpcomingEvents() {
+    public List<UpcomingEventDto> fetchUpcomingEvents() {
         var now = LocalDate.now();
         return eventRepository.findAllByDateBetween(now, now.plusYears(1L), Limit.of(20), SORT_BY_DATE_ASC).stream()
-                .map(EventEntity::toDto)
+                .map(EventEntity::toUpcomingEventDto)
                 .toList();
     }
 
@@ -47,6 +48,15 @@ public class NakitinDao {
         return eventRepository
                 .findById(eventId)
                 .map(EventEntity::toDto)
+                .orElseThrow(() -> new EventNotFoundException(
+                        messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + " "
+                                + eventId + "."));
+    }
+
+    public EventDto fetchEventForEventPage(UUID eventId) {
+        return eventRepository
+                .findById(eventId)
+                .map(EventEntity::toEventPageDto)
                 .orElseThrow(() -> new EventNotFoundException(
                         messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + " "
                                 + eventId + "."));

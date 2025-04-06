@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns is-gapless">
+    <div class="column is-2 is-desktop"></div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <article th:if="${success}" id="success-message" class="message is-success">
+            <div class="message-header">
+                <p th:if="${from == 'add'}" th:text="#{admin.newUser.success.title}"></p>
+                <p th:if="${from == 'edit'}" th:text="#{admin.editUser.success.title}"></p>
+                <p th:if="${from == 'pw'}" th:text="#{admin.changePw.success.title}"></p>
+                <p th:if="${from == 'delete'}" th:text="#{admin.deleteUser.success.title}"></p>
+                <button class="delete" aria-label="delete" onclick="hideMessage()"></button>
+            </div>
+            <div th:if="${from == 'add'}" class="message-body" th:text="#{admin.newUser.success.text}"></div>
+            <div th:if="${from == 'edit'}" class="message-body" th:text="#{admin.editUser.success.text}"></div>
+            <div th:if="${from == 'pw'}" class="message-body" th:text="#{admin.changePw.success.text}"></div>
+            <div th:if="${from == 'delete'}" class="message-body" th:text="#{admin.deleteUser.success.text}"></div>
+        </article>
+        <a th:href="@{/admin/add-user}">
+            <span class="icon">
+  <i class="fa-solid fa-plus"></i>
+</span>
+            <span th:text="#{admin.label.addUser}"></span>
+        </a>
+        <br/>
+        <nav th:replace="~{fragments/admin/pagination.html :: pagination(path='users')}"></nav>
+        <div class="columns is-multiline">
+            <div class="column is-half" th:each="user : ${data.getContent()}">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title" th:text="${user.firstName} + ' ' + ${user.lastName}"></p>
+                    </header>
+                    <div class="card-content">
+                    <span class="tag is-success"
+                          th:text="#{admin.users.tags.label.user}"></span>
+                        <span class="tag is-danger" th:if="${user.isAdmin}"
+                              th:text="#{admin.users.tags.label.admin}"></span>
+                        <span class="tag is-warning" th:if="${user.isOrganisationAdmin}"
+                              th:text="#{admin.users.tags.label.Orgadmin}"></span>
+                        <div class="content">
+                            <hr>
+                            <p>
+                                <span th:text="#{admin.label.usersName} + ' ' + ${user.firstName} + ' ' + ${user.lastName}"></span><br/>
+                                <span th:text="#{admin.label.usersUserName} + ' ' + ${user.username}"></span><br/>
+                                <span th:text="#{admin.label.usersEmail} + ' ' + ${user.email}"></span><br/><br/>
+                                <span th:if="${!user.organizations.isEmpty()}" th:text="#{admin.label.organizations}"></span><br/>
+                            <ul th:if="${!user.organizations.isEmpty()}" th:each="org : ${user.organizations}">
+                                <li th:text="${org.name}"></li>
+                            </ul>
+                            </p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a th:href="@{/admin/edit-user(id=${user.id})}" th:id="${user.id + ''}" class="card-footer-item"
+                           th:text="#{form.button.label.edit}"></a>
+                        <a th:href="@{/admin/delete-user-confirmation(id=${user.id})}" th:id="${user.id + ''}" class="card-footer-item"
+                           th:text="#{form.button.label.delete}"></a>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column is-2 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>
