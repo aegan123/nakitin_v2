@@ -12,6 +12,7 @@ import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.dto.admin.AddEditOrganizationForm;
 import fi.asteriski.nakitin.entity.EventEntity;
 import fi.asteriski.nakitin.entity.EventTaskEntity;
+import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.EventService;
 import fi.asteriski.nakitin.service.EventTaskService;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +36,8 @@ public class AdminOrganizationService {
     private final EventService eventService;
     private final EventTaskService eventTaskService;
 
-    public List<OrganizationDto> fetchAllOrganizations() {
-        return organizationService.fetchAllOrganization();
+    public Page<OrganizationEntity> fetchAllOrganizations(int page) {
+        return organizationService.fetchAllOrganizationForAdmin(page);
     }
 
     @Transactional

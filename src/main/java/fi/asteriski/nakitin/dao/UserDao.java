@@ -5,7 +5,7 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.dao;
 
 import static fi.asteriski.nakitin.entity.UserRole.*;
-import static fi.asteriski.nakitin.utils.Constants.SORT_BY_LASTNAME_ASC;
+import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.IdFirstLastNameDto;
 import fi.asteriski.nakitin.dto.UserDto;
@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -102,8 +104,8 @@ public class UserDao {
         userRepository.save(user);
     }
 
-    public List<UserEntity> fetchAllUsers() {
-        return userRepository.findAll(SORT_BY_LASTNAME_ASC);
+    public Page<UserEntity> fetchAllUsersForAdmin(int page) {
+        return userRepository.findAll(PageRequest.of(page, MAX_PAGE_SIZE, SORT_BY_LASTNAME_ASC));
     }
 
     public boolean emailNotInUseByAnotherUser(String email, UUID id) {

@@ -22,6 +22,7 @@ import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -93,8 +94,8 @@ public class UserService implements UserDetailsService {
         userDao.editUser(userDto);
     }
 
-    public List<UserEntity> fetchAllUsers() {
-        return userDao.fetchAllUsers();
+    public Page<UserEntity> fetchAllUsersForAdmin(int page) {
+        return userDao.fetchAllUsersForAdmin(page);
     }
 
     public boolean emailNotInUseByAnotherUser(String email, UUID id) {

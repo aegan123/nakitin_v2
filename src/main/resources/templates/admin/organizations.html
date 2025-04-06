@@ -19,6 +19,7 @@
             <div th:if="${from == 'edit'}" class="message-body" th:text="#{admin.organization.edit.success.text}"></div>
             <div th:if="${from == 'delete'}" class="message-body" th:text="#{admin.organization.delete.success.text}"></div>
         </article>
+        <nav th:replace="~{fragments/admin/pagination.html :: pagination(path='organizations')}"></nav>
         <a th:href="@{/admin/add-organization}">
             <span class="icon">
   <i class="fa-solid fa-plus"></i>
@@ -26,10 +27,10 @@
             <span th:text="#{admin.label.addOrganization}"></span>
         </a>
         <br/>
-        <span th:if="${organizations.isEmpty()}" th:text="#{admin.organization.noOrgs}"></span>
-        <div th:if="${!organizations.isEmpty()}" class="columns is-multiline">
+        <span th:if="${data.getContent().isEmpty()}" th:text="#{admin.organization.noOrgs}"></span>
+        <div th:if="${!data.getContent().isEmpty()}" class="columns is-multiline">
             <!--/*@thymesVar id="users" type="java.util.List<fi.asteriski.nakitin.dto.OrganizationDto>"*/-->
-            <div class="column is-half" th:each="organization : ${organizations}">
+            <div class="column is-half" th:each="organization : ${data.getContent()}">
                 <div class="card">
                     <header class="card-header">
                         <p class="card-header-title" th:text="${organization.name}"></p>

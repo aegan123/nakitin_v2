@@ -5,12 +5,14 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.service.admin;
 
 import fi.asteriski.nakitin.dto.EventDto;
+import fi.asteriski.nakitin.entity.EventEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.EventService;
 import fi.asteriski.nakitin.service.UserService;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +23,8 @@ public class AdminEventService {
     private final EventService eventService;
     private final UserService userService;
 
-    public List<EventDto> fetchAllEvents() {
-        return eventService.fetchAllEvents();
+    public Page<EventEntity> fetchAllEvents(int page) {
+        return eventService.fetchAllEventsForAdmin(page);
     }
 
     public EventDto fetchEvent(UUID id) {

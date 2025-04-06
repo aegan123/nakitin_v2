@@ -58,7 +58,7 @@ public class EventEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity createdBy;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<EventTaskEntity> tasks = new ArrayList<>();
 
@@ -71,6 +71,9 @@ public class EventEntity {
     @CreationTimestamp
     @Column(nullable = false)
     private ZonedDateTime createdAt;
+
+    @Transient
+    private String abbreviatedDescription;
 
     @Override
     public String toString() {
@@ -130,8 +133,8 @@ public class EventEntity {
         return new UpcomingEventDto(id, name, organizer.getName(), date);
     }
 
-    private String getAbbreviatedDescription() {
-        var abbreviatedDescription = description.substring(0, Math.min(100, description.length()));
+    public String getAbbreviatedDescription() {
+        abbreviatedDescription = description.substring(0, Math.min(100, description.length()));
         if (abbreviatedDescription.length() != description.length()) {
             abbreviatedDescription += "...";
         }

@@ -27,12 +27,13 @@ public class AdminEventController {
     private final AdminEventService adminEventService;
 
     @GetMapping("/admin/events")
-    public String adminEvents(Model model, @AuthenticationPrincipal UserEntity user, Boolean success, String from) {
+    public String adminEvents(
+            Model model, @AuthenticationPrincipal UserEntity user, Boolean success, String from, Integer page) {
         setCommonUserAttributes(model, user);
         model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_EVENTS, adminEventService.fetchAllEvents());
+        model.addAttribute(MODEL_LABEL_EVENTS, adminEventService.fetchAllEvents(page == null ? 0 : page - 1));
         model.addAttribute(MODEL_LABEL_SUCCESS, success);
         model.addAttribute(MODEL_LABEL_FROM, from);
 

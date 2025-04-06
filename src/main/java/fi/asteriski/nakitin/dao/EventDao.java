@@ -4,6 +4,9 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dao;
 
+import static fi.asteriski.nakitin.utils.Constants.MAX_PAGE_SIZE;
+import static fi.asteriski.nakitin.utils.Constants.SORT_BY_ID_ASC;
+
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.entity.EventEntity;
@@ -12,6 +15,8 @@ import fi.asteriski.nakitin.repo.EventRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,10 +39,8 @@ public class EventDao {
         return eventRepository.readAllByIdIn(eventIds);
     }
 
-    public List<EventDto> fetchAllEvents() {
-        return eventRepository.findAll().stream()
-                .map(EventEntity::toEventPageDto)
-                .toList();
+    public Page<EventEntity> fetchAllEventsForAdmin(int page) {
+        return eventRepository.findAll(PageRequest.of(page, MAX_PAGE_SIZE, SORT_BY_ID_ASC));
     }
 
     public EventEntity fetchEventEntityById(UUID id) {

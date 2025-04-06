@@ -28,9 +28,9 @@
             <span th:text="#{admin.label.addUser}"></span>
         </a>
         <br/>
+        <nav th:replace="~{fragments/admin/pagination.html :: pagination(path='users')}"></nav>
         <div class="columns is-multiline">
-            <!--/*@thymesVar id="users" type="java.util.List<fi.asteriski.nakitin.entity.UserEntity>"*/-->
-            <div class="column is-half" th:each="user : ${users}">
+            <div class="column is-half" th:each="user : ${data.getContent()}">
                 <div class="card">
                     <header class="card-header">
                         <p class="card-header-title" th:text="${user.firstName} + ' ' + ${user.lastName}"></p>

@@ -11,6 +11,7 @@ import fi.asteriski.nakitin.entity.UserEntity;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,10 @@ public class OrganizationService {
 
     public List<OrganizationDto> fetchAllOrganization() {
         return organizationDao.fetchAll();
+    }
+
+    public Page<OrganizationEntity> fetchAllOrganizationForAdmin(int page) {
+        return organizationDao.fetchAllForAdmin(page);
     }
 
     @Transactional

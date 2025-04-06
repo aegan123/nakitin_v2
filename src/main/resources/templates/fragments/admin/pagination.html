@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<body>
+<nav class="pagination is-centered" role="navigation" aria-label="pagination" th:fragment="pagination (path)">
+    <a th:href="@{/admin/{path}(path=${path},page=${data.getNumber() == 0 ? 1 : data.getNumber()})}" class="pagination-previous" th:classappend="${data.getNumber() == 0 ? 'is-disabled' : ''}" th:text="#{admin.label.previousPage}"></a>
+    <a th:href="@{/admin/{path}(path=${path},page=${data.getNumber() + 2})}" class="pagination-next" th:classappend="${data.getNumber() + 1 == data.getTotalPages() ? 'is-disabled' : ''}" th:text="#{admin.label.nextPage}"></a>
+    <ul class="pagination-list" th:each="pageNum: ${#numbers.sequence(1, data.getTotalPages())}">
+        <li><a th:href="@{/admin/{path}(path=${path},page=${pageNum})}" class="pagination-link" aria-label="Goto page 1" th:text="${pageNum}"></a></li>
+    </ul>
+</nav>
+</body>
+</html>

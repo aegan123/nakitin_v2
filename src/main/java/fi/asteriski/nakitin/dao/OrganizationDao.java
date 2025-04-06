@@ -4,6 +4,8 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dao;
 
+import static fi.asteriski.nakitin.utils.Constants.*;
+
 import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
@@ -12,7 +14,8 @@ import fi.asteriski.nakitin.repo.OrganizationRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,9 +24,13 @@ public class OrganizationDao {
     private final OrganizationRepository organizationRepository;
 
     public List<OrganizationDto> fetchAll() {
-        return organizationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")).stream()
+        return organizationRepository.findAll(SORT_BY_NAME_ASC).stream()
                 .map(OrganizationEntity::toAdminDto)
                 .toList();
+    }
+
+    public Page<OrganizationEntity> fetchAllForAdmin(int page) {
+        return organizationRepository.findAll(PageRequest.of(page, MAX_PAGE_SIZE, SORT_BY_NAME_ASC));
     }
 
     public OrganizationDto fetchOrganizationByName(String organizer) {

@@ -31,12 +31,13 @@ public class AdminUserController {
     private final AdminUserService adminUserService;
 
     @GetMapping({"/admin", "/admin/users"})
-    public String adminFrontpage(Model model, @AuthenticationPrincipal UserEntity user, Boolean success, String from) {
+    public String adminFrontpage(
+            Model model, @AuthenticationPrincipal UserEntity user, Boolean success, String from, Integer page) {
         setCommonUserAttributes(model, user);
         model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
         model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_USERS, adminUserService.fetchAllUsers());
+        model.addAttribute(MODEL_LABEL_USERS, adminUserService.fetchAllUsersForAdmin(page == null ? 0 : page - 1));
         model.addAttribute(MODEL_LABEL_SUCCESS, success);
         model.addAttribute(MODEL_LABEL_FROM, from);
 

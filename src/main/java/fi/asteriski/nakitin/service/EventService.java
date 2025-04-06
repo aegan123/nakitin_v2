@@ -12,6 +12,7 @@ import fi.asteriski.nakitin.entity.EventEntity;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,8 +56,8 @@ public class EventService {
         return eventDao.fetchEventsByIds(eventIds);
     }
 
-    public List<EventDto> fetchAllEvents() {
-        return eventDao.fetchAllEvents();
+    public Page<EventEntity> fetchAllEventsForAdmin(int page) {
+        return eventDao.fetchAllEventsForAdmin(page);
     }
 
     @Transactional

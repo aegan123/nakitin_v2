@@ -30,12 +30,13 @@ public class AdminOrganizationController {
 
     @GetMapping("/admin/organizations")
     public String adminOrganizations(
-            Model model, @AuthenticationPrincipal UserEntity user, Boolean success, String from) {
+            Model model, @AuthenticationPrincipal UserEntity user, Boolean success, String from, Integer page) {
         setCommonUserAttributes(model, user);
         model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
         model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_ORGANIZATIONS, adminOrganizationService.fetchAllOrganizations());
+        model.addAttribute(
+                MODEL_LABEL_ORGANIZATIONS, adminOrganizationService.fetchAllOrganizations(page == null ? 0 : page - 1));
         model.addAttribute(MODEL_LABEL_SUCCESS, success);
         model.addAttribute(MODEL_LABEL_FROM, from);
 

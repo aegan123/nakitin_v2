@@ -20,10 +20,11 @@
             <div th:if="${from == 'delete'}" class="message-body" th:text="#{admin.events.delete.success.text}"></div>
         </article>
         <br/>
-        <span th:if="${events.isEmpty()}" th:text="#{admin.events.noEvents}"></span>
-        <div th:if="${!events.isEmpty()}" class="columns is-multiline">
-            <!--/*@thymesVar id="users" type="java.util.List<fi.asteriski.nakitin.dto.EventDto>"*/-->
-            <div class="column is-half" th:each="event : ${events}">
+        <nav th:replace="~{fragments/admin/pagination.html :: pagination(path='events')}"></nav>
+        <span th:if="${data.getContent().isEmpty()}" th:text="#{admin.events.noEvents}"></span>
+        <div th:if="${!data.getContent().isEmpty()}" class="columns is-multiline">
+            <!--/*@thymesVar id="event" type="fi.asteriski.nakitin.entity.EventEntity"*/-->
+            <div class="column is-half" th:each="event : ${data.getContent()}">
                 <div class="card">
                     <header class="card-header">
                         <p class="card-header-title" th:text="${event.name}"></p>
@@ -37,10 +38,10 @@
                                 <span th:text="#{addEvent.form.label.description} + ': ' + ${event.abbreviatedDescription}"></span>
                             </p>
                             <p>
-                                <hr th:if="${!event.tasks().isEmpty()}">
-                                <span th:if="${!event.tasks().isEmpty()}" th:text="#{event.page.label.tasks}"></span>
-                                <span th:unless="${!event.tasks().isEmpty()}" th:text="#{admin.events.noEventTasks}"></span>
-                            <ul th:if="${!event.tasks().isEmpty()}" th:each="task : ${event.tasks}">
+                                <hr th:if="${!event.tasks.isEmpty()}">
+                                <span th:if="${!event.tasks.isEmpty()}" th:text="#{event.page.label.tasks}"></span>
+                                <span th:unless="${!event.tasks.isEmpty()}" th:text="#{admin.events.noEventTasks}"></span>
+                            <ul th:if="${!event.tasks.isEmpty()}" th:each="task : ${event.tasks}">
                                 <li th:text="${task.taskName} + ', ' + ${task.personCount} + ${task.personCount > 1 ? ' hlöä, ' : ' hlö, '} + ${#temporals.format(task.date, 'dd.MM.yyyy')} + ', ' + ${#temporals.format(task.startTime, 'HH:mm')} +' - ' + ${#temporals.format(task.endTime, 'HH:mm')}"></li>
                             </ul>
                             </p>

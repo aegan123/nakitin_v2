@@ -12,6 +12,9 @@ import org.springframework.data.domain.Sort;
 public class Constants {
     public static final Sort SORT_BY_DATE_ASC = Sort.by(Sort.Direction.ASC, "date");
     public static final Sort SORT_BY_LASTNAME_ASC = Sort.by(Sort.Direction.ASC, "lastName");
+    public static final Sort SORT_BY_ID_ASC = Sort.by(Sort.Direction.ASC, "id");
+    public static final Sort SORT_BY_NAME_ASC = Sort.by(Sort.Direction.ASC, "name");
+    public static final int MAX_PAGE_SIZE = 20;
     public static final String DUMMY_PASSWORD = Base64.getEncoder().encodeToString("dummyPassword".getBytes());
     public static final String PASSWORDS_MUST_MATCH = "Salasanojen tulee täsmätä";
     public static final String CANNOT_BE_ADMIN_AND_ORG_ADMIN =
@@ -47,7 +50,7 @@ public class Constants {
     public static final String MODEL_LABEL_FROM = "from";
     public static final String MODEL_LABEL_ORGANIZATION = "organization";
     public static final String MODEL_LABEL_USER_IS_THE_ONLY_ADMIN = "userIsTheOnlyAdmin";
-    public static final String MODEL_LABEL_USERS = "users";
-    public static final String MODEL_LABEL_EVENTS = "events";
-    public static final String MODEL_LABEL_ORGANIZATIONS = "organizations";
+    public static final String MODEL_LABEL_USERS = "data";
+    public static final String MODEL_LABEL_EVENTS = "data";
+    public static final String MODEL_LABEL_ORGANIZATIONS = "data";
 }
