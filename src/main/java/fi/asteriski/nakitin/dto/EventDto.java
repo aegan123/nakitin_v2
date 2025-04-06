@@ -16,6 +16,7 @@ public record EventDto(
         String name,
         String venue,
         String description,
+        String abbreviatedDescription,
         LocalDate date,
         OrganizationDto organizer,
         List<EventTaskDto> tasks,

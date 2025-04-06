@@ -43,16 +43,6 @@ public class AdminUserController {
         return "admin/users";
     }
 
-    @GetMapping("/admin/events")
-    public String adminEvents(Model model, @AuthenticationPrincipal UserEntity user) {
-        setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, true);
-
-        return "admin/events";
-    }
-
     @GetMapping("/admin/edit-user")
     public String adminEditUser(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);

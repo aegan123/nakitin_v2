@@ -14,11 +14,10 @@ import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.EventTaskEntity;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
-import java.util.*;
-
 import fi.asteriski.nakitin.service.EventTaskService;
 import fi.asteriski.nakitin.service.OrganizationService;
 import fi.asteriski.nakitin.service.UserService;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

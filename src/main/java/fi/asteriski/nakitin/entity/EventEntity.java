@@ -109,6 +109,7 @@ public class EventEntity {
                 .date(date)
                 .organizer(organizer.toEventPageDto())
                 .tasks(tasks.stream().map(EventTaskEntity::toDto).toList())
+                .abbreviatedDescription(getAbbreviatedDescription())
                 .createdAt(createdAt)
                 .build();
     }
@@ -127,5 +128,13 @@ public class EventEntity {
 
     public UpcomingEventDto toUpcomingEventDto() {
         return new UpcomingEventDto(id, name, organizer.getName(), date);
+    }
+
+    private String getAbbreviatedDescription() {
+        var abbreviatedDescription = description.substring(0, Math.min(100, description.length()));
+        if (abbreviatedDescription.length() != description.length()) {
+            abbreviatedDescription += "...";
+        }
+        return abbreviatedDescription;
     }
 }

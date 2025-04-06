@@ -47,11 +47,24 @@ public class EventService {
                 .build();
     }
 
-    private EventDto fetchEventById(UUID eventId) {
+    public EventDto fetchEventById(UUID eventId) {
         return eventDao.fetchEventById(eventId);
     }
 
     public List<EventEntity> fetchEventsById(List<UUID> eventIds) {
         return eventDao.fetchEventsByIds(eventIds);
+    }
+
+    public List<EventDto> fetchAllEvents() {
+        return eventDao.fetchAllEvents();
+    }
+
+    @Transactional
+    public void deleteEventById(UUID event) {
+        eventDao.deleteEvent(event);
+    }
+
+    public EventEntity fetchEventEntityById(UUID id) {
+        return eventDao.fetchEventEntityById(id);
     }
 }

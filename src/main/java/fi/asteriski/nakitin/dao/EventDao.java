@@ -27,13 +27,30 @@ public class EventDao {
     }
 
     public EventDto fetchEventById(UUID eventId) {
-        return eventRepository
-                .findById(eventId)
-                .map(EventEntity::toDto)
-                .orElseThrow(() -> new EventNotFoundException(String.format("Event not found with id '%s'.", eventId)));
+        return fetchById(eventId).toEventPageDto();
     }
 
     public List<EventEntity> fetchEventsByIds(List<UUID> eventIds) {
         return eventRepository.readAllByIdIn(eventIds);
+    }
+
+    public List<EventDto> fetchAllEvents() {
+        return eventRepository.findAll().stream()
+                .map(EventEntity::toEventPageDto)
+                .toList();
+    }
+
+    public EventEntity fetchEventEntityById(UUID id) {
+        return fetchById(id);
+    }
+
+    private EventEntity fetchById(UUID id) {
+        return eventRepository
+                .findById(id)
+                .orElseThrow(() -> new EventNotFoundException(String.format("Event not found with id '%s'.", id)));
+    }
+
+    public void deleteEvent(UUID event) {
+        eventRepository.deleteById(event);
     }
 }

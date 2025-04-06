@@ -29,7 +29,7 @@ public class OrganizationDao {
     public OrganizationDto fetchOrganizationByName(String organizer) {
         return organizationRepository
                 .findByName(organizer)
-                .map(OrganizationEntity::toDto)
+                .map(OrganizationEntity::toEventPageDto)
                 .orElseThrow(() ->
                         new OrganizationNotFoundException(String.format("Organization %s not found.", organizer)));
     }

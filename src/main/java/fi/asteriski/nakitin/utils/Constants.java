@@ -48,5 +48,6 @@ public class Constants {
     public static final String MODEL_LABEL_ORGANIZATION = "organization";
     public static final String MODEL_LABEL_USER_IS_THE_ONLY_ADMIN = "userIsTheOnlyAdmin";
     public static final String MODEL_LABEL_USERS = "users";
+    public static final String MODEL_LABEL_EVENTS = "events";
     public static final String MODEL_LABEL_ORGANIZATIONS = "organizations";
 }

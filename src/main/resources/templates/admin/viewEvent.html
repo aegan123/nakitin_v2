@@ -4,9 +4,10 @@
 </head>
 <body>
 <nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
-<div class="columns is-gapless">
+<div class="columns">
     <div class="column is-2 is-desktop"></div>
     <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
         <h1 th:replace="~{fragments/event/event.html :: title}"></h1>
         <div th:replace="~{fragments/event/event.html :: infoBox}"></div>
         <div th:replace="~{fragments/event/event.html :: description}"></div>
@@ -14,6 +15,6 @@
     </div>
     <div class="column is-2 is-desktop"></div>
 </div>
-<script type="application/javascript" th:src="@{/js/nakitin.js}"></script>
+<script th:src="@{/js/nakitin.js}"></script>
 </body>
 </html>
