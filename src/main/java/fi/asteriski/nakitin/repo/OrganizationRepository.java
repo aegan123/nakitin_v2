@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrganizationRepository extends JpaRepository<OrganizationEntity, UUID> {
-    Optional<OrganizationEntity> findByName(@NonNull String name);
+    Optional<IdAndNameProjection> findByName(@NonNull String name);
 
     List<IdAndNameProjection> readAllByName(@NonNull String name);
 }

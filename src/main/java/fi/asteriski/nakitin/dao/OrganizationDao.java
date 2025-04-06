@@ -36,7 +36,7 @@ public class OrganizationDao {
     public OrganizationDto fetchOrganizationByName(String organizer) {
         return organizationRepository
                 .findByName(organizer)
-                .map(OrganizationEntity::toEventPageDto)
+                .map(org -> OrganizationDto.builder().id(org.getId()).name(org.getName()).build())
                 .orElseThrow(() ->
                         new OrganizationNotFoundException(String.format("Organization %s not found.", organizer)));
     }
