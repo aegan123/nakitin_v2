@@ -5,6 +5,7 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.service;
 
 import fi.asteriski.nakitin.dao.OrganizationDao;
+import fi.asteriski.nakitin.dto.IdAndNameDto;
 import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrganizationService {
     private final OrganizationDao organizationDao;
 
-    public List<OrganizationDto> fetchAllOrganization() {
+    public List<IdAndNameDto> fetchAllOrganization() {
         return organizationDao.fetchAll();
     }
 
@@ -63,5 +64,9 @@ public class OrganizationService {
 
     public List<OrganizationDto> fetchByName(String name) {
         return organizationDao.fetchOrganizationsByName(name);
+    }
+
+    public List<IdAndNameDto> fetchUsersOrganizations(UUID id) {
+        return organizationDao.fetchUsersOrganizations(id);
     }
 }

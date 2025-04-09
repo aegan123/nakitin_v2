@@ -58,4 +58,18 @@ class NakitinControllerAdvice {
     String csvExportHandler(CsvExportException ex) {
         return ex.getMessage();
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    String genericErrorHandler(RuntimeException ex, Model model) {
+        var id = errorService.logError(ex);
+        model.addAttribute("errorTitle", messageSource.getMessage("error.generic.title", null, Locale.getDefault()));
+        model.addAttribute("errorText", messageSource.getMessage("error.generic.text", null, Locale.getDefault()));
+        model.addAttribute("contactAdmin", true);
+        model.addAttribute(
+                "contactAdminText",
+                String.format(messageSource.getMessage("error.contact.admin", null, Locale.getDefault()), id));
+
+        return "error";
+    }
 }

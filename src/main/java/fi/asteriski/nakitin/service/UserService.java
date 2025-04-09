@@ -157,4 +157,8 @@ public class UserService implements UserDetailsService {
     public UserEntity fetchUserReferencesById(UUID userIds) {
         return userDao.fetchUserReferencesById(userIds);
     }
+
+    public UserDto fetchUserDetails(UUID id) {
+        return userDao.fetchUserDetails(id);
+    }
 }

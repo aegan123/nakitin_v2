@@ -53,4 +53,8 @@ public class Constants {
     public static final String MODEL_LABEL_USERS = "data";
     public static final String MODEL_LABEL_EVENTS = "data";
     public static final String MODEL_LABEL_ORGANIZATIONS = "data";
+    public static final String MODEL_LABEL_USER_ORGANIZATIONS = "userOrganizations";
+    public static final String MODEL_LABEL_USERS_ORGANIZATIONS = "usersOrganizations";
+    public static final String MODEL_LABEL_USERS_TASKS = "usersTasks";
+    public static final String MODEL_LABEL_FAILED = "failed";
 }

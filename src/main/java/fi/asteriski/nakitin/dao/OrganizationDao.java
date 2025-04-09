@@ -6,6 +6,7 @@ package fi.asteriski.nakitin.dao;
 
 import static fi.asteriski.nakitin.utils.Constants.*;
 
+import fi.asteriski.nakitin.dto.IdAndNameDto;
 import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
@@ -23,9 +24,9 @@ import org.springframework.stereotype.Component;
 public class OrganizationDao {
     private final OrganizationRepository organizationRepository;
 
-    public List<OrganizationDto> fetchAll() {
-        return organizationRepository.findAll(SORT_BY_NAME_ASC).stream()
-                .map(OrganizationEntity::toAdminDto)
+    public List<IdAndNameDto> fetchAll() {
+        return organizationRepository.readAll().stream()
+                .map(o -> new IdAndNameDto(o.getId(), o.getName()))
                 .toList();
     }
 
@@ -36,7 +37,10 @@ public class OrganizationDao {
     public OrganizationDto fetchOrganizationByName(String organizer) {
         return organizationRepository
                 .findByName(organizer)
-                .map(org -> OrganizationDto.builder().id(org.getId()).name(org.getName()).build())
+                .map(org -> OrganizationDto.builder()
+                        .id(org.getId())
+                        .name(org.getName())
+                        .build())
                 .orElseThrow(() ->
                         new OrganizationNotFoundException(String.format("Organization %s not found.", organizer)));
     }
@@ -81,6 +85,12 @@ public class OrganizationDao {
                         .id(org.getId())
                         .name(org.getName())
                         .build())
+                .toList();
+    }
+
+    public List<IdAndNameDto> fetchUsersOrganizations(UUID userId) {
+        return organizationRepository.fetchUsersOrganizations(userId).stream()
+                .map(p -> new IdAndNameDto(p.getId(), p.getName()))
                 .toList();
     }
 }

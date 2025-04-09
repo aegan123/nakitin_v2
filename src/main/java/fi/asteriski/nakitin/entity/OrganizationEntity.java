@@ -38,11 +38,11 @@ public class OrganizationEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "organizations", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "organizations", fetch = FetchType.LAZY)
     @Builder.Default
     private Set<UserEntity> users = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "organizer", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "organizer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventEntity> events;
 
     @UpdateTimestamp

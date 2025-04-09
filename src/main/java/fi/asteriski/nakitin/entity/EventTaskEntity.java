@@ -38,7 +38,7 @@ public class EventTaskEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private EventEntity event;
 
     @NonNull
@@ -98,7 +98,12 @@ public class EventTaskEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        return Objects.equals(taskName, ((EventTaskEntity) o).taskName);
+        var other = (EventTaskEntity) o;
+        return Objects.equals(taskName, other.taskName)
+                && Objects.equals(date, other.date)
+                && Objects.equals(startTime, other.startTime)
+                && Objects.equals(endTime, other.endTime)
+                && Objects.equals(personCount, other.personCount);
     }
 
     @Override

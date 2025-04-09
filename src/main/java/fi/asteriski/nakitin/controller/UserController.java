@@ -10,6 +10,8 @@ import static fi.asteriski.nakitin.utils.Constants.*;
 import fi.asteriski.nakitin.dto.SignupForm;
 import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.entity.UserEntity;
+import fi.asteriski.nakitin.service.EventTaskService;
+import fi.asteriski.nakitin.service.OrganizationService;
 import fi.asteriski.nakitin.service.UserService;
 import jakarta.validation.Valid;
 import java.util.Objects;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final OrganizationService organizationService;
+    private final EventTaskService eventTaskService;
 
     @GetMapping("/signup")
     public String signUp(Model model) {
@@ -61,12 +65,16 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public String profile(Model model, @AuthenticationPrincipal UserEntity user, Boolean success) {
-        setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
-        model.addAttribute(MODEL_LABEL_USER_DTO, user.toDto());
-        model.addAttribute("success", success);
-        model.addAttribute("failed", false);
+    public String profile(Model model, @AuthenticationPrincipal UserEntity loggedInUser, Boolean success) {
+        setCommonUserAttributes(model, loggedInUser);
+        var user = userService.fetchUserDetails(loggedInUser.getId());
+        model.addAttribute(
+                MODEL_LABEL_USERS_ORGANIZATIONS, organizationService.fetchUsersOrganizations(loggedInUser.getId()));
+        model.addAttribute(MODEL_LABEL_USERS_TASKS, eventTaskService.fetchUsersEventTasks(loggedInUser));
+        model.addAttribute(MODEL_LABEL_USER, user);
+        model.addAttribute(MODEL_LABEL_USER_DTO, user);
+        model.addAttribute(MODEL_LABEL_SUCCESS, success);
+        model.addAttribute(MODEL_LABEL_FAILED, false);
 
         return "profile";
     }
@@ -79,8 +87,11 @@ public class UserController {
             Model model) {
         if (result.hasErrors()) {
             setCommonUserAttributes(model, user);
-            model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
-            model.addAttribute("failed", true);
+            model.addAttribute(
+                    MODEL_LABEL_USERS_ORGANIZATIONS, organizationService.fetchUsersOrganizations(user.getId()));
+            model.addAttribute(MODEL_LABEL_USERS_TASKS, eventTaskService.fetchUsersEventTasks(user));
+            model.addAttribute(MODEL_LABEL_USER, userService.fetchUserDetails(user.getId()));
+            model.addAttribute(MODEL_LABEL_FAILED, true);
             return "profile";
         }
         userDto.setId(user.getId());
