@@ -4,8 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dao;
 
-import static fi.asteriski.nakitin.utils.Constants.MAX_PAGE_SIZE;
-import static fi.asteriski.nakitin.utils.Constants.SORT_BY_ID_ASC;
+import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.OrganizationDto;
@@ -16,6 +15,7 @@ import fi.asteriski.nakitin.repo.EventRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
@@ -33,6 +33,7 @@ public class EventDao {
         return eventRepository.save(eventEntity).getId();
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_EVENTS, key = "#p0")
     public EventDto fetchEventById(UUID eventId) {
         return fetchById(eventId).toEventPageDto();
     }
@@ -45,6 +46,7 @@ public class EventDao {
         return eventRepository.findAll(PageRequest.of(page, MAX_PAGE_SIZE, SORT_BY_ID_ASC));
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_EVENTS, key = "#p0")
     public EventEntity fetchEventEntityById(UUID id) {
         return fetchById(id);
     }
@@ -59,6 +61,7 @@ public class EventDao {
         eventRepository.deleteById(event);
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_EVENTS, key = "#p0")
     public EventDto fetchEventDetailsById(UUID eventId) {
         return eventRepository.fetchEventDetails(eventId);
     }
