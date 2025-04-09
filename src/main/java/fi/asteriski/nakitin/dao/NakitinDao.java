@@ -4,7 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dao;
 
-import static fi.asteriski.nakitin.utils.Constants.SORT_BY_DATE_ASC;
+import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.EventTaskForm;
@@ -26,6 +26,8 @@ import java.util.Locale;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Limit;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -39,6 +41,7 @@ public class NakitinDao {
     private final UserRepository userRepository;
     private final MessageSource messageSource;
 
+    @Cacheable(cacheNames = CACHE_NAME_EVENTS)
     public List<UpcomingEventDto> fetchUpcomingEvents() {
         var now = LocalDate.now();
         return eventRepository.findAllByDateBetween(now, now.plusYears(1L), Limit.of(20), SORT_BY_DATE_ASC).stream()
@@ -46,6 +49,7 @@ public class NakitinDao {
                 .toList();
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_EVENTS, key = "#p0")
     public EventDto fetchEventForEventPage(UUID eventId) {
         return eventRepository
                 .findById(eventId)
@@ -67,6 +71,7 @@ public class NakitinDao {
                                 + taskId + "."));
     }
 
+    @CacheEvict(cacheNames = CACHE_NAME_USERS)
     public void saveUser(UserEntity loggedInUser) {
         userRepository.save(loggedInUser);
     }
@@ -78,6 +83,7 @@ public class NakitinDao {
         eventTaskRepository.save(entity);
     }
 
+    @CacheEvict(cacheNames = CACHE_NAME_TASKS, key = "#p0.id")
     public void editEventTask(EventTaskForm eventTaskDto) {
         var entity = eventTaskRepository
                 .findById(eventTaskDto.getId())
@@ -92,6 +98,7 @@ public class NakitinDao {
         eventTaskRepository.save(entity);
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_EVENTS)
     public EventDto getEventById(UUID eventId) {
         return eventRepository
                 .findById(eventId)
@@ -101,12 +108,14 @@ public class NakitinDao {
                                 + eventId + "."));
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_USERS)
     public UserEntity fetchUser(@NonNull String userName) {
         return userRepository
                 .findByUsername(userName)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_EVENTS)
     public LocalDate fetchEventDate(@NotNull UUID eventId) {
         return eventRepository
                 .findDateById(eventId)
@@ -116,6 +125,7 @@ public class NakitinDao {
                                 + eventId + "."));
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_EVENTS)
     public List<NameAndDateDto> fetchUpcomingEvents(UUID organizationId) {
         return eventRepository
                 .findAllByOrganizer_IdAndDateAfter(organizationId, LocalDate.now(), SORT_BY_DATE_ASC)
@@ -124,6 +134,7 @@ public class NakitinDao {
                 .toList();
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_EVENTS)
     public List<NameAndDateDto> fetchPastEvents(UUID organizationId) {
         return eventRepository
                 .findAllByOrganizer_IdAndDateBefore(organizationId, LocalDate.now(), SORT_BY_DATE_ASC, Limit.of(50))

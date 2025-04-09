@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -70,6 +72,7 @@ public class UserDao {
         return userRepository.existsByUsername(username);
     }
 
+    @CacheEvict(cacheNames = CACHE_NAME_USERS, key = "#p0.id")
     public void editUser(
             UserInfoForm userInfoForm,
             OrganizationEntity currentOrganization,
@@ -96,6 +99,7 @@ public class UserDao {
         userRepository.save(user);
     }
 
+    @CacheEvict(cacheNames = CACHE_NAME_USERS, key = "#p0.id")
     public void editUser(UserDto userDto) {
         var user = findById(userDto.getId());
         user.setFirstName(userDto.getFirstName());
@@ -115,6 +119,7 @@ public class UserDao {
     public void updatePasswordForUser(UserDto userDto) {
         var user = findById(userDto.getId());
         user.setPassword(userDto.getPassword());
+        user.setExpirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays));
         userRepository.save(user);
     }
 
@@ -122,6 +127,7 @@ public class UserDao {
         return userRepository.countAllByUserRoleAndIdNot(ROLE_ADMIN, id) == 0;
     }
 
+    @CacheEvict(cacheNames = CACHE_NAME_USERS, key = "#p0.id")
     public void deleteUser(UserEntity user) {
         userRepository.delete(user);
     }
@@ -144,6 +150,7 @@ public class UserDao {
         return userRepository.getReferenceById(userId);
     }
 
+    @Cacheable(cacheNames = CACHE_NAME_USERS)
     public UserDto fetchUserDetails(UUID id) {
         return userRepository
                 .findUserEntityById(id)

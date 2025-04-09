@@ -23,6 +23,11 @@ public class Constants {
     public static final String ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME = "Tämän niminen järjestö on jo olemassa.";
     public static final String ERROR_MESSAGE_PASSWORDS_DO_NOT_MATCH = "Salasanat eivät täsmää.";
 
+    public static final String CACHE_NAME_ORGANIZATIONS = "organizations";
+    public static final String CACHE_NAME_EVENTS = "events";
+    public static final String CACHE_NAME_USERS = "users";
+    public static final String CACHE_NAME_TASKS = "tasks";
+
     public static final String MODEL_LABEL_EVENT_TASK_FORM = "eventTaskForm";
     public static final String MODEL_LABEL_USER_IS_LOGGED_IN = "userIsLoggedIn";
     public static final String MODEL_LABEL_EVENT = "event";
