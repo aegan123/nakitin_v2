@@ -8,7 +8,9 @@ import fi.asteriski.nakitin.dao.EventDao;
 import fi.asteriski.nakitin.dao.OrganizationDao;
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.EventForm;
+import fi.asteriski.nakitin.dto.IdAndNameDto;
 import fi.asteriski.nakitin.entity.EventEntity;
+import fi.asteriski.nakitin.entity.UserEntity;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -24,21 +26,21 @@ public class EventService {
     private final OrganizationDao organizationDao;
 
     @Transactional
-    public UUID createNewEvent(EventForm eventForm) {
+    public UUID createNewEvent(EventForm eventForm, UserEntity user) {
         var org = organizationDao.fetchOrganizationByName(eventForm.getOrganizer());
-        return eventDao.saveEvent(eventForm.toDto(), org);
+        return eventDao.saveEvent(eventForm.toDto(), org, user);
     }
 
     @Transactional
-    public UUID editEvent(EventForm eventForm) {
+    public UUID editEvent(EventForm eventForm, UserEntity user) {
         var org = organizationDao.fetchOrganizationByName(eventForm.getOrganizer());
         var event = fetchEventById(eventForm.getEventId()).copy(eventForm, org);
 
-        return eventDao.saveEvent(event, org);
+        return eventDao.saveEvent(event, org, user);
     }
 
     public EventForm generateEventFormForEvent(UUID eventId) {
-        var event = fetchEventById(eventId);
+        var event = eventDao.fetchEventDetailsById(eventId);
         return EventForm.builder()
                 .eventId(eventId)
                 .name(event.name())
@@ -67,5 +69,9 @@ public class EventService {
 
     public EventEntity fetchEventEntityById(UUID id) {
         return eventDao.fetchEventEntityById(id);
+    }
+
+    public List<IdAndNameDto> fetchUsersOrganizations(UUID userId) {
+        return organizationDao.fetchUsersOrganizations(userId);
     }
 }

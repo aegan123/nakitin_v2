@@ -8,6 +8,7 @@ import static fi.asteriski.nakitin.utils.Constants.SORT_BY_DATE_ASC;
 
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.EventTaskForm;
+import fi.asteriski.nakitin.dto.NameAndDateDto;
 import fi.asteriski.nakitin.dto.UpcomingEventDto;
 import fi.asteriski.nakitin.entity.EventEntity;
 import fi.asteriski.nakitin.entity.EventTaskEntity;
@@ -17,6 +18,7 @@ import fi.asteriski.nakitin.exceptions.EventTaskNotFoundException;
 import fi.asteriski.nakitin.repo.EventRepository;
 import fi.asteriski.nakitin.repo.EventTaskRepository;
 import fi.asteriski.nakitin.repo.UserRepository;
+import fi.asteriski.nakitin.repo.projection.DateProjection;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
@@ -44,15 +46,6 @@ public class NakitinDao {
                 .toList();
     }
 
-    public EventDto fetchEvent(UUID eventId) {
-        return eventRepository
-                .findById(eventId)
-                .map(EventEntity::toDto)
-                .orElseThrow(() -> new EventNotFoundException(
-                        messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + " "
-                                + eventId + "."));
-    }
-
     public EventDto fetchEventForEventPage(UUID eventId) {
         return eventRepository
                 .findById(eventId)
@@ -60,6 +53,10 @@ public class NakitinDao {
                 .orElseThrow(() -> new EventNotFoundException(
                         messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + " "
                                 + eventId + "."));
+    }
+
+    public EventTaskEntity fetchReference(UUID taskId) {
+        return eventTaskRepository.getReferenceById(taskId);
     }
 
     public EventTaskEntity getEventTaskById(UUID taskId) {
@@ -98,7 +95,7 @@ public class NakitinDao {
     public EventDto getEventById(UUID eventId) {
         return eventRepository
                 .findById(eventId)
-                .map(EventEntity::toDto)
+                .map(EventEntity::toEventPageDto)
                 .orElseThrow(() -> new EventNotFoundException(
                         messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + " "
                                 + eventId + "."));
@@ -112,24 +109,26 @@ public class NakitinDao {
 
     public LocalDate fetchEventDate(@NotNull UUID eventId) {
         return eventRepository
-                .findById(eventId)
-                .map(EventEntity::getDate)
-                .orElseThrow(() -> new EventNotFoundException("Event not found by id: " + eventId + "."));
+                .findDateById(eventId)
+                .map(DateProjection::getDate)
+                .orElseThrow(() -> new EventNotFoundException(
+                        messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + " "
+                                + eventId + "."));
     }
 
-    public List<EventDto> fetchUpcomingEvents(UUID organizationId) {
+    public List<NameAndDateDto> fetchUpcomingEvents(UUID organizationId) {
         return eventRepository
                 .findAllByOrganizer_IdAndDateAfter(organizationId, LocalDate.now(), SORT_BY_DATE_ASC)
                 .stream()
-                .map(EventEntity::toDto)
+                .map(e -> new NameAndDateDto(e.getName(), e.getDate()))
                 .toList();
     }
 
-    public List<EventDto> fetchPastEvents(UUID organizationId) {
+    public List<NameAndDateDto> fetchPastEvents(UUID organizationId) {
         return eventRepository
                 .findAllByOrganizer_IdAndDateBefore(organizationId, LocalDate.now(), SORT_BY_DATE_ASC, Limit.of(50))
                 .stream()
-                .map(EventEntity::toDto)
+                .map(e -> new NameAndDateDto(e.getName(), e.getDate()))
                 .toList();
     }
 }

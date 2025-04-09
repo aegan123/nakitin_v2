@@ -52,15 +52,15 @@ public class EventEntity {
     @Column(nullable = false)
     private LocalDate date;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private OrganizationEntity organizer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity createdBy;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    private List<EventTaskEntity> tasks = new ArrayList<>();
+    private Set<EventTaskEntity> tasks = new LinkedHashSet<>();
 
     private UUID signupSystemEvent;
 

@@ -55,14 +55,14 @@ public class NakitinService {
     @Transactional
     public void volunteerToTask(UUID taskId, UserEntity loggedInUser) {
         var user = nakitinDao.fetchUser(loggedInUser.getUsername());
-        user.addEventTask(nakitinDao.getEventTaskById(taskId));
+        user.addEventTask(nakitinDao.fetchReference(taskId));
         nakitinDao.saveUser(user);
     }
 
     @Transactional
     public void cancelVolunteeringToTask(UUID taskId, UserEntity loggedInUser) {
         var user = nakitinDao.fetchUser(loggedInUser.getUsername());
-        user.removeEventTask(nakitinDao.getEventTaskById(taskId));
+        user.removeEventTask(nakitinDao.fetchReference(taskId));
         nakitinDao.saveUser(user);
     }
 
@@ -109,11 +109,11 @@ public class NakitinService {
         return sw.toString().trim();
     }
 
-    public List<EventDto> fetchUpcomingEvents(UUID organizationId) {
+    public List<NameAndDateDto> fetchUpcomingEvents(UUID organizationId) {
         return nakitinDao.fetchUpcomingEvents(organizationId);
     }
 
-    public List<EventDto> fetchPastEvents(UUID organizationId) {
+    public List<NameAndDateDto> fetchPastEvents(UUID organizationId) {
         return nakitinDao.fetchPastEvents(organizationId);
     }
 }

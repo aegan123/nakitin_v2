@@ -5,8 +5,10 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.dao;
 
 import fi.asteriski.nakitin.entity.EventTaskEntity;
+import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.repo.EventTaskRepository;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,5 +20,9 @@ public class EventTaskDao {
 
     public List<EventTaskEntity> fetchEventTasksByIds(List<UUID> taskIds) {
         return eventTaskRepository.readEventTaskEntitiesByIdIn(taskIds);
+    }
+
+    public List<EventTaskEntity> fetchUsersEventTasks(UserEntity id) {
+        return eventTaskRepository.findAllByVolunteersContaining(Set.of(id));
     }
 }

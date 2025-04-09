@@ -10,7 +10,6 @@ import static fi.asteriski.nakitin.utils.Constants.*;
 import fi.asteriski.nakitin.dto.EventForm;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.EventService;
-import fi.asteriski.nakitin.service.UserService;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class EventController {
     private final EventService eventService;
-    private final UserService userService;
 
     @GetMapping("/add-event")
     public String addEvent(Model model, @AuthenticationPrincipal UserEntity user) {
@@ -46,7 +44,7 @@ public class EventController {
         if (result.hasErrors()) {
             return "addEditEvent";
         }
-        var eventId = eventService.createNewEvent(eventForm);
+        var eventId = eventService.createNewEvent(eventForm, user);
 
         return String.format("redirect:/event/%s", eventId);
     }
@@ -69,7 +67,7 @@ public class EventController {
         if (result.hasErrors()) {
             return "addEditEvent";
         }
-        var eventId = eventService.editEvent(eventForm);
+        var eventId = eventService.editEvent(eventForm, user);
 
         return String.format("redirect:/event/%s", eventId);
     }
@@ -78,6 +76,6 @@ public class EventController {
         setCommonUserAttributes(model, user);
         model.addAttribute(MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, user != null && user.isOrganisationAdmin());
         model.addAttribute(MODEL_LABEL_EVENT_FORM, eventForm);
-        model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(user.getId()));
+        model.addAttribute(MODEL_LABEL_USER_ORGANIZATIONS, eventService.fetchUsersOrganizations(user.getId()));
     }
 }
