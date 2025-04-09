@@ -10,6 +10,7 @@ import static fi.asteriski.nakitin.utils.Constants.SORT_BY_ID_ASC;
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.entity.EventEntity;
+import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.exceptions.EventNotFoundException;
 import fi.asteriski.nakitin.repo.EventRepository;
 import java.util.List;
@@ -24,10 +25,11 @@ import org.springframework.stereotype.Component;
 public class EventDao {
     private final EventRepository eventRepository;
 
-    public UUID saveEvent(final EventDto dto, final OrganizationDto org) {
+    public UUID saveEvent(final EventDto dto, final OrganizationDto org, UserEntity user) {
         var orgEntity = org.toEntity();
         var eventEntity = dto.toEntity();
         orgEntity.addEvent(eventEntity);
+        eventEntity.setCreatedBy(user);
         return eventRepository.save(eventEntity).getId();
     }
 
@@ -55,5 +57,9 @@ public class EventDao {
 
     public void deleteEvent(UUID event) {
         eventRepository.deleteById(event);
+    }
+
+    public EventDto fetchEventDetailsById(UUID eventId) {
+        return eventRepository.fetchEventDetails(eventId);
     }
 }

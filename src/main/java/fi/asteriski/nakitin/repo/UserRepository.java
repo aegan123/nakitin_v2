@@ -7,6 +7,7 @@ package fi.asteriski.nakitin.repo;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.UserRole;
 import fi.asteriski.nakitin.repo.projection.IdFirstLastNameProjection;
+import fi.asteriski.nakitin.repo.projection.UserDetailsProjection;
 import java.util.*;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,4 +36,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             select id, first_name, last_name from users
             """)
     Set<IdFirstLastNameProjection> fetchAllUsers();
+
+    Optional<UserDetailsProjection> findUserEntityById(UUID id);
 }

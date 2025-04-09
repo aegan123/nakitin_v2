@@ -143,4 +143,11 @@ public class UserDao {
     public UserEntity fetchUserReferencesById(UUID userId) {
         return userRepository.getReferenceById(userId);
     }
+
+    public UserDto fetchUserDetails(UUID id) {
+        return userRepository
+                .findUserEntityById(id)
+                .map(UserDto::fromUserDetailsProjection)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", id)));
+    }
 }

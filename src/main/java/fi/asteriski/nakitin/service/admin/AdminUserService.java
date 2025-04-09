@@ -7,7 +7,7 @@ package fi.asteriski.nakitin.service.admin;
 import static fi.asteriski.nakitin.utils.Constants.DUMMY_PASSWORD;
 import static fi.asteriski.nakitin.utils.Utils.*;
 
-import fi.asteriski.nakitin.dto.OrganizationDto;
+import fi.asteriski.nakitin.dto.IdAndNameDto;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
 import fi.asteriski.nakitin.dto.admin.PasswordForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
@@ -124,7 +124,7 @@ public class AdminUserService {
         userService.deleteUser(user);
     }
 
-    public List<OrganizationDto> fetchAllOrganizations() {
+    public List<IdAndNameDto> fetchAllOrganizations() {
         return organizationService.fetchAllOrganization();
     }
 

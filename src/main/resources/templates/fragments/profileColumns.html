@@ -82,18 +82,20 @@
             <div class="content">
                 <h4 class="sub-title is-4" th:text="#{profile.label.title.organizations}"></h4>
                 <ul>
-                    <li th:each="org : ${user.organizations}" th:text="${org.name}"></li>
-                    <li th:if="${user.organizations.isEmpty()}" th:text="#{profile.label.notAnOrgAdmin}"></li>
+                    <!--/*@thymesVar id="usersOrganizations" type="java.util.List<fi.asteriski.nakitin.dto.IdAndNameDto>"*/-->
+                    <li th:each="org : ${usersOrganizations}" th:text="${org.name}"></li>
+                    <li th:if="${usersOrganizations.isEmpty()}" th:text="#{profile.label.notAnOrgAdmin}"></li>
                 </ul>
             </div>
         </div>
         <div class="block">
             <div class="content">
                 <h4 class="sub-title is-4" th:text="#{profile.label.title.statistics}"></h4>
-                <p th:utext="#{profile.label.totalEventTask} + ${user.eventsTasks.size()} + ' ' + #{profile.label.numberOf}"></p>
+                <!--/*@thymesVar id="usersTasks" type="java.util.List<fi.asteriski.nakitin.entity.EventTaskEntity>"*/-->
+                <p th:utext="#{profile.label.totalEventTask} + ${usersTasks.size()} + ' ' + #{profile.label.numberOf}"></p>
                 <ul>
-                    <li th:each="task : ${user.eventsTasks}" th:text="${task}"></li>
-                    <li th:if="${user.eventsTasks.isEmpty()}" th:text="#{profile.label.noTasks}"></li>
+                    <li th:each="task : ${usersTasks}" th:text="${task}"></li>
+                    <li th:if="${usersTasks.isEmpty()}" th:text="#{profile.label.noTasks}"></li>
                 </ul>
             </div>
         </div>

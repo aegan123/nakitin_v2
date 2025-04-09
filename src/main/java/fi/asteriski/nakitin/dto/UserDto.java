@@ -4,6 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
+import fi.asteriski.nakitin.repo.projection.UserDetailsProjection;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
@@ -30,4 +31,13 @@ public final class UserDto {
     @Email(message = "Virheellinen sähköpostiosoite")
     @NotBlank(message = "Sähköpostiosoite on pakollinen tieto")
     private String email;
+
+    public static UserDto fromUserDetailsProjection(UserDetailsProjection userDetailsProjection) {
+        return builder()
+                .username(userDetailsProjection.getUsername())
+                .firstName(userDetailsProjection.getFirstName())
+                .lastName(userDetailsProjection.getLastName())
+                .email(userDetailsProjection.getEmail())
+                .build();
+    }
 }

@@ -31,7 +31,14 @@ import org.springframework.security.core.userdetails.UserDetails;
         value = {
             @NamedEntityGraph(
                     name = "graph_user_organizations",
-                    attributeNodes = {@NamedAttributeNode(value = "organizations")}),
+                    attributeNodes = {
+                        @NamedAttributeNode(value = "organizations", subgraph = "subgraph_user_organizations_users")
+                    },
+                    subgraphs = {
+                        @NamedSubgraph(
+                                name = "subgraph_user_organizations_users",
+                                attributeNodes = {@NamedAttributeNode(value = "users")})
+                    }),
             @NamedEntityGraph(
                     name = "graph_user_tasks",
                     attributeNodes = {@NamedAttributeNode(value = "eventTasks")}),
@@ -84,13 +91,13 @@ public class UserEntity implements UserDetails {
 
     @ManyToMany(
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            fetch = FetchType.EAGER)
+            fetch = FetchType.LAZY)
     @JoinTable(
             name = "nakittautuneet",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "event_task_id"))
     @Builder.Default
-    private List<EventTaskEntity> eventTasks = new ArrayList<>();
+    private Set<EventTaskEntity> eventTasks = new LinkedHashSet<>();
 
     @NonNull
     @Column(nullable = false)
