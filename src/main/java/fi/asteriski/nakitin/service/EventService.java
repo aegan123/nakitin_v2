@@ -4,8 +4,6 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.service;
 
-import static fi.asteriski.nakitin.utils.Constants.CACHE_NAME_EVENTS;
-
 import fi.asteriski.nakitin.dao.EventDao;
 import fi.asteriski.nakitin.dao.OrganizationDao;
 import fi.asteriski.nakitin.dto.EventDto;
@@ -16,7 +14,6 @@ import fi.asteriski.nakitin.entity.UserEntity;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +32,6 @@ public class EventService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = CACHE_NAME_EVENTS, key = "#p0.eventId")
     public UUID editEvent(EventForm eventForm, UserEntity user) {
         var org = organizationDao.fetchOrganizationByName(eventForm.getOrganizer());
         var event = fetchEventById(eventForm.getEventId()).copy(eventForm, org);

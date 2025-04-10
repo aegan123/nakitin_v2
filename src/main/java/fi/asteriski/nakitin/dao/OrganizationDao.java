@@ -15,8 +15,6 @@ import fi.asteriski.nakitin.repo.OrganizationRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Component;
 public class OrganizationDao {
     private final OrganizationRepository organizationRepository;
 
-    @Cacheable(cacheNames = CACHE_NAME_ORGANIZATIONS)
     public List<IdAndNameDto> fetchAll() {
         return organizationRepository.readAll().stream()
                 .map(o -> new IdAndNameDto(o.getId(), o.getName()))
@@ -37,7 +34,6 @@ public class OrganizationDao {
         return organizationRepository.findAll(PageRequest.of(page, MAX_PAGE_SIZE, SORT_BY_NAME_ASC));
     }
 
-    @Cacheable(cacheNames = CACHE_NAME_ORGANIZATIONS)
     public OrganizationDto fetchOrganizationByName(String organizer) {
         return organizationRepository
                 .findByName(organizer)
@@ -59,7 +55,6 @@ public class OrganizationDao {
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
     }
 
-    @CacheEvict(cacheNames = CACHE_NAME_ORGANIZATIONS, key = "#p0.id")
     public void save(OrganizationEntity organization) {
         organizationRepository.save(organization);
     }
@@ -74,7 +69,6 @@ public class OrganizationDao {
         save(organization);
     }
 
-    @CacheEvict(cacheNames = CACHE_NAME_ORGANIZATIONS, key = "#p0.id()")
     public void editOrganization(OrganizationDto dto, UserEntity oldAdmin) {
         var organization = fetchOrganizationById(dto.id());
         organization.setName(dto.name());
@@ -94,7 +88,6 @@ public class OrganizationDao {
                 .toList();
     }
 
-    @Cacheable(cacheNames = CACHE_NAME_ORGANIZATIONS)
     public List<IdAndNameDto> fetchUsersOrganizations(UUID userId) {
         return organizationRepository.fetchUsersOrganizations(userId).stream()
                 .map(p -> new IdAndNameDto(p.getId(), p.getName()))
