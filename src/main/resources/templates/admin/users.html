@@ -36,7 +36,7 @@
                         <p class="card-header-title" th:text="${user.firstName} + ' ' + ${user.lastName}"></p>
                     </header>
                     <div class="card-content">
-                    <span class="tag is-success"
+                    <span class="tag is-success" th:if="${user.isStandardUser()}"
                           th:text="#{admin.users.tags.label.user}"></span>
                         <span class="tag is-danger" th:if="${user.isAdmin}"
                               th:text="#{admin.users.tags.label.admin}"></span>
