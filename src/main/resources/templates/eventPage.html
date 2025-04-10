@@ -7,6 +7,13 @@
 <div class="columns is-gapless">
     <div class="column is-2 is-desktop"></div>
     <div class="column">
+        <article th:if="${success}" id="success-message" class="message is-success">
+            <div class="message-header">
+                <p th:text="#{success.deleteTask.title}"></p>
+                <button class="delete" aria-label="delete" onclick="hideMessage()"></button>
+            </div>
+            <div class="message-body" th:text="#{success.deleteTask.text}"></div>
+        </article>
         <h1 th:replace="~{fragments/event/event.html :: title}"></h1>
         <div th:replace="~{fragments/event/event.html :: infoBox}"></div>
         <div th:replace="~{fragments/event/event.html :: description}"></div>
@@ -18,6 +25,14 @@
         <i class="fa-regular fa-pen-to-square"></i>
       </span>
                         <span th:text="#{form.button.label.edit-event}"></span>
+                    </a>
+                </p>
+                <p class="control">
+                    <a th:href="@{/delete-event(eventId=${event.id})}" class="button">
+      <span class="icon is-small">
+        <i class="fa-solid fa-trash"></i>
+      </span>
+                        <span th:text="#{form.button.label.delete-event}"></span>
                     </a>
                 </p>
             </div>

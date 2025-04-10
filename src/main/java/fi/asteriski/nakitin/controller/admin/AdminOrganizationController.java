@@ -7,8 +7,8 @@ package fi.asteriski.nakitin.controller.admin;
 import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
+import fi.asteriski.nakitin.dto.DeleteForm;
 import fi.asteriski.nakitin.dto.admin.AddEditOrganizationForm;
-import fi.asteriski.nakitin.dto.admin.DeleteForm;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.admin.AdminOrganizationService;
 import jakarta.validation.Valid;
@@ -120,14 +120,14 @@ public class AdminOrganizationController {
         model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
         model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_ORGANIZATION, adminOrganizationService.fetchOrganization(id));
-        model.addAttribute(MODEL_LABEL_ADMIN_DELETE_FORM, new DeleteForm(id));
+        model.addAttribute(MODEL_LABEL_DELETE_FORM, DeleteForm.builder().id(id).build());
 
         return "admin/deleteOrganizationConfirmation";
     }
 
     @PostMapping("/admin/delete-organization")
     public String adminDeleteUser(
-            @Valid @ModelAttribute(MODEL_LABEL_ADMIN_DELETE_FORM) DeleteForm deleteOrganizationForm,
+            @Valid @ModelAttribute(MODEL_LABEL_DELETE_FORM) DeleteForm deleteOrganizationForm,
             BindingResult result,
             Model model,
             @AuthenticationPrincipal UserEntity user) {
@@ -136,7 +136,7 @@ public class AdminOrganizationController {
             model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
             model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
             model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_ADMIN_DELETE_FORM, deleteOrganizationForm);
+            model.addAttribute(MODEL_LABEL_DELETE_FORM, deleteOrganizationForm);
             return "admin/deleteOrganizationConfirmation";
         }
         adminOrganizationService.deleteOrganization(deleteOrganizationForm.id());

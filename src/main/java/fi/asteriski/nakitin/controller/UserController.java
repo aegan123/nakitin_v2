@@ -54,14 +54,7 @@ public class UserController {
         }
         userService.createNewUser(signupForm);
 
-        return "redirect:/success";
-    }
-
-    @GetMapping("/success")
-    public String success(Model model) {
-        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
-
-        return "success";
+        return "redirect:/success?from=signup";
     }
 
     @GetMapping("/profile")

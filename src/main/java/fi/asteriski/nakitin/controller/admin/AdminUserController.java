@@ -7,8 +7,8 @@ package fi.asteriski.nakitin.controller.admin;
 import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
+import fi.asteriski.nakitin.dto.DeleteForm;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
-import fi.asteriski.nakitin.dto.admin.DeleteForm;
 import fi.asteriski.nakitin.dto.admin.PasswordForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.UserEntity;
@@ -140,14 +140,14 @@ public class AdminUserController {
         model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
         model.addAttribute(MODEL_LABEL_USER, adminUserService.fetchUser(id));
         model.addAttribute(MODEL_LABEL_USER_IS_THE_ONLY_ADMIN, adminUserService.userIsTheOnlyAdmin(user.getId()));
-        model.addAttribute(MODEL_LABEL_ADMIN_DELETE_FORM, new DeleteForm(id));
+        model.addAttribute(MODEL_LABEL_DELETE_FORM, DeleteForm.builder().id(id).build());
 
         return "admin/deleteUserConfirmation";
     }
 
     @PostMapping("/admin/delete-user")
     public String adminDeleteUser(
-            @Valid @ModelAttribute(MODEL_LABEL_ADMIN_DELETE_FORM) DeleteForm deleteUserForm,
+            @Valid @ModelAttribute(MODEL_LABEL_DELETE_FORM) DeleteForm deleteUserForm,
             BindingResult result,
             Model model,
             @AuthenticationPrincipal UserEntity user) {
@@ -156,7 +156,7 @@ public class AdminUserController {
             model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
             model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
             model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_ADMIN_DELETE_FORM, deleteUserForm);
+            model.addAttribute(MODEL_LABEL_DELETE_FORM, deleteUserForm);
             return "admin/deleteUserConfirmation";
         }
         adminUserService.deleteUser(deleteUserForm.id());
