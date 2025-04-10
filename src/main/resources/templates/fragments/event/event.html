@@ -72,7 +72,7 @@
                             <div class="message-body" th:text="#{event.task.form.label.full}">
                             </div>
                         </article>
-                        <form method="post" th:if="${userIsLoggedIn && task.isNotFull}" th:action="@{/volunteer/{eventId}/task/{taskId}(eventId=${event.id},taskId=${task.id},cancel=${task.userHasVolunteered(user)})}">
+                        <form method="post" th:if="${userIsLoggedIn && task.isNotFull && !user.isAdmin()}" th:action="@{/volunteer/{eventId}/task/{taskId}(eventId=${event.id},taskId=${task.id},cancel=${task.userHasVolunteered(user)})}">
                             <div class="field">
                                 <div class="control">
                                     <button class="button is-primary" th:if="${task.userHasNotVolunteered(user)}" th:text="#{form.button.label.volunteer.signup}"></button>
