@@ -20,6 +20,14 @@
                         <span th:text="#{form.button.label.edit-event}"></span>
                     </a>
                 </p>
+                <p class="control">
+                    <a th:href="@{/delete-event(eventId=${event.id})}" class="button">
+      <span class="icon is-small">
+        <i class="fa-solid fa-trash"></i>
+      </span>
+                        <span th:text="#{form.button.label.delete-event}"></span>
+                    </a>
+                </p>
             </div>
         </div>
         <div th:replace="~{fragments/event/event.html :: tasks}"></div>

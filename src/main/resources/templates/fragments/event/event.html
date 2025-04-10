@@ -92,6 +92,8 @@
                 <footer class="card-footer" th:if="${userIsOrganisationAdmin}">
                     <a th:href="@{/task/edit(eventId=${event.id},taskId=${task.id})}" th:id="${task.id + ''}" class="card-footer-item"
                        th:text="#{form.button.label.edit}"></a>
+                    <a th:href="@{/task/delete(eventId=${event.id},taskId=${task.id})}" th:id="${task.id + ''}" class="card-footer-item"
+                       th:text="#{form.button.label.delete}"></a>
                 </footer>
             </div>
         </div>
