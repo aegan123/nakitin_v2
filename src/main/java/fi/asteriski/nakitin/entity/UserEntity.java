@@ -121,10 +121,6 @@ public class UserEntity implements UserDetails {
         return userRole == ROLE_ADMIN;
     }
 
-    public boolean isStandardUser() {
-        return userRole == ROLE_USER;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(userRole.name()));
