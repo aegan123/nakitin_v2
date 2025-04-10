@@ -36,12 +36,15 @@ public class NakitinController {
     }
 
     @GetMapping("/event/{eventId}")
-    public String eventPage(@PathVariable UUID eventId, Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
+    public String eventPage(
+            @PathVariable UUID eventId,
+            Model model,
+            @AuthenticationPrincipal UserEntity loggedInUser,
+            Boolean success) {
         setCommonUserAttributes(model, loggedInUser);
-        model.addAttribute(
-                MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, loggedInUser != null && loggedInUser.isOrganisationAdmin());
         model.addAttribute(MODEL_LABEL_EVENT, nakitinService.fetchEventForEventPage(eventId));
         model.addAttribute(MODEL_LABEL_USER, loggedInUser);
+        model.addAttribute(MODEL_LABEL_SUCCESS, success);
 
         return "eventPage";
     }
@@ -132,5 +135,14 @@ public class NakitinController {
         }
 
         return String.format("redirect:/event/%s", eventId);
+    }
+
+    @GetMapping("/success")
+    public String success(Model model, @AuthenticationPrincipal UserEntity loggedInUser, String from) {
+        setCommonUserAttributes(model, loggedInUser);
+        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
+        model.addAttribute(MODEL_LABEL_FROM, from);
+
+        return "success";
     }
 }

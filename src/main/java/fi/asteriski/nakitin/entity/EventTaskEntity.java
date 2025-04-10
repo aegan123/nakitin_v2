@@ -4,6 +4,8 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.entity;
 
+import static fi.asteriski.nakitin.utils.Constants.DATE_FORMAT_FINLAND;
+
 import fi.asteriski.nakitin.dto.EventTaskDto;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
@@ -43,7 +45,6 @@ public class EventTaskEntity {
 
     @NonNull
     @Column(nullable = false)
-    @NaturalId
     private String taskName;
 
     @NonNull
@@ -80,6 +81,12 @@ public class EventTaskEntity {
     public String toString() {
         return String.format(
                 "%s @ %s by %s", taskName, event.getName(), event.getOrganizer().getName());
+    }
+
+    public String deleteInfo() {
+        return String.format(
+                "%s, %s, %s-%s<br/>Tapahtumassa: %s",
+                taskName, date.format(DATE_FORMAT_FINLAND), startTime, endTime, event.toString());
     }
 
     public EventTaskDto toDto() {

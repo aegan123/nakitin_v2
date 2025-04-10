@@ -25,8 +25,8 @@
                 <li th:text="#{admin.deleteOrganization.text.events}"></li>
                 <li th:text="#{admin.deleteOrganization.text.users}"></li>
             </ul>
-            <p th:utext="#{admin.deleteConfirmation.text}"></p>
-            <form th:action="@{/admin/delete-organization}" method="post" th:object="${adminDeleteForm}">
+            <p th:utext="#{deleteConfirmation.text}"></p>
+            <form th:action="@{/admin/delete-organization}" method="post" th:object="${deleteForm}">
                 <input type="hidden" th:field="*{id}" name="userId" th:value="${organization.id}"/>
                 <div class="field is-grouped is-left">
                     <p class="control">

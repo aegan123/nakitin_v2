@@ -6,6 +6,7 @@ package fi.asteriski.nakitin.dao;
 
 import fi.asteriski.nakitin.entity.EventTaskEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
+import fi.asteriski.nakitin.exceptions.EventTaskNotFoundException;
 import fi.asteriski.nakitin.repo.EventTaskRepository;
 import java.util.List;
 import java.util.Set;
@@ -24,5 +25,15 @@ public class EventTaskDao {
 
     public List<EventTaskEntity> fetchUsersEventTasks(UserEntity id) {
         return eventTaskRepository.findAllByVolunteersContaining(Set.of(id));
+    }
+
+    public EventTaskEntity fetchTask(UUID id) {
+        return eventTaskRepository
+                .findById(id)
+                .orElseThrow(() -> new EventTaskNotFoundException("Task with id " + id + " not found"));
+    }
+
+    public void deleteTask(EventTaskEntity task) {
+        eventTaskRepository.delete(task);
     }
 }

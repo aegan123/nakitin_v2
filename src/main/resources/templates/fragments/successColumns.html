@@ -3,12 +3,14 @@
 <body>
 <div class="columns is-gapless is-centered" th:fragment="columns">
     <div class="column is-half">
+        <!--/*@thymesVar id="from" type="java.lang.String"*/-->
         <article class="message is-success">
             <div class="message-header">
-                <p th:text="#{register.success.title}"></p>
+                <p th:if="${from == 'signup'}" th:text="#{success.register.title}"></p>
+                <p th:if="${from == 'event-delete'}" th:text="#{success.deleteEvent.title}"></p>
             </div>
-            <div class="message-body" th:text="#{register.success.text}">
-            </div>
+            <div class="message-body" th:if="${from == 'signup'}" th:text="#{success.register.text}"></div>
+            <div class="message-body" th:if="${from == 'event-delete'}" th:text="#{success.deleteEvent.text}"></div>
         </article>
     </div>
 </div>

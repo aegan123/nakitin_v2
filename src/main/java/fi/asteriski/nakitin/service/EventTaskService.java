@@ -29,4 +29,20 @@ public class EventTaskService {
         tasks.forEach(EventTaskEntity::toString);
         return tasks;
     }
+
+    public EventTaskEntity readEventTaskById(UUID taskId) {
+        var task = fetchEventTasksById(List.of(taskId)).getFirst();
+        // Work-around for lazy loading problem.
+        task.toString();
+        task.getVolunteers().forEach(UserEntity::getId);
+        return task;
+    }
+
+    @Transactional
+    public void deleteTask(UUID id) {
+        var task = eventTaskDao.fetchTask(id);
+        task.getEvent().removeTask(task);
+        task.getVolunteers().forEach(volunteer -> volunteer.removeEventTask(task));
+        eventTaskDao.deleteTask(task);
+    }
 }

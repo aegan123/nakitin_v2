@@ -7,7 +7,6 @@
 <div class="columns is-gapless" th:fragment="columns">
     <div class="column is-4 is-desktop"></div>
     <div class="column">
-        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
         <div class="content">
             <h1 class="title has-text-centered" th:text="#{deleteEvent.title}"></h1>
             <p th:text="#{deleteEvent.text.p1}"></p>
@@ -18,14 +17,14 @@
                 <li th:text="#{deleteEvent.text.tasks}"></li>
             </ul>
             <p th:utext="#{deleteConfirmation.text}"></p>
-            <form th:action="@{/admin/delete-event}" method="post" th:object="${deleteForm}">
+            <form th:action="@{/delete-event}" method="post" th:object="${deleteForm}">
                 <input type="hidden" th:field="*{id}" name="userId" th:value="${event.id}"/>
                 <div class="field is-grouped is-left">
                     <p class="control">
                         <input type="submit" th:value="#{form.button.label.delete}" class="button is-danger">
                     </p>
                     <p class="control">
-                        <a th:href="@{/admin/events}" th:text="#{form.button.label.back}" class="button is-primary"></a>
+                        <a th:href="@{/event/{eventId}(eventId=${event.id})}" th:text="#{form.button.label.back}" class="button is-primary"></a>
                     </p>
                 </div>
             </form>

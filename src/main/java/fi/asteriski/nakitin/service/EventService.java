@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class EventService {
     private final EventDao eventDao;
     private final OrganizationDao organizationDao;
+    private final UserService userService;
 
     @Transactional
     public UUID createNewEvent(EventForm eventForm, UserEntity user) {
@@ -63,8 +64,22 @@ public class EventService {
     }
 
     @Transactional
-    public void deleteEventById(UUID event) {
-        eventDao.deleteEvent(event);
+    public void deleteEventById(UUID id) {
+        var event = fetchEventEntityById(id);
+        var users = event.getTasks().stream()
+                .map(task ->
+                        task.getVolunteers().stream().map(UserEntity::getId).toList())
+                .map(userService::fetchUsersByIds)
+                .flatMap(List::stream)
+                .toList();
+        event.getTasks()
+                .forEach(task -> users.forEach(user -> {
+                    user.removeEventTask(task);
+                    user.removeEvent(event);
+                }));
+        event.getOrganizer().removeEvent(event);
+
+        eventDao.deleteEvent(id);
     }
 
     public EventEntity fetchEventEntityById(UUID id) {

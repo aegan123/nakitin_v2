@@ -7,6 +7,7 @@ package fi.asteriski.nakitin.controller;
 import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
+import fi.asteriski.nakitin.dto.DeleteForm;
 import fi.asteriski.nakitin.dto.EventForm;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.EventService;
@@ -40,8 +41,9 @@ public class EventController {
             BindingResult result,
             Model model,
             @AuthenticationPrincipal UserEntity user) {
-        setCommonAttributesForAddEditPage(eventForm, model, user);
         if (result.hasErrors()) {
+            setCommonAttributesForAddEditPage(eventForm, model, user);
+            model.addAttribute(MODEL_LABEL_IS_EDIT, false);
             return "addEditEvent";
         }
         var eventId = eventService.createNewEvent(eventForm, user);
@@ -63,8 +65,9 @@ public class EventController {
             BindingResult result,
             Model model,
             @AuthenticationPrincipal UserEntity user) {
-        setCommonAttributesForAddEditPage(eventForm, model, user);
         if (result.hasErrors()) {
+            setCommonAttributesForAddEditPage(eventForm, model, user);
+            model.addAttribute(MODEL_LABEL_IS_EDIT, true);
             return "addEditEvent";
         }
         var eventId = eventService.editEvent(eventForm, user);
@@ -72,9 +75,35 @@ public class EventController {
         return String.format("redirect:/event/%s", eventId);
     }
 
+    @GetMapping("/delete-event")
+    public String deleteEvent(Model model, @AuthenticationPrincipal UserEntity user, UUID eventId) {
+        setCommonUserAttributes(model, user);
+        model.addAttribute(MODEL_LABEL_EVENT, eventService.fetchEventById(eventId));
+        model.addAttribute(
+                MODEL_LABEL_DELETE_FORM, DeleteForm.builder().id(eventId).build());
+
+        return "deleteEventConfirmation";
+    }
+
+    @PostMapping("/delete-event")
+    public String deleteEvent(
+            @Valid @ModelAttribute(MODEL_LABEL_DELETE_FORM) DeleteForm deleteForm,
+            BindingResult result,
+            Model model,
+            @AuthenticationPrincipal UserEntity user) {
+        if (result.hasErrors()) {
+            setCommonUserAttributes(model, user);
+            model.addAttribute(MODEL_LABEL_DELETE_FORM, deleteForm);
+            return "deleteEventConfirmation";
+        }
+
+        eventService.deleteEventById(deleteForm.id());
+
+        return "redirect:/success?from=event-delete";
+    }
+
     private void setCommonAttributesForAddEditPage(EventForm eventForm, Model model, UserEntity user) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, user != null && user.isOrganisationAdmin());
         model.addAttribute(MODEL_LABEL_EVENT_FORM, eventForm);
         model.addAttribute(MODEL_LABEL_USER_ORGANIZATIONS, eventService.fetchUsersOrganizations(user.getId()));
     }
