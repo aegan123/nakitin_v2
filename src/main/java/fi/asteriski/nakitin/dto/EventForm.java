@@ -4,6 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
+import fi.asteriski.nakitin.validation.DateMustBeInTheFuture;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ public class EventForm {
     private String description;
 
     @NotNull(message = "Ajankohta täytyy antaa")
+    @DateMustBeInTheFuture(message = "Tapahtumapäivän tulee olla tulevaisuudessa")
     private LocalDate date;
 
     @NotBlank(message = "Järjestäjä on pakollinen tieto")
