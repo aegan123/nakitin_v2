@@ -37,6 +37,7 @@ public class UserController {
     private final EventTaskService eventTaskService;
     private final EmailService emailService;
     private final MessageSource messageSource;
+    private final RateLimitService rateLimitService;
 
     @GetMapping("/signup")
     public String signUp(Model model) {
@@ -109,6 +110,12 @@ public class UserController {
     public String processForgotPassword(
             @RequestParam("email") String email, Model model, Locale locale, HttpServletRequest request) {
         model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
+
+        if (!rateLimitService.tryConsumeLimitByEmail(email)) {
+            model.addAttribute(
+                    MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.too.many.reset.attempts", null, locale));
+            return "auth/forgot-password";
+        }
 
         var user = userService.findByEmail(email);
         if (user == null) {
@@ -199,7 +206,7 @@ public class UserController {
     private void addCustomErrorIfNeeded(BindingResult result, Model model) {
         if (isPasswordError(result)) {
             model.addAttribute(MODEL_LABEL_CUSTOM_VALIDATION_ERROR, true);
-            model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, "Salasanat eivät täsmää.");
+            model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, PASSWORDS_MUST_MATCH);
         }
     }
 

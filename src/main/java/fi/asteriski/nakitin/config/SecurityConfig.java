@@ -11,6 +11,7 @@ import fi.asteriski.nakitin.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -31,12 +32,17 @@ public class SecurityConfig {
 
     @Profile({"dev", "special"})
     public static class DevSecurityConfig {
+        private final CustomAuthenticationFailureHandler authenticationFailureHandler;
         private final int rememberMeValiditySeconds;
+        private final String rememberMeKey;
 
         public DevSecurityConfig(
                 CustomAuthenticationFailureHandler authenticationFailureHandler,
-                @Value("${security.rememberMe.validitySeconds:86400}") int rememberMeValiditySeconds) {
+                @Value("${security.rememberMe.validitySeconds:86400}") int rememberMeValiditySeconds,
+                @Value("${security.rememberMe.key}") String rememberMeKey) {
+            this.authenticationFailureHandler = authenticationFailureHandler;
             this.rememberMeValiditySeconds = rememberMeValiditySeconds;
+            this.rememberMeKey = rememberMeKey;
         }
 
         @Bean
@@ -96,13 +102,13 @@ public class SecurityConfig {
                                     "/css/**")
                             .permitAll())
                     .formLogin(form -> form.loginPage("/login")
-                            .defaultSuccessUrl("/", true)
+                            .failureHandler(authenticationFailureHandler)
                             .failureUrl("/login?error=true")
                             .permitAll())
                     .logout(logout -> logout.logoutSuccessUrl("/")
                             .deleteCookies("JSESSIONID")
                             .permitAll())
-                    .rememberMe(remember -> remember.key("uniqueAndSecretKey")
+                    .rememberMe(remember -> remember.key(rememberMeKey)
                             .tokenValiditySeconds(rememberMeValiditySeconds)
                             .rememberMeParameter("remember-me"))
                     .cors(Customizer.withDefaults());
