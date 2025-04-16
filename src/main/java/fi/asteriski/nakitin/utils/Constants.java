@@ -59,4 +59,7 @@ public class Constants {
     public static final String MODEL_LABEL_USERS_ORGANIZATIONS = "usersOrganizations";
     public static final String MODEL_LABEL_USERS_TASKS = "usersTasks";
     public static final String MODEL_LABEL_FAILED = "failed";
+    public static final String MODEL_LABEL_ERROR = "error";
+    public static final String MODEL_LABEL_MESSAGE = "message";
+    public static final String MODEL_LABEL_TOKEN = "token";
 }

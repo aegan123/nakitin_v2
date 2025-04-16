@@ -31,6 +31,14 @@ public class SecurityConfig {
 
     @Profile({"dev", "special"})
     public static class DevSecurityConfig {
+        private final int rememberMeValiditySeconds;
+
+        public DevSecurityConfig(
+                CustomAuthenticationFailureHandler authenticationFailureHandler,
+                @Value("${security.rememberMe.validitySeconds:86400}") int rememberMeValiditySeconds) {
+            this.rememberMeValiditySeconds = rememberMeValiditySeconds;
+        }
+
         @Bean
         public SecurityFilterChain configureDev(@NonNull HttpSecurity http) throws Exception {
             http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
@@ -82,11 +90,22 @@ public class SecurityConfig {
                                     "/success",
                                     "/error",
                                     "/js/**",
-                                    "/favicon.ico")
+                                    "/favicon.ico",
+                                    "/forgot-password",
+                                    "/reset-password/**",
+                                    "/css/**")
                             .permitAll())
-                    .formLogin(Customizer.withDefaults())
-                    .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
-            http.cors(Customizer.withDefaults());
+                    .formLogin(form -> form.loginPage("/login")
+                            .defaultSuccessUrl("/", true)
+                            .failureUrl("/login?error=true")
+                            .permitAll())
+                    .logout(logout -> logout.logoutSuccessUrl("/")
+                            .deleteCookies("JSESSIONID")
+                            .permitAll())
+                    .rememberMe(remember -> remember.key("uniqueAndSecretKey")
+                            .tokenValiditySeconds(rememberMeValiditySeconds)
+                            .rememberMeParameter("remember-me"))
+                    .cors(Customizer.withDefaults());
 
             return http.build();
         }

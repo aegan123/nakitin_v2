@@ -6,6 +6,7 @@ package fi.asteriski.nakitin.service;
 
 import static fi.asteriski.nakitin.entity.UserRole.*;
 
+import fi.asteriski.nakitin.dao.PasswordResetTokenDao;
 import fi.asteriski.nakitin.dao.UserDao;
 import fi.asteriski.nakitin.dto.IdFirstLastNameDto;
 import fi.asteriski.nakitin.dto.SignupForm;
@@ -13,8 +14,10 @@ import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
+import fi.asteriski.nakitin.entity.PasswordResetToken;
 import fi.asteriski.nakitin.entity.UserEntity;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -43,8 +46,14 @@ public class UserService implements UserDetailsService {
     @NonNull
     private final OrganizationService organizationService;
 
+    @NonNull
+    private final PasswordResetTokenDao passwordResetTokenDao;
+
     @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
     private Long maxPasswordAgeInDays;
+
+    @Value("${fi.asteriski.config.passwordResetTokenExpirationHours:24}")
+    private Integer passwordResetTokenExpirationHours;
 
     /**
      * Fetches a user from database on login. Called automatically by Spring.
@@ -160,5 +169,51 @@ public class UserService implements UserDetailsService {
 
     public UserDto fetchUserDetails(UUID id) {
         return userDao.fetchUserDetails(id);
+    }
+
+    public UserEntity findByEmail(String email) {
+        return userDao.findByEmail(email);
+    }
+
+    @Transactional
+    public void createPasswordResetTokenForUser(UserEntity user, String token) {
+        var expiryDate = LocalDateTime.now().plusHours(passwordResetTokenExpirationHours);
+        var passwordResetToken = PasswordResetToken.builder()
+                .token(token)
+                .user(user)
+                .expiryDate(expiryDate)
+                .build();
+        passwordResetTokenDao.save(passwordResetToken);
+    }
+
+    public boolean validatePasswordResetToken(String token) {
+        var passwordResetToken = passwordResetTokenDao.findByToken(token);
+        if (passwordResetToken == null) {
+            return false;
+        }
+
+        if (passwordResetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            passwordResetTokenDao.delete(passwordResetToken);
+            return false;
+        }
+
+        return true;
+    }
+
+    @Transactional
+    public boolean resetPassword(String token, String newPassword) {
+        var passwordResetToken = passwordResetTokenDao.findByToken(token);
+        if (passwordResetToken == null || !validatePasswordResetToken(token)) {
+            return false;
+        }
+
+        var user = passwordResetToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setExpirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays));
+
+        userDao.saveNewUser(user);
+        passwordResetTokenDao.delete(passwordResetToken);
+
+        return true;
     }
 }

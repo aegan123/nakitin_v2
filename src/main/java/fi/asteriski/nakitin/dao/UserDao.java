@@ -150,4 +150,8 @@ public class UserDao {
                 .map(UserDto::fromUserDetailsProjection)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", id)));
     }
+
+    public UserEntity findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found."));
+    }
 }
