@@ -4,26 +4,16 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name = "password_reset_tokens")
-@Getter
-@Setter
+@Table(
+        name = "password_reset_tokens",
+        indexes = {@Index(name = "idx_password_reset_token", columnList = "token", unique = true)})
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

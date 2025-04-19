@@ -52,7 +52,7 @@ public class UserService implements UserDetailsService {
     @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
     private Long maxPasswordAgeInDays;
 
-    @Value("${fi.asteriski.config.passwordResetTokenExpirationHours:24}")
+    @Value("${fi.asteriski.config.passwordResetTokenExpirationHours}")
     private Integer passwordResetTokenExpirationHours;
 
     /**

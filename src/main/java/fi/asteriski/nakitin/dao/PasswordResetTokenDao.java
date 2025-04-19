@@ -6,14 +6,12 @@ package fi.asteriski.nakitin.dao;
 
 import fi.asteriski.nakitin.entity.PasswordResetToken;
 import fi.asteriski.nakitin.repo.PasswordResetTokenRepository;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class PasswordResetTokenDao {
-    @NonNull
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     public PasswordResetToken findByToken(String token) {
