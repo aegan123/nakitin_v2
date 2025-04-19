@@ -48,9 +48,7 @@ public class EmailService {
     public void sendEmailVerification(String toEmail, String verificationUrl) {
         var subject = messageSource.getMessage("email.subject.verification", null, LocaleContextHolder.getLocale());
         var message = messageSource.getMessage(
-                "email.message.verification",
-                new Object[] {verificationUrl, verificationUrl},
-                LocaleContextHolder.getLocale());
+                "email.message.verification", new Object[] {verificationUrl}, LocaleContextHolder.getLocale());
         try {
             sendEmail(toEmail, defaultSender, subject, message);
         } catch (MessagingException e) {

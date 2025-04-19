@@ -8,13 +8,13 @@
     <div class="container">
         <div class="columns is-centered">
             <div class="column is-half">
-                <h1 class="title has-text-centered" th:text="#{verification.title}">Sähköpostin vahvistus</h1>
+                <h1 class="title has-text-centered" th:text="#{verification.title}"></h1>
                 
                 <div th:class="${success ? 'notification is-success' : 'notification is-warning'}"
-                     th:text="${success ? #{verification.success.message} : #{verification.error.expired}}">
+                     th:text="#{${success ? 'verification.success.message' : 'verification.error.expired'}}">
                 </div>
                 
-                <div th:if="${!success}" class="box">
+                <div th:if="${!success && verificationStatus == T(fi.asteriski.nakitin.dto.VerificationStatus).EXPIRED}" class="box">
                     <form th:action="@{/resend-verification}" method="post">
                         <input type="hidden" name="email" th:value="${email}"/>
                         <div class="field">

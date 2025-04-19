@@ -4,14 +4,12 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.service;
 
+import static fi.asteriski.nakitin.dto.VerificationStatus.*;
 import static fi.asteriski.nakitin.entity.UserRole.*;
 
 import fi.asteriski.nakitin.dao.PasswordResetTokenDao;
 import fi.asteriski.nakitin.dao.UserDao;
-import fi.asteriski.nakitin.dto.IdFirstLastNameDto;
-import fi.asteriski.nakitin.dto.SignupForm;
-import fi.asteriski.nakitin.dto.UserDto;
-import fi.asteriski.nakitin.dto.VerificationResult;
+import fi.asteriski.nakitin.dto.*;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
@@ -130,21 +128,9 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public VerificationResult verifyEmail(String token) {
-        UserEntity user = userDao.findByVerificationToken(token);
-
-        if (verificationTokenService.isTokenExpired(user.getVerificationTokenExpiry())) {
-            return VerificationResult.builder()
-                    .verified(false)
-                    .email(user.getEmail())
-                    .build();
-        }
-
-        user.setEmailVerified(true);
-        user.setVerificationToken(null);
-        user.setVerificationTokenExpiry(null);
-        userDao.save(user);
-
-        return VerificationResult.builder().verified(true).email(null).build();
+        return userDao.findByVerificationToken(token)
+                .map(this::processUserVerification)
+                .orElse(createVerificationResult(false, null, NOT_FOUND));
     }
 
     public Page<UserEntity> fetchAllUsersForAdmin(int page) {
@@ -261,18 +247,42 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    private String getBaseUrl(HttpServletRequest request) {
-        String scheme = request.getScheme();
-        String serverName = request.getServerName();
-        return "%s://%s:%s%s".formatted(scheme, serverName, serverPort, contextPath);
-    }
-
     public void setupEmailVerification(UserEntity user, HttpServletRequest request) {
-        String token = verificationTokenService.generateVerificationToken();
+        var token = verificationTokenService.generateVerificationToken();
         user.setVerificationToken(token);
         user.setVerificationTokenExpiry(verificationTokenService.calculateExpiryDate());
 
-        String verificationUrl = "%s/verify-email?token=%s".formatted(getBaseUrl(request), token);
+        var verificationUrl = "%s/verify-email?token=%s".formatted(getBaseUrl(request), token);
         emailService.sendEmailVerification(user.getEmail(), verificationUrl);
+    }
+
+    private String getBaseUrl(HttpServletRequest request) {
+        var scheme = request.getScheme();
+        var serverName = request.getServerName();
+        return "%s://%s:%s%s".formatted(scheme, serverName, serverPort, contextPath);
+    }
+
+    private VerificationResult processUserVerification(UserEntity user) {
+        if (verificationTokenService.isTokenExpired(user.getVerificationTokenExpiry())) {
+            return createVerificationResult(false, user.getEmail(), EXPIRED);
+        }
+
+        verifyUserEmail(user);
+        return createVerificationResult(true, null, VERIFIED);
+    }
+
+    private void verifyUserEmail(UserEntity user) {
+        user.setEmailVerified(true);
+        user.setVerificationToken(null);
+        user.setVerificationTokenExpiry(null);
+        userDao.save(user);
+    }
+
+    private VerificationResult createVerificationResult(boolean verified, String email, VerificationStatus status) {
+        return VerificationResult.builder()
+                .verified(verified)
+                .email(email)
+                .status(status)
+                .build();
     }
 }

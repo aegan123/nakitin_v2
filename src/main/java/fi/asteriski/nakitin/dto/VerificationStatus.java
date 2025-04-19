@@ -4,7 +4,8 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
-import lombok.Builder;
-
-@Builder
-public record VerificationResult(boolean verified, String email, VerificationStatus status) {}
+public enum VerificationStatus {
+    VERIFIED,
+    EXPIRED,
+    NOT_FOUND
+}
