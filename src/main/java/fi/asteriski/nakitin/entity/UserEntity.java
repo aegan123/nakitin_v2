@@ -10,7 +10,6 @@ import fi.asteriski.nakitin.dto.UserDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -118,11 +117,8 @@ public class UserEntity implements UserDetails {
     @Builder.Default
     private Boolean emailVerified = false;
 
-    @Column(length = 64)
-    private String verificationToken;
-
-    @Column
-    private LocalDateTime verificationTokenExpiry;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private VerificationTokenEntity verificationToken;
 
     public boolean isOrganisationAdmin() {
         return userRole == ROLE_ORG_ADMIN;

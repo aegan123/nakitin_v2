@@ -13,8 +13,6 @@ import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.repo.UserRepository;
-import fi.asteriski.nakitin.repo.projection.IdProjection;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -135,18 +133,6 @@ public class UserDao {
 
     public Optional<UserEntity> findByEmail(String email) {
         return userRepository.findByEmail(email);
-    }
-
-    public Optional<UserEntity> findByVerificationToken(String token) {
-        return userRepository.findByVerificationToken(token);
-    }
-
-    public List<UUID> findUnverifiedUsersWithExpiredTokens() {
-        return userRepository
-                .findAllByVerificationTokenExpiryBeforeAndEmailVerifiedIsFalse(LocalDateTime.now())
-                .stream()
-                .map(IdProjection::getId)
-                .toList();
     }
 
     public void deleteUsersById(List<UUID> toDelete) {

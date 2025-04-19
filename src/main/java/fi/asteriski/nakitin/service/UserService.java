@@ -9,13 +9,11 @@ import static fi.asteriski.nakitin.entity.UserRole.*;
 
 import fi.asteriski.nakitin.dao.PasswordResetTokenDao;
 import fi.asteriski.nakitin.dao.UserDao;
+import fi.asteriski.nakitin.dao.VerificationTokenDao;
 import fi.asteriski.nakitin.dto.*;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
-import fi.asteriski.nakitin.entity.OrganizationEntity;
-import fi.asteriski.nakitin.entity.PasswordResetToken;
-import fi.asteriski.nakitin.entity.UserEntity;
-import fi.asteriski.nakitin.entity.UserRole;
+import fi.asteriski.nakitin.entity.*;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,6 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService implements UserDetailsService {
+    @NonNull
+    private final VerificationTokenDao verificationTokenDao;
+
     @NonNull
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -128,7 +129,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public VerificationResult verifyEmail(String token) {
-        return userDao.findByVerificationToken(token)
+        return verificationTokenDao
+                .findByToken(token)
                 .map(this::processUserVerification)
                 .orElse(createVerificationResult(false, null, NOT_FOUND));
     }
@@ -247,10 +249,16 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
+    @Transactional
     public void setupEmailVerification(UserEntity user, HttpServletRequest request) {
         var token = verificationTokenService.generateVerificationToken();
-        user.setVerificationToken(token);
-        user.setVerificationTokenExpiry(verificationTokenService.calculateExpiryDate());
+        var verificationToken = VerificationTokenEntity.builder()
+                .token(token)
+                .expiryDate(verificationTokenService.calculateExpiryDate())
+                .build();
+
+        verificationToken.addUser(user);
+        userDao.save(user);
 
         var verificationUrl = "%s/verify-email?token=%s".formatted(getBaseUrl(request), token);
         emailService.sendEmailVerification(user.getEmail(), verificationUrl);
@@ -262,20 +270,19 @@ public class UserService implements UserDetailsService {
         return "%s://%s:%s%s".formatted(scheme, serverName, serverPort, contextPath);
     }
 
-    private VerificationResult processUserVerification(UserEntity user) {
-        if (verificationTokenService.isTokenExpired(user.getVerificationTokenExpiry())) {
-            return createVerificationResult(false, user.getEmail(), EXPIRED);
+    private VerificationResult processUserVerification(VerificationTokenEntity token) {
+        if (verificationTokenService.isTokenExpired(token.getExpiryDate())) {
+            return createVerificationResult(false, token.getUser().getEmail(), EXPIRED);
         }
 
-        verifyUserEmail(user);
+        verifyUserEmail(token);
         return createVerificationResult(true, null, VERIFIED);
     }
 
-    private void verifyUserEmail(UserEntity user) {
-        user.setEmailVerified(true);
-        user.setVerificationToken(null);
-        user.setVerificationTokenExpiry(null);
-        userDao.save(user);
+    private void verifyUserEmail(VerificationTokenEntity token) {
+        token.getUser().setEmailVerified(true);
+        token.removeUser(token.getUser());
+        verificationTokenDao.deleteByUser(token.getUser());
     }
 
     private VerificationResult createVerificationResult(boolean verified, String email, VerificationStatus status) {

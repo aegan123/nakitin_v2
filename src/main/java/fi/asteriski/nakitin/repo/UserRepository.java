@@ -7,9 +7,7 @@ package fi.asteriski.nakitin.repo;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.UserRole;
 import fi.asteriski.nakitin.repo.projection.IdFirstLastNameProjection;
-import fi.asteriski.nakitin.repo.projection.IdProjection;
 import fi.asteriski.nakitin.repo.projection.UserDetailsProjection;
-import java.time.LocalDateTime;
 import java.util.*;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,11 +41,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserDetailsProjection> findUserEntityById(UUID id);
 
     Optional<UserEntity> findByEmail(String email);
-
-    Optional<UserEntity> findByVerificationToken(String verificationToken);
-
-    List<IdProjection> findAllByVerificationTokenExpiryBeforeAndEmailVerifiedIsFalse(
-            LocalDateTime verificationTokenExpiryBefore);
 
     @Modifying
     @NativeQuery("""
