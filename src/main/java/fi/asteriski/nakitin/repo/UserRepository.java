@@ -38,4 +38,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Set<IdFirstLastNameProjection> fetchAllUsers();
 
     Optional<UserDetailsProjection> findUserEntityById(UUID id);
+
+    Optional<UserEntity> findByEmail(String email);
 }

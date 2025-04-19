@@ -10,6 +10,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+        const $notification = $delete.parentNode;
+        $delete.addEventListener('click', () => {
+            $notification.parentNode.removeChild($notification);
+        });
+    });
+});
+
 function checkPassword(element) {
     const otherPasswordElement = element.id === "password" ? document.getElementById("confirmPassword") : document.getElementById("password")
     if (element.value === otherPasswordElement.value) {

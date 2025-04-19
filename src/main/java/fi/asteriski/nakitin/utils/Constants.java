@@ -24,6 +24,7 @@ public class Constants {
     public static final String ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME = "Tämän niminen järjestö on jo olemassa.";
     public static final String ERROR_MESSAGE_PASSWORDS_DO_NOT_MATCH = "Salasanat eivät täsmää.";
     public static final DateTimeFormatter DATE_FORMAT_FINLAND = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    public static final String LOG_ERROR_MESSAGE_TEMPLATE = "Error with email. Error was: %s";
 
     public static final String MODEL_LABEL_EVENT_TASK_FORM = "eventTaskForm";
     public static final String MODEL_LABEL_USER_IS_LOGGED_IN = "userIsLoggedIn";
@@ -59,4 +60,7 @@ public class Constants {
     public static final String MODEL_LABEL_USERS_ORGANIZATIONS = "usersOrganizations";
     public static final String MODEL_LABEL_USERS_TASKS = "usersTasks";
     public static final String MODEL_LABEL_FAILED = "failed";
+    public static final String MODEL_LABEL_ERROR = "error";
+    public static final String MODEL_LABEL_MESSAGE = "message";
+    public static final String MODEL_LABEL_TOKEN = "token";
 }

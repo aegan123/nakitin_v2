@@ -10,12 +10,13 @@ import static fi.asteriski.nakitin.utils.Constants.*;
 import fi.asteriski.nakitin.dto.SignupForm;
 import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.entity.UserEntity;
-import fi.asteriski.nakitin.service.EventTaskService;
-import fi.asteriski.nakitin.service.OrganizationService;
-import fi.asteriski.nakitin.service.UserService;
+import fi.asteriski.nakitin.service.*;
 import jakarta.validation.Valid;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +25,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
 @AllArgsConstructor
@@ -31,6 +34,9 @@ public class UserController {
     private final UserService userService;
     private final OrganizationService organizationService;
     private final EventTaskService eventTaskService;
+    private final EmailService emailService;
+    private final MessageSource messageSource;
+    private final RateLimitService rateLimitService;
 
     @GetMapping("/signup")
     public String signUp(Model model) {
@@ -93,10 +99,109 @@ public class UserController {
         return "redirect:/profile?success=true";
     }
 
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm(Model model) {
+        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
+        return "auth/forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String processForgotPassword(@RequestParam("email") String email, Model model, Locale locale) {
+        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
+
+        if (!rateLimitService.tryConsumeLimitByEmail(email)) {
+            model.addAttribute(
+                    MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.too.many.reset.attempts", null, locale));
+            return "auth/forgot-password";
+        }
+
+        var dbUser = userService.findByEmail(email);
+        dbUser.ifPresent(user -> {
+            var token = UUID.randomUUID().toString();
+            userService.createPasswordResetTokenForUser(user, token);
+
+            var resetUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/reset-password")
+                    .queryParam("token", token)
+                    .build()
+                    .toUriString();
+
+            emailService.sendPasswordResetEmail(user.getEmail(), resetUrl);
+        });
+
+        model.addAttribute(
+                MODEL_LABEL_MESSAGE, messageSource.getMessage("auth.message.reset.email.sent", null, locale));
+        return "auth/forgot-password";
+    }
+
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(@RequestParam("token") String token, Model model, Locale locale) {
+        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
+
+        if (!userService.validatePasswordResetToken(token)) {
+            model.addAttribute(MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.token.invalid", null, locale));
+            return "auth/forgot-password";
+        }
+
+        model.addAttribute(MODEL_LABEL_TOKEN, token);
+        return "auth/reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String handlePasswordReset(
+            @RequestParam("token") String token,
+            @RequestParam("password") String password,
+            @RequestParam("confirmPassword") String confirmPassword,
+            Model model,
+            Locale locale) {
+
+        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
+
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute(
+                    MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.passwords.dont.match", null, locale));
+            model.addAttribute(MODEL_LABEL_TOKEN, token);
+            return "auth/reset-password";
+        }
+
+        if (userService.resetPassword(token, password)) {
+            return "redirect:/login?reset=success";
+        }
+
+        model.addAttribute(
+                MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.password.reset.failed", null, locale));
+        return "auth/reset-password";
+    }
+
+    @GetMapping("/login")
+    public String showLoginForm(
+            @RequestParam(required = false) String error,
+            @RequestParam(required = false) String logout,
+            @RequestParam(required = false) String reset,
+            Model model,
+            Locale locale) {
+
+        if (error != null) {
+            model.addAttribute(
+                    MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.invalid.credentials", null, locale));
+        }
+        if (logout != null) {
+            model.addAttribute(
+                    MODEL_LABEL_MESSAGE, messageSource.getMessage("auth.message.logout.success", null, locale));
+        }
+        if (reset != null && reset.equals("success")) {
+            model.addAttribute(
+                    MODEL_LABEL_MESSAGE, messageSource.getMessage("auth.message.password.reset.success", null, locale));
+        }
+
+        model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
+        return "auth/login";
+    }
+
     private void addCustomErrorIfNeeded(BindingResult result, Model model) {
         if (isPasswordError(result)) {
             model.addAttribute(MODEL_LABEL_CUSTOM_VALIDATION_ERROR, true);
-            model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, "Salasanat eivät täsmää.");
+            model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, PASSWORDS_MUST_MATCH);
         }
     }
 
