@@ -12,14 +12,13 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
 @AllArgsConstructor
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     private final RateLimitService rateLimitService;
@@ -33,10 +32,17 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         var ip = request.getRemoteAddr();
         boolean canTry = rateLimitService.tryConsumeLimitByIp(ip);
 
-        var errorMessage = messageSource.getMessage(
-                canTry ? "auth.error.invalid.credentials" : "auth.error.too.many.attempts", null, request.getLocale());
+        String redirectUrl;
+        if (!canTry) {
+            var errorMessage = messageSource.getMessage("auth.error.too.many.attempts", null, request.getLocale());
+            redirectUrl = "/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        } else if (exception instanceof DisabledException) {
+            redirectUrl = "/login?error=disabled";
+        } else {
+            var errorMessage = messageSource.getMessage("auth.error.invalid.credentials", null, request.getLocale());
+            redirectUrl = "/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        }
 
-        var redirectUrl = "/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
         super.setDefaultFailureUrl(redirectUrl);
         super.onAuthenticationFailure(request, response, exception);
     }

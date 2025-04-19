@@ -11,11 +11,14 @@ import fi.asteriski.nakitin.dao.UserDao;
 import fi.asteriski.nakitin.dto.IdFirstLastNameDto;
 import fi.asteriski.nakitin.dto.SignupForm;
 import fi.asteriski.nakitin.dto.UserDto;
+import fi.asteriski.nakitin.dto.VerificationResult;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.PasswordResetToken;
 import fi.asteriski.nakitin.entity.UserEntity;
+import fi.asteriski.nakitin.entity.UserRole;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,11 +52,23 @@ public class UserService implements UserDetailsService {
     @NonNull
     private final PasswordResetTokenDao passwordResetTokenDao;
 
+    @NonNull
+    private final VerificationTokenService verificationTokenService;
+
+    @NonNull
+    private final EmailService emailService;
+
     @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
     private Long maxPasswordAgeInDays;
 
     @Value("${fi.asteriski.config.passwordResetTokenExpirationHours}")
     private Integer passwordResetTokenExpirationHours;
+
+    @Value("${server.servlet.context-path:}")
+    private String contextPath;
+
+    @Value("${server.port:8080}")
+    private String serverPort;
 
     /**
      * Fetches a user from database on login. Called automatically by Spring.
@@ -72,14 +87,18 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void createNewUser(SignupForm signupForm) {
-        userDao.saveNewUser(UserDto.builder()
+    public void createNewUser(SignupForm signupForm, HttpServletRequest request) {
+        var user = UserEntity.builder()
                 .username(signupForm.getUsername())
                 .password(passwordEncoder.encode(signupForm.getPassword()))
                 .email(signupForm.getEmail())
                 .firstName(signupForm.getFirstName())
                 .lastName(signupForm.getLastName())
-                .build());
+                .expirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays))
+                .userRole(UserRole.ROLE_USER)
+                .build();
+        setupEmailVerification(user, request);
+        userDao.saveNewUser(user);
     }
 
     public boolean existsByEmail(String email) {
@@ -99,8 +118,33 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void updateUser(UserDto userDto) {
-        userDao.editUser(userDto);
+    public void updateUser(UserDto userDto, HttpServletRequest request) {
+        var user = userDao.findById(userDto.getId());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setEmail(userDto.getEmail());
+        user.setEmailVerified(false);
+        setupEmailVerification(user, request);
+        userDao.editUser(user);
+    }
+
+    @Transactional
+    public VerificationResult verifyEmail(String token) {
+        UserEntity user = userDao.findByVerificationToken(token);
+
+        if (verificationTokenService.isTokenExpired(user.getVerificationTokenExpiry())) {
+            return VerificationResult.builder()
+                    .verified(false)
+                    .email(user.getEmail())
+                    .build();
+        }
+
+        user.setEmailVerified(true);
+        user.setVerificationToken(null);
+        user.setVerificationTokenExpiry(null);
+        userDao.save(user);
+
+        return VerificationResult.builder().verified(true).email(null).build();
     }
 
     public Page<UserEntity> fetchAllUsersForAdmin(int page) {
@@ -215,5 +259,20 @@ public class UserService implements UserDetailsService {
         passwordResetTokenDao.delete(passwordResetToken);
 
         return true;
+    }
+
+    private String getBaseUrl(HttpServletRequest request) {
+        String scheme = request.getScheme();
+        String serverName = request.getServerName();
+        return "%s://%s:%s%s".formatted(scheme, serverName, serverPort, contextPath);
+    }
+
+    public void setupEmailVerification(UserEntity user, HttpServletRequest request) {
+        String token = verificationTokenService.generateVerificationToken();
+        user.setVerificationToken(token);
+        user.setVerificationTokenExpiry(verificationTokenService.calculateExpiryDate());
+
+        String verificationUrl = "%s/verify-email?token=%s".formatted(getBaseUrl(request), token);
+        emailService.sendEmailVerification(user.getEmail(), verificationUrl);
     }
 }

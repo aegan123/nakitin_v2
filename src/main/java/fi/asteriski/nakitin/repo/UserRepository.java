@@ -40,4 +40,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserDetailsProjection> findUserEntityById(UUID id);
 
     Optional<UserEntity> findByEmail(String email);
+
+    Optional<UserEntity> findByVerificationToken(String verificationToken);
 }

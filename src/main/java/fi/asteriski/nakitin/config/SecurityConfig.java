@@ -7,16 +7,20 @@ package fi.asteriski.nakitin.config;
 import static fi.asteriski.nakitin.entity.UserRole.*;
 import static org.springframework.http.HttpMethod.*;
 
+import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,6 +33,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final MessageSource messageSource;
 
     @Profile({"dev", "special"})
     public static class DevSecurityConfig {
@@ -99,7 +104,9 @@ public class SecurityConfig {
                                     "/favicon.ico",
                                     "/forgot-password",
                                     "/reset-password/**",
-                                    "/css/**")
+                                    "/css/**",
+                                    "/verify-email/**",
+                                    "/resend-verification/**")
                             .permitAll())
                     .formLogin(form -> form.loginPage("/login")
                             .failureHandler(authenticationFailureHandler)
@@ -117,14 +124,19 @@ public class SecurityConfig {
         }
     }
 
-    /**
-     * Configures to use custom service for user management and password encrypting method.
-     *
-     * @param auth Builtin AuthenticationManagerBuilder entity.
-     * @throws Exception
-     */
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        var provider = new DaoAuthenticationProvider();
+        provider.setPreAuthenticationChecks(userDetails -> {
+            var user = (UserEntity) userDetails;
+            if (!user.isEmailVerified()) {
+                throw new DisabledException(messageSource.getMessage(
+                        "auth.error.email.not.verified", null, LocaleContextHolder.getLocale()));
+            }
+        });
+
+        provider.setUserDetailsService(userService);
+        provider.setPasswordEncoder(bCryptPasswordEncoder);
+        return provider;
     }
 }

@@ -10,6 +10,7 @@ import fi.asteriski.nakitin.dto.UserDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -113,6 +114,16 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private Boolean enabled = true;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean emailVerified = false;
+
+    @Column(length = 64)
+    private String verificationToken;
+
+    @Column
+    private LocalDateTime verificationTokenExpiry;
+
     public boolean isOrganisationAdmin() {
         return userRole == ROLE_ORG_ADMIN;
     }
@@ -190,5 +201,9 @@ public class UserEntity implements UserDetails {
 
     public void removeOrganizationAdminRights() {
         setUserRole(ROLE_USER);
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
     }
 }

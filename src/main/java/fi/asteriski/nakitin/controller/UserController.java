@@ -11,6 +11,7 @@ import fi.asteriski.nakitin.dto.SignupForm;
 import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Locale;
 import java.util.Objects;
@@ -51,14 +52,15 @@ public class UserController {
     public String signUp(
             @Validated @ModelAttribute(MODEL_LABEL_SIGNUP_FORM) SignupForm signupForm,
             BindingResult result,
-            Model model) {
+            Model model,
+            HttpServletRequest request) {
         model.addAttribute(MODEL_LABEL_SIGNUP_FORM, signupForm);
         model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
         if (result.hasErrors()) {
             addCustomErrorIfNeeded(result, model);
             return "signup";
         }
-        userService.createNewUser(signupForm);
+        userService.createNewUser(signupForm, request);
 
         return "redirect:/success?from=signup";
     }
@@ -83,7 +85,8 @@ public class UserController {
             @Valid @ModelAttribute(MODEL_LABEL_USER_DTO) UserDto userDto,
             BindingResult result,
             @AuthenticationPrincipal UserEntity user,
-            Model model) {
+            Model model,
+            HttpServletRequest request) {
         if (result.hasErrors()) {
             setCommonUserAttributes(model, user);
             model.addAttribute(
@@ -94,7 +97,7 @@ public class UserController {
             return "profile";
         }
         userDto.setId(user.getId());
-        userService.updateUser(userDto);
+        userService.updateUser(userDto, request);
 
         return "redirect:/profile?success=true";
     }
@@ -178,12 +181,20 @@ public class UserController {
             @RequestParam(required = false) String error,
             @RequestParam(required = false) String logout,
             @RequestParam(required = false) String reset,
+            @RequestParam(required = false) String verificationSent,
             Model model,
             Locale locale) {
 
         if (error != null) {
-            model.addAttribute(
-                    MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.invalid.credentials", null, locale));
+            if ("disabled".equals(error)) {
+                // Don't set MODEL_LABEL_ERROR here as it would override the template's handling
+            } else if ("locked".equals(error)) {
+                model.addAttribute(
+                        MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.account.locked", null, locale));
+            } else {
+                model.addAttribute(
+                        MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.invalid.credentials", null, locale));
+            }
         }
         if (logout != null) {
             model.addAttribute(
