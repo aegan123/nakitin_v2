@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.AuthenticationException;
@@ -19,27 +20,23 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@AllArgsConstructor
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     private final RateLimitService rateLimitService;
     private final MessageSource messageSource;
-
-    public CustomAuthenticationFailureHandler(RateLimitService rateLimitService, MessageSource messageSource) {
-        this.rateLimitService = rateLimitService;
-        this.messageSource = messageSource;
-    }
 
     @Override
     public void onAuthenticationFailure(
             HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
             throws IOException, ServletException {
 
-        String ip = request.getRemoteAddr();
+        var ip = request.getRemoteAddr();
         boolean canTry = rateLimitService.tryConsumeLimitByIp(ip);
 
-        String errorMessage = messageSource.getMessage(
+        var errorMessage = messageSource.getMessage(
                 canTry ? "auth.error.invalid.credentials" : "auth.error.too.many.attempts", null, request.getLocale());
 
-        String redirectUrl = "/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        var redirectUrl = "/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
         super.setDefaultFailureUrl(redirectUrl);
         super.onAuthenticationFailure(request, response, exception);
     }

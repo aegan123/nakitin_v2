@@ -11,7 +11,6 @@ import fi.asteriski.nakitin.dto.SignupForm;
 import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.*;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Locale;
 import java.util.Objects;
@@ -107,8 +106,7 @@ public class UserController {
     }
 
     @PostMapping("/forgot-password")
-    public String processForgotPassword(
-            @RequestParam("email") String email, Model model, Locale locale, HttpServletRequest request) {
+    public String processForgotPassword(@RequestParam("email") String email, Model model, Locale locale) {
         model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
 
         if (!rateLimitService.tryConsumeLimitByEmail(email)) {
@@ -117,22 +115,19 @@ public class UserController {
             return "auth/forgot-password";
         }
 
-        var user = userService.findByEmail(email);
-        if (user == null) {
-            model.addAttribute(MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.email.not.found", null, locale));
-            return "auth/forgot-password";
-        }
+        var dbUser = userService.findByEmail(email);
+        dbUser.ifPresent(user -> {
+            var token = UUID.randomUUID().toString();
+            userService.createPasswordResetTokenForUser(user, token);
 
-        String token = UUID.randomUUID().toString();
-        userService.createPasswordResetTokenForUser(user, token);
+            var resetUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/reset-password")
+                    .queryParam("token", token)
+                    .build()
+                    .toUriString();
 
-        String resetUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/reset-password")
-                .queryParam("token", token)
-                .build()
-                .toUriString();
-
-        emailService.sendPasswordResetEmail(user.getEmail(), resetUrl);
+            emailService.sendPasswordResetEmail(user.getEmail(), resetUrl);
+        });
 
         model.addAttribute(
                 MODEL_LABEL_MESSAGE, messageSource.getMessage("auth.message.reset.email.sent", null, locale));

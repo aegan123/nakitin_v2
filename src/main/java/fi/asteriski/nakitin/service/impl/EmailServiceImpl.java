@@ -4,81 +4,93 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.service.impl;
 
+import static fi.asteriski.nakitin.utils.Constants.LOG_ERROR_MESSAGE_TEMPLATE;
+
 import fi.asteriski.nakitin.service.EmailService;
-import lombok.AllArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
+import jakarta.mail.MessagingException;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Log4j2
 public class EmailServiceImpl implements EmailService {
+
+    @NonNull
     private final JavaMailSender mailSender;
+
+    @NonNull
+    private final MessageSource messageSource;
+
+    @Value("${fi.asteriski.config.email.default-sender-address}")
+    private String defaultSender;
 
     @Override
     public void sendPasswordResetEmail(String toEmail, String resetUrl) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Password Reset Request");
-        message.setText(
-                """
-            Hello,
-
-            A password reset has been requested for your account.
-            To reset your password, please click the link below:
-
-            %s
-
-            If you did not request this password reset, please ignore this email.
-            The link will expire in 24 hours.
-
-            Best regards,
-            Nakitin Team
-            """
-                        .formatted(resetUrl));
-
-        mailSender.send(message);
+        var subject = messageSource.getMessage("email.subject.password-reset", null, LocaleContextHolder.getLocale());
+        var message = messageSource.getMessage(
+                "email.message.password-reset", new Object[] {resetUrl}, LocaleContextHolder.getLocale());
+        try {
+            sendEmail(toEmail, defaultSender, subject, message);
+        } catch (MessagingException e) {
+            log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(e));
+        }
     }
 
     @Override
     public void sendEmailVerification(String toEmail, String verificationUrl) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Verify Your Email Address");
-        message.setText(
-                """
-            Hello,
-
-            Thank you for signing up. Please verify your email address by clicking the link below:
-
-            %s
-
-            This link will expire in 24 hours.
-
-            Best regards,
-            Nakitin Team
-            """
-                        .formatted(verificationUrl));
-
-        mailSender.send(message);
+        var subject = messageSource.getMessage("email.subject.verification", null, LocaleContextHolder.getLocale());
+        var message = messageSource.getMessage(
+                "email.message.verification", new Object[] {verificationUrl}, LocaleContextHolder.getLocale());
+        try {
+            sendEmail(toEmail, defaultSender, subject, message);
+        } catch (MessagingException e) {
+            log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(e));
+        }
     }
 
     @Override
     public void sendPasswordExpirationWarning(String toEmail, int daysUntilExpiration) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Password Expiration Warning");
-        message.setText(
-                """
-            Hello,
+        var subject =
+                messageSource.getMessage("email.subject.password-expiration", null, LocaleContextHolder.getLocale());
+        var message = messageSource.getMessage(
+                "email.message.password-expiration",
+                new Object[] {daysUntilExpiration},
+                LocaleContextHolder.getLocale());
+        try {
+            sendEmail(toEmail, defaultSender, subject, message);
+        } catch (MessagingException e) {
+            log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(e));
+        }
+    }
 
-            Your password will expire in %d days. Please log in to your account and update your password.
+    private void sendEmail(String recipient, String sender, String messageSubject, String messageText)
+            throws MessagingException {
+        var msg = mailSender.createMimeMessage();
+        var helper = new MimeMessageHelper(msg);
+        helper.setTo(recipient);
+        helper.setFrom(sender);
+        helper.setSubject(messageSubject);
+        helper.setText(messageText, true);
 
-            Best regards,
-            Nakitin Team
-            """
-                        .formatted(daysUntilExpiration));
-
-        mailSender.send(message);
+        try {
+            mailSender.send(msg);
+        } catch (MailAuthenticationException mailAuthenticationException) {
+            log.error("Error authenticating to smtp server. Error was: {}.", mailAuthenticationException.toString());
+        } catch (MailSendException mailSendException) {
+            log.error("Error sending email to '{}'. Error was: {}.", recipient, mailSendException);
+        } catch (MailException mailException) {
+            log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(mailException));
+        }
     }
 }

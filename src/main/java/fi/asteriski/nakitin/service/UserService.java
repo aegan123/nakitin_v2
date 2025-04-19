@@ -171,7 +171,7 @@ public class UserService implements UserDetailsService {
         return userDao.fetchUserDetails(id);
     }
 
-    public UserEntity findByEmail(String email) {
+    public Optional<UserEntity> findByEmail(String email) {
         return userDao.findByEmail(email);
     }
 
