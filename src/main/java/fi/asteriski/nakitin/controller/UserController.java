@@ -7,6 +7,7 @@ package fi.asteriski.nakitin.controller;
 import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
+import fi.asteriski.nakitin.dto.PasswordForm;
 import fi.asteriski.nakitin.dto.SignupForm;
 import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.entity.UserEntity;
@@ -78,6 +79,9 @@ public class UserController {
         model.addAttribute(MODEL_LABEL_SUCCESS, success);
         model.addAttribute(MODEL_LABEL_FAILED, false);
         model.addAttribute("verify", verify);
+        model.addAttribute(
+                MODEL_LABEL_USER_PASSWORD_FORM,
+                PasswordForm.builder().userId(loggedInUser.getId()).build());
 
         return "profile";
     }
@@ -102,6 +106,29 @@ public class UserController {
         var emailChanged = userService.updateUser(userDto, request);
 
         return "redirect:/profile?success=true&verify=%s".formatted(emailChanged);
+    }
+
+    @PostMapping("/profile/change-password")
+    public String changePassword(
+            @Valid @ModelAttribute(MODEL_LABEL_USER_PASSWORD_FORM) PasswordForm passwordForm,
+            BindingResult result,
+            @AuthenticationPrincipal UserEntity loggedInUser,
+            Model model) {
+        if (result.hasErrors()) {
+            setCommonUserAttributes(model, loggedInUser);
+            model.addAttribute(MODEL_LABEL_FAILED, true);
+            var user = userService.fetchUserDetails(loggedInUser.getId());
+            model.addAttribute(
+                    MODEL_LABEL_USERS_ORGANIZATIONS, organizationService.fetchUsersOrganizations(loggedInUser.getId()));
+            model.addAttribute(MODEL_LABEL_USERS_TASKS, eventTaskService.fetchUsersEventTasks(loggedInUser));
+            model.addAttribute(MODEL_LABEL_USER, user);
+            model.addAttribute(MODEL_LABEL_USER_DTO, user);
+            addCustomErrorIfNeeded(result, model);
+            return "profile";
+        }
+        userService.changePassword(passwordForm);
+
+        return "redirect:/profile?success=true&verify=false";
     }
 
     @GetMapping("/forgot-password")

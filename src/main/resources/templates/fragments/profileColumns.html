@@ -13,6 +13,12 @@
             <div class="message-body" th:text="#{profile.label.update.success.text} + ' ' + #{${verify ? 'profile.label.update.success.updateEmail' : 'profile.label.update.success.empty'}}">
             </div>
         </article>
+        <div th:replace="~{fragments/messages.html :: error-message(
+            hasError=${validationError},
+            errorTitle=#{register.label.validationError},
+            errorMessage=${errorMessage}
+        )}">
+        </div>
         <div class="block">
             <div class="content">
                 <h3 class="title is-3" th:text="#{profile.label.userData}"></h3>
@@ -64,6 +70,38 @@
                                     <div class="field is-grouped is-left">
                                         <p class="control">
                                             <input type="submit" th:value="#{form.button.label.updateInfo}" class="button is-primary">
+                                        </p>
+                                        <p class="control">
+                                            <input type="reset" th:value="#{form.button.label.reset}" class="button is-dark">
+                                        </p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="dropdown-item">
+                            <!--/*@thymesVar id="userPasswordForm" type="fi.asteriski.nakitin.dto.PasswordForm"*/-->
+                            <form class="box" th:action="@{/profile/change-password}" method="post" th:object="${userPasswordForm}">
+                                <input type="hidden" th:field="*{userId}" id="userId" th:value="${userPasswordForm.userId}"/>
+                                <div class="field">
+                                    <label for="password" class="label" th:text="#{register.form.label.password}"></label>
+                                    <div class="control">
+                                        <input th:field="*{password}" id="password" class="input" type="password" required="required" th:value="*{password}" oninput="checkPassword(this)">
+                                        <p th:if="${#fields.hasErrors('password')}" class="help is-danger" th:errors="*{password}"></p>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="confirmPassword" class="label" th:text="#{register.form.label.passwordConfirm}"></label>
+                                    <div class="control">
+                                        <input th:field="*{confirmPassword}" id="confirmPassword" class="input" type="password" required="required" th:value="*{confirmPassword}" oninput="checkPassword(this)">
+                                        <p th:if="${#fields.hasErrors('confirmPassword')}" class="help is-danger" th:errors="*{confirmPassword}"></p>
+                                    </div>
+                                </div>
+                                <div class="field is-horizontal">
+                                    <div class="field-label">
+                                    </div>
+                                    <div class="field is-grouped is-left">
+                                        <p class="control">
+                                            <input type="submit" th:value="#{form.button.label.resetPassword}" class="button is-primary">
                                         </p>
                                         <p class="control">
                                             <input type="reset" th:value="#{form.button.label.reset}" class="button is-dark">

@@ -36,8 +36,8 @@ public class Constants {
     public static final String MODEL_LABEL_EVENT_FORM = "eventForm";
     public static final String MODEL_LABEL_USER = "user";
     public static final String MODEL_LABEL_SIGNUP_FORM = "signupForm";
-    public static final String MODEL_LABEL_CUSTOM_VALIDATION_ERROR = "customValidationError";
-    public static final String MODEL_LABEL_CUSTOM_ERROR_MESSAGE = "customValidationErrorMessage";
+    public static final String MODEL_LABEL_CUSTOM_VALIDATION_ERROR = "validationError";
+    public static final String MODEL_LABEL_CUSTOM_ERROR_MESSAGE = "errorMessage";
     public static final String MODEL_LABEL_USER_IS_ADMIN = "userIsAdmin";
     public static final String MODEL_LABEL_IS_USER_MANAGEMENT_TAB = "isUserManagementTab";
     public static final String MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB = "isOrganizationManagementTab";
@@ -63,4 +63,5 @@ public class Constants {
     public static final String MODEL_LABEL_ERROR = "error";
     public static final String MODEL_LABEL_MESSAGE = "message";
     public static final String MODEL_LABEL_TOKEN = "token";
+    public static final String MODEL_LABEL_USER_PASSWORD_FORM = "userPasswordForm";
 }

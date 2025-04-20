@@ -8,8 +8,8 @@ import static fi.asteriski.nakitin.utils.Constants.DUMMY_PASSWORD;
 import static fi.asteriski.nakitin.utils.Utils.*;
 
 import fi.asteriski.nakitin.dto.IdAndNameDto;
+import fi.asteriski.nakitin.dto.PasswordForm;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
-import fi.asteriski.nakitin.dto.admin.PasswordForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.EventTaskEntity;
 import fi.asteriski.nakitin.entity.OrganizationEntity;

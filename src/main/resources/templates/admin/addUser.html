@@ -17,14 +17,12 @@
     </div>
     <div class="column">
         <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
-        <article class="message is-danger" th:if="${customValidationError}">
-            <div class="message-header">
-                <p th:text="#{register.label.validationError}"></p>
-            </div>
-            <!--/*@thymesVar id="customValidationErrorMessage" type="java.lang.String"*/-->
-            <div class="message-body" th:utext="${customValidationErrorMessage}">
-            </div>
-        </article>
+        <div th:replace="~{error-message :: error-message(
+            hasError=${validationError},
+            errorTitle=#{register.label.validationError},
+            errorMessage=${errorMessage}
+        )}">
+        </div>
         <h4 class="subtitle is-4" th:text="#{admin.title.userInfo}"></h4>
         <form class="box" th:action="@{/admin/add-user}" method="post" th:object="${adminAddUserForm}">
             <div class="field">

@@ -2,12 +2,10 @@
 Copyright Juhani Vähä-Mäkilä (juhani@fmail.co.uk) 2025.
 Licenced under EUPL-1.2 or later.
  */
-package fi.asteriski.nakitin.dto.admin;
+package fi.asteriski.nakitin.dto;
 
 import static fi.asteriski.nakitin.utils.Constants.PASSWORDS_MUST_MATCH;
 
-import fi.asteriski.nakitin.dto.FormWithPassword;
-import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.validation.IsNotAllTheSameCharacter;
 import fi.asteriski.nakitin.validation.PasswordMatch;
 import jakarta.validation.constraints.NotBlank;
