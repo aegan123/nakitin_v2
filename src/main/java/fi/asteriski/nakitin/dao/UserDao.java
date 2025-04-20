@@ -150,4 +150,16 @@ public class UserDao {
                 .map(EmailProjection::getEmail)
                 .toList();
     }
+
+    public void disableExpiredUsers() {
+        userRepository.disableUsersThatExpireToday(LocalDate.now());
+    }
+
+    public void enableUser(UUID id) {
+        userRepository.enableUser(id);
+    }
+
+    public void disableUser(UUID id) {
+        userRepository.disableUser(id);
+    }
 }

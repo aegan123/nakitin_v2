@@ -132,4 +132,14 @@ public class AdminUserService {
         return organizationService.fetchOrganizationsByIds(
                 Arrays.stream(organizations).filter(Objects::nonNull).toList());
     }
+
+    @Transactional
+    public void enableUser(UUID id) {
+        userService.enableUser(id);
+    }
+
+    @Transactional
+    public void disableUser(UUID id) {
+        userService.disableUser(id);
+    }
 }

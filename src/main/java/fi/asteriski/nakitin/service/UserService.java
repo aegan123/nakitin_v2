@@ -22,6 +22,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -78,7 +79,16 @@ public class UserService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userDao.findByUsername(username);
+        var user = userDao.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("User '%s' not found.", username));
+        }
+
+        if (!user.isEnabled()) {
+            throw new DisabledException("User account is disabled");
+        }
+
+        return user;
     }
 
     public UserEntity fetchUserById(UUID id) {
@@ -342,5 +352,18 @@ public class UserService implements UserDetailsService {
     public void sendReminderEmailAboutExpiringPasswords() {
         userDao.fetchUsersWithExpiringPassword(LocalDate.now().plusDays(daysBeforeExpireToRemind))
                 .forEach(email -> emailService.sendPasswordExpirationWarning(email, daysBeforeExpireToRemind));
+    }
+
+    @Transactional
+    public void disableExpiredUsers() {
+        userDao.disableExpiredUsers();
+    }
+
+    public void disableUser(UUID id) {
+        userDao.disableUser(id);
+    }
+
+    public void enableUser(UUID id) {
+        userDao.enableUser(id);
     }
 }

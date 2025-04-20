@@ -35,12 +35,16 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         String redirectUrl;
         if (!canTry) {
             var errorMessage = messageSource.getMessage("auth.error.too.many.attempts", null, request.getLocale());
-            redirectUrl = "/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+            redirectUrl =
+                    "/login?error=true&message=%s".formatted(URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         } else if (exception instanceof DisabledException) {
-            redirectUrl = "/login?error=disabled";
+            var errorMessage = messageSource.getMessage("auth.error.account.disabled", null, request.getLocale());
+            redirectUrl =
+                    "/login?error=true&message=%s".formatted(URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         } else {
             var errorMessage = messageSource.getMessage("auth.error.invalid.credentials", null, request.getLocale());
-            redirectUrl = "/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+            redirectUrl =
+                    "/login?error=true&message=%s".formatted(URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
         }
 
         super.setDefaultFailureUrl(redirectUrl);
