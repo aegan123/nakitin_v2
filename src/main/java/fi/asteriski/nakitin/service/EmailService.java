@@ -70,6 +70,19 @@ public class EmailService {
         }
     }
 
+    public void sendEmailChangeVerification(String toEmail, String verificationUrl) {
+        var subject = messageSource.getMessage("email.subject.verification", null, LocaleContextHolder.getLocale());
+        var message = messageSource.getMessage(
+                "email.message.email-change-verification",
+                new Object[] {verificationUrl},
+                LocaleContextHolder.getLocale());
+        try {
+            sendEmail(toEmail, defaultSender, subject, message);
+        } catch (MessagingException e) {
+            log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(e));
+        }
+    }
+
     private void sendEmail(String recipient, String sender, String messageSubject, String messageText)
             throws MessagingException {
         var msg = mailSender.createMimeMessage();

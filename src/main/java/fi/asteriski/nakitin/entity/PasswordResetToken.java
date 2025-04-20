@@ -22,9 +22,10 @@ public class PasswordResetToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false, unique = true)
     private String token;
 
-    @OneToOne(targetEntity = UserEntity.class, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = UserEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 

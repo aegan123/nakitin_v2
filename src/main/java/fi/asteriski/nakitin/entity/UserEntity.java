@@ -120,12 +120,31 @@ public class UserEntity implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private VerificationTokenEntity verificationToken;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PendingEmailChangeEntity pendingEmailChange;
+
+    public void setPendingEmailChange(String newEmail, VerificationTokenEntity token) {
+        this.pendingEmailChange = PendingEmailChangeEntity.builder()
+                .newEmail(newEmail)
+                .user(this)
+                .verificationToken(token)
+                .build();
+    }
+
+    public void clearPendingEmailChange() {
+        this.pendingEmailChange = null;
+    }
+
     public boolean isOrganisationAdmin() {
         return userRole == ROLE_ORG_ADMIN;
     }
 
     public boolean isAdmin() {
         return userRole == ROLE_ADMIN;
+    }
+
+    public boolean isNotAdmin() {
+        return !isAdmin();
     }
 
     @Override

@@ -138,4 +138,8 @@ public class UserDao {
     public void deleteUsersById(List<UUID> toDelete) {
         userRepository.deleteUsersById(toDelete);
     }
+
+    public Optional<UserEntity> findByVerificationToken(String token) {
+        return userRepository.findByVerificationToken_Token(token);
+    }
 }

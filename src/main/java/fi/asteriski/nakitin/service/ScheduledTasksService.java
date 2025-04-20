@@ -4,6 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.service;
 
+import fi.asteriski.nakitin.dao.PasswordResetTokenDao;
 import fi.asteriski.nakitin.dao.UserDao;
 import fi.asteriski.nakitin.dao.VerificationTokenDao;
 import fi.asteriski.nakitin.entity.UserEntity;
@@ -21,8 +22,9 @@ public class ScheduledTasksService {
 
     private final VerificationTokenDao verificationTokenDao;
     private final UserDao userDao;
+    private final PasswordResetTokenDao passwordResetTokenDao;
 
-    @Scheduled(cron = "${fi.asteriski.config.cleanup.unverified-users-cron}")
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.unverifiedUsersCron}")
     @Transactional
     public void cleanupUnverifiedUsers() {
         log.info("Starting cleanup of unverified users with expired tokens.");
@@ -32,7 +34,21 @@ public class ScheduledTasksService {
             var users = toDelete.stream().map(VerificationTokenEntity::getUser).toList();
             toDelete.forEach(token -> token.removeUser(token.getUser()));
             verificationTokenDao.deleteByUsers(users);
-            userDao.deleteUsersById(users.stream().map(UserEntity::getId).toList());
+            userDao.deleteUsersById(users.stream()
+                    .filter(UserEntity::isNotAdmin)
+                    .map(UserEntity::getId)
+                    .toList());
+        }
+    }
+
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.passwordResetCron}")
+    @Transactional
+    public void cleanupPasswordResetTokens() {
+        log.info("Starting cleanup of expired password reset tokens.");
+        var toDelete = passwordResetTokenDao.findExpiredTokens();
+        if (!toDelete.isEmpty()) {
+            log.info("Deleting {} expired tokens.", toDelete.size());
+            passwordResetTokenDao.deleteAll(toDelete);
         }
     }
 }

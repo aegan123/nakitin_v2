@@ -17,10 +17,7 @@ import fi.asteriski.nakitin.entity.*;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -117,22 +114,70 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void updateUser(UserDto userDto, HttpServletRequest request) {
+    public boolean updateUser(UserDto userDto, HttpServletRequest request) {
         var user = userDao.findById(userDto.getId());
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
-        user.setEmail(userDto.getEmail());
-        user.setEmailVerified(false);
-        setupEmailVerification(user, request);
-        userDao.editUser(user);
+
+        boolean emailChanged = !user.getEmail().equals(userDto.getEmail());
+        if (emailChanged) {
+            setupEmailChangeVerification(user, userDto.getEmail(), request);
+        }
+
+        userDao.save(user);
+        return emailChanged;
+    }
+
+    private void setupEmailChangeVerification(UserEntity user, String newEmail, HttpServletRequest request) {
+        var token = verificationTokenService.generateVerificationToken();
+        var verificationToken = VerificationTokenEntity.builder()
+                .token(token)
+                .expiryDate(verificationTokenService.calculateExpiryDate())
+                .build();
+
+        user.setPendingEmailChange(newEmail, verificationToken);
+        verificationToken.addUser(user);
+
+        var verificationUrl = "%s/verify-email?token=%s".formatted(getBaseUrl(request), token);
+        emailService.sendEmailChangeVerification(newEmail, verificationUrl);
     }
 
     @Transactional
     public VerificationResult verifyEmail(String token) {
-        return verificationTokenDao
-                .findByToken(token)
-                .map(this::processUserVerification)
+        return userDao.findByVerificationToken(token)
+                .map(user -> {
+                    if (user.getPendingEmailChange() != null) {
+                        return processEmailChangeVerification(user);
+                    }
+                    return processNewUserVerification(user);
+                })
                 .orElse(createVerificationResult(false, null, NOT_FOUND));
+    }
+
+    private VerificationResult processEmailChangeVerification(UserEntity user) {
+        var newEmail = user.getPendingEmailChange().getNewEmail();
+        if (verificationTokenService.isTokenExpired(
+                user.getPendingEmailChange().getVerificationToken().getExpiryDate())) {
+            return createVerificationResult(false, newEmail, EXPIRED);
+        }
+
+        user.getPendingEmailChange().getVerificationToken().removeUser(user);
+
+        user.setEmail(newEmail);
+        user.setEmailVerified(true);
+        user.clearPendingEmailChange();
+        userDao.save(user);
+
+        return createVerificationResult(true, null, VERIFIED);
+    }
+
+    private VerificationResult processNewUserVerification(UserEntity user) {
+        if (verificationTokenService.isTokenExpired(user.getVerificationToken().getExpiryDate())) {
+            return createVerificationResult(false, user.getEmail(), EXPIRED);
+        }
+
+        verifyUserEmail(user);
+        return createVerificationResult(true, null, VERIFIED);
     }
 
     public Page<UserEntity> fetchAllUsersForAdmin(int page) {
@@ -270,19 +315,10 @@ public class UserService implements UserDetailsService {
         return "%s://%s:%s%s".formatted(scheme, serverName, serverPort, contextPath);
     }
 
-    private VerificationResult processUserVerification(VerificationTokenEntity token) {
-        if (verificationTokenService.isTokenExpired(token.getExpiryDate())) {
-            return createVerificationResult(false, token.getUser().getEmail(), EXPIRED);
-        }
-
-        verifyUserEmail(token);
-        return createVerificationResult(true, null, VERIFIED);
-    }
-
-    private void verifyUserEmail(VerificationTokenEntity token) {
-        token.getUser().setEmailVerified(true);
-        token.removeUser(token.getUser());
-        verificationTokenDao.deleteByUser(token.getUser());
+    private void verifyUserEmail(UserEntity user) {
+        user.setEmailVerified(true);
+        user.getVerificationToken().removeUser(user);
+        verificationTokenDao.deleteByUser(user);
     }
 
     private VerificationResult createVerificationResult(boolean verified, String email, VerificationStatus status) {

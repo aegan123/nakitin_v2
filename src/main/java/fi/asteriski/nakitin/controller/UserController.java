@@ -66,7 +66,8 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public String profile(Model model, @AuthenticationPrincipal UserEntity loggedInUser, Boolean success) {
+    public String profile(
+            Model model, @AuthenticationPrincipal UserEntity loggedInUser, Boolean success, Boolean verify) {
         setCommonUserAttributes(model, loggedInUser);
         var user = userService.fetchUserDetails(loggedInUser.getId());
         model.addAttribute(
@@ -76,6 +77,7 @@ public class UserController {
         model.addAttribute(MODEL_LABEL_USER_DTO, user);
         model.addAttribute(MODEL_LABEL_SUCCESS, success);
         model.addAttribute(MODEL_LABEL_FAILED, false);
+        model.addAttribute("verify", verify);
 
         return "profile";
     }
@@ -97,9 +99,9 @@ public class UserController {
             return "profile";
         }
         userDto.setId(user.getId());
-        userService.updateUser(userDto, request);
+        var emailChanged = userService.updateUser(userDto, request);
 
-        return "redirect:/profile?success=true";
+        return "redirect:/profile?success=true&verify=%s".formatted(emailChanged);
     }
 
     @GetMapping("/forgot-password")
@@ -181,7 +183,6 @@ public class UserController {
             @RequestParam(required = false) String error,
             @RequestParam(required = false) String logout,
             @RequestParam(required = false) String reset,
-            @RequestParam(required = false) String verificationSent,
             Model model,
             Locale locale) {
 

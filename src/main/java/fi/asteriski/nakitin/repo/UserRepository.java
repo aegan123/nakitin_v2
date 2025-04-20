@@ -47,4 +47,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
         delete from users where id in :toDelete
         """)
     void deleteUsersById(@Param("toDelete") List<UUID> toDelete);
+
+    Optional<UserEntity> findByVerificationToken_Token(String verificationTokenToken);
 }
