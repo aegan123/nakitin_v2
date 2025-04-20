@@ -8,9 +8,11 @@
             <div class="message-header">
                 <p th:if="${from == 'signup'}" th:text="#{success.register.title}"></p>
                 <p th:if="${from == 'event-delete'}" th:text="#{success.deleteEvent.title}"></p>
+                <p th:if="${from == 'remove-user'}" th:text="#{success.deleteUser.title}"></p>
             </div>
             <div class="message-body" th:if="${from == 'signup'}" th:text="#{success.register.text}"></div>
             <div class="message-body" th:if="${from == 'event-delete'}" th:text="#{success.deleteEvent.text}"></div>
+            <div class="message-body" th:if="${from == 'remove-user'}" th:text="#{success.deleteUser.text}"></div>
         </article>
     </div>
 </div>
