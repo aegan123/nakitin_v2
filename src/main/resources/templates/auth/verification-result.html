@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<section class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-half">
+                <h1 class="title has-text-centered" th:text="#{verification.title}"></h1>
+                
+                <div th:class="${success ? 'notification is-success' : 'notification is-warning'}"
+                     th:text="#{${success ? 'verification.success.message' : 'verification.error.expired'}}">
+                </div>
+                
+                <div th:if="${!success && verificationStatus == T(fi.asteriski.nakitin.dto.VerificationStatus).EXPIRED}" class="box">
+                    <form th:action="@{/resend-verification}" method="post">
+                        <input type="hidden" name="email" th:value="${email}"/>
+                        <div class="field">
+                            <div class="control">
+                                <button class="button is-link is-fullwidth" type="submit" 
+                                        th:text="#{verification.button.resend}">
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="has-text-centered mt-5">
+                    <a href="/login" class="button is-light" th:text="#{form.button.label.login}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

@@ -12,39 +12,19 @@ import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
-import fi.asteriski.nakitin.entity.UserRole;
 import fi.asteriski.nakitin.repo.UserRepository;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserDao {
-    @NonNull
     private final UserRepository userRepository;
-
-    @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
-    private Long maxPasswordAgeInDays;
-
-    public UserEntity saveNewUser(UserDto dto) {
-        return userRepository.save(UserEntity.builder()
-                .username(dto.getUsername())
-                .email(dto.getEmail())
-                .password(dto.getPassword())
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .userRole(UserRole.ROLE_USER)
-                .expirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays))
-                .build());
-    }
 
     public void saveNewUser(UserEntity newUserEntity) {
         userRepository.save(newUserEntity);
@@ -96,11 +76,7 @@ public class UserDao {
         userRepository.save(user);
     }
 
-    public void editUser(UserDto userDto) {
-        var user = findById(userDto.getId());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setEmail(userDto.getEmail());
+    public void editUser(UserEntity user) {
         userRepository.save(user);
     }
 
@@ -130,6 +106,10 @@ public class UserDao {
         return userRepository.findAllById(userIds);
     }
 
+    public void save(UserEntity user) {
+        userRepository.save(user);
+    }
+
     public void save(List<UserEntity> users) {
         userRepository.saveAll(users);
     }
@@ -153,5 +133,13 @@ public class UserDao {
 
     public Optional<UserEntity> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public void deleteUsersById(List<UUID> toDelete) {
+        userRepository.deleteUsersById(toDelete);
+    }
+
+    public Optional<UserEntity> findByVerificationToken(String token) {
+        return userRepository.findByVerificationToken_Token(token);
     }
 }

@@ -4,24 +4,20 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.service;
 
+import static fi.asteriski.nakitin.dto.VerificationStatus.*;
 import static fi.asteriski.nakitin.entity.UserRole.*;
 
 import fi.asteriski.nakitin.dao.PasswordResetTokenDao;
 import fi.asteriski.nakitin.dao.UserDao;
-import fi.asteriski.nakitin.dto.IdFirstLastNameDto;
-import fi.asteriski.nakitin.dto.SignupForm;
-import fi.asteriski.nakitin.dto.UserDto;
+import fi.asteriski.nakitin.dao.VerificationTokenDao;
+import fi.asteriski.nakitin.dto.*;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
-import fi.asteriski.nakitin.entity.OrganizationEntity;
-import fi.asteriski.nakitin.entity.PasswordResetToken;
-import fi.asteriski.nakitin.entity.UserEntity;
+import fi.asteriski.nakitin.entity.*;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService implements UserDetailsService {
     @NonNull
+    private final VerificationTokenDao verificationTokenDao;
+
+    @NonNull
     private final BCryptPasswordEncoder passwordEncoder;
 
     @NonNull
@@ -49,11 +48,23 @@ public class UserService implements UserDetailsService {
     @NonNull
     private final PasswordResetTokenDao passwordResetTokenDao;
 
+    @NonNull
+    private final VerificationTokenService verificationTokenService;
+
+    @NonNull
+    private final EmailService emailService;
+
     @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
     private Long maxPasswordAgeInDays;
 
     @Value("${fi.asteriski.config.passwordResetTokenExpirationHours}")
     private Integer passwordResetTokenExpirationHours;
+
+    @Value("${server.servlet.context-path:}")
+    private String contextPath;
+
+    @Value("${server.port:8080}")
+    private String serverPort;
 
     /**
      * Fetches a user from database on login. Called automatically by Spring.
@@ -72,14 +83,18 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void createNewUser(SignupForm signupForm) {
-        userDao.saveNewUser(UserDto.builder()
+    public void createNewUser(SignupForm signupForm, HttpServletRequest request) {
+        var user = UserEntity.builder()
                 .username(signupForm.getUsername())
                 .password(passwordEncoder.encode(signupForm.getPassword()))
                 .email(signupForm.getEmail())
                 .firstName(signupForm.getFirstName())
                 .lastName(signupForm.getLastName())
-                .build());
+                .expirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays))
+                .userRole(UserRole.ROLE_USER)
+                .build();
+        setupEmailVerification(user, request);
+        userDao.saveNewUser(user);
     }
 
     public boolean existsByEmail(String email) {
@@ -99,8 +114,70 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void updateUser(UserDto userDto) {
-        userDao.editUser(userDto);
+    public boolean updateUser(UserDto userDto, HttpServletRequest request) {
+        var user = userDao.findById(userDto.getId());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+
+        boolean emailChanged = !user.getEmail().equals(userDto.getEmail());
+        if (emailChanged) {
+            setupEmailChangeVerification(user, userDto.getEmail(), request);
+        }
+
+        userDao.save(user);
+        return emailChanged;
+    }
+
+    private void setupEmailChangeVerification(UserEntity user, String newEmail, HttpServletRequest request) {
+        var token = verificationTokenService.generateVerificationToken();
+        var verificationToken = VerificationTokenEntity.builder()
+                .token(token)
+                .expiryDate(verificationTokenService.calculateExpiryDate())
+                .build();
+
+        user.setPendingEmailChange(newEmail, verificationToken);
+        verificationToken.addUser(user);
+
+        var verificationUrl = "%s/verify-email?token=%s".formatted(getBaseUrl(request), token);
+        emailService.sendEmailChangeVerification(newEmail, verificationUrl);
+    }
+
+    @Transactional
+    public VerificationResult verifyEmail(String token) {
+        return userDao.findByVerificationToken(token)
+                .map(user -> {
+                    if (user.getPendingEmailChange() != null) {
+                        return processEmailChangeVerification(user);
+                    }
+                    return processNewUserVerification(user);
+                })
+                .orElse(createVerificationResult(false, null, NOT_FOUND));
+    }
+
+    private VerificationResult processEmailChangeVerification(UserEntity user) {
+        var newEmail = user.getPendingEmailChange().getNewEmail();
+        if (verificationTokenService.isTokenExpired(
+                user.getPendingEmailChange().getVerificationToken().getExpiryDate())) {
+            return createVerificationResult(false, newEmail, EXPIRED);
+        }
+
+        user.getPendingEmailChange().getVerificationToken().removeUser(user);
+
+        user.setEmail(newEmail);
+        user.setEmailVerified(true);
+        user.clearPendingEmailChange();
+        userDao.save(user);
+
+        return createVerificationResult(true, null, VERIFIED);
+    }
+
+    private VerificationResult processNewUserVerification(UserEntity user) {
+        if (verificationTokenService.isTokenExpired(user.getVerificationToken().getExpiryDate())) {
+            return createVerificationResult(false, user.getEmail(), EXPIRED);
+        }
+
+        verifyUserEmail(user);
+        return createVerificationResult(true, null, VERIFIED);
     }
 
     public Page<UserEntity> fetchAllUsersForAdmin(int page) {
@@ -215,5 +292,40 @@ public class UserService implements UserDetailsService {
         passwordResetTokenDao.delete(passwordResetToken);
 
         return true;
+    }
+
+    @Transactional
+    public void setupEmailVerification(UserEntity user, HttpServletRequest request) {
+        var token = verificationTokenService.generateVerificationToken();
+        var verificationToken = VerificationTokenEntity.builder()
+                .token(token)
+                .expiryDate(verificationTokenService.calculateExpiryDate())
+                .build();
+
+        verificationToken.addUser(user);
+        userDao.save(user);
+
+        var verificationUrl = "%s/verify-email?token=%s".formatted(getBaseUrl(request), token);
+        emailService.sendEmailVerification(user.getEmail(), verificationUrl);
+    }
+
+    private String getBaseUrl(HttpServletRequest request) {
+        var scheme = request.getScheme();
+        var serverName = request.getServerName();
+        return "%s://%s:%s%s".formatted(scheme, serverName, serverPort, contextPath);
+    }
+
+    private void verifyUserEmail(UserEntity user) {
+        user.setEmailVerified(true);
+        user.getVerificationToken().removeUser(user);
+        verificationTokenDao.deleteByUser(user);
+    }
+
+    private VerificationResult createVerificationResult(boolean verified, String email, VerificationStatus status) {
+        return VerificationResult.builder()
+                .verified(verified)
+                .email(email)
+                .status(status)
+                .build();
     }
 }

@@ -113,12 +113,38 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private Boolean enabled = true;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean emailVerified = false;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private VerificationTokenEntity verificationToken;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PendingEmailChangeEntity pendingEmailChange;
+
+    public void setPendingEmailChange(String newEmail, VerificationTokenEntity token) {
+        this.pendingEmailChange = PendingEmailChangeEntity.builder()
+                .newEmail(newEmail)
+                .user(this)
+                .verificationToken(token)
+                .build();
+    }
+
+    public void clearPendingEmailChange() {
+        this.pendingEmailChange = null;
+    }
+
     public boolean isOrganisationAdmin() {
         return userRole == ROLE_ORG_ADMIN;
     }
 
     public boolean isAdmin() {
         return userRole == ROLE_ADMIN;
+    }
+
+    public boolean isNotAdmin() {
+        return !isAdmin();
     }
 
     @Override
@@ -190,5 +216,9 @@ public class UserEntity implements UserDetails {
 
     public void removeOrganizationAdminRights() {
         setUserRole(ROLE_USER);
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
     }
 }

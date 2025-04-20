@@ -10,7 +10,7 @@
             <div class="message-header">
                 <p th:text="#{profile.label.update.success.title}"></p>
             </div>
-            <div class="message-body" th:text="#{profile.label.update.success.text}">
+            <div class="message-body" th:text="#{profile.label.update.success.text} + ' ' + #{${verify ? 'profile.label.update.success.updateEmail' : 'profile.label.update.success.empty'}}">
             </div>
         </article>
         <div class="block">

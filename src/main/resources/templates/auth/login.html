@@ -20,6 +20,12 @@
                             <button class="delete"></button>
                             <span th:text="${message}">Info message</span>
                         </div>
+                        <div th:if="${param.verificationSent}" class="notification is-info"
+                             th:text="#{verification.notification.sent}">
+                        </div>
+                        <div th:if="${param.error == 'disabled'}" class="notification is-warning"
+                             th:text="#{verification.error.unverified}">
+                        </div>
 
                         <form th:action="@{/login}" method="post">
                             <div class="field">

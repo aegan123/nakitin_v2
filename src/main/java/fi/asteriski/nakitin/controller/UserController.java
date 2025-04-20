@@ -11,6 +11,7 @@ import fi.asteriski.nakitin.dto.SignupForm;
 import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Locale;
 import java.util.Objects;
@@ -51,20 +52,22 @@ public class UserController {
     public String signUp(
             @Validated @ModelAttribute(MODEL_LABEL_SIGNUP_FORM) SignupForm signupForm,
             BindingResult result,
-            Model model) {
+            Model model,
+            HttpServletRequest request) {
         model.addAttribute(MODEL_LABEL_SIGNUP_FORM, signupForm);
         model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
         if (result.hasErrors()) {
             addCustomErrorIfNeeded(result, model);
             return "signup";
         }
-        userService.createNewUser(signupForm);
+        userService.createNewUser(signupForm, request);
 
         return "redirect:/success?from=signup";
     }
 
     @GetMapping("/profile")
-    public String profile(Model model, @AuthenticationPrincipal UserEntity loggedInUser, Boolean success) {
+    public String profile(
+            Model model, @AuthenticationPrincipal UserEntity loggedInUser, Boolean success, Boolean verify) {
         setCommonUserAttributes(model, loggedInUser);
         var user = userService.fetchUserDetails(loggedInUser.getId());
         model.addAttribute(
@@ -74,6 +77,7 @@ public class UserController {
         model.addAttribute(MODEL_LABEL_USER_DTO, user);
         model.addAttribute(MODEL_LABEL_SUCCESS, success);
         model.addAttribute(MODEL_LABEL_FAILED, false);
+        model.addAttribute("verify", verify);
 
         return "profile";
     }
@@ -83,7 +87,8 @@ public class UserController {
             @Valid @ModelAttribute(MODEL_LABEL_USER_DTO) UserDto userDto,
             BindingResult result,
             @AuthenticationPrincipal UserEntity user,
-            Model model) {
+            Model model,
+            HttpServletRequest request) {
         if (result.hasErrors()) {
             setCommonUserAttributes(model, user);
             model.addAttribute(
@@ -94,9 +99,9 @@ public class UserController {
             return "profile";
         }
         userDto.setId(user.getId());
-        userService.updateUser(userDto);
+        var emailChanged = userService.updateUser(userDto, request);
 
-        return "redirect:/profile?success=true";
+        return "redirect:/profile?success=true&verify=%s".formatted(emailChanged);
     }
 
     @GetMapping("/forgot-password")
@@ -182,8 +187,15 @@ public class UserController {
             Locale locale) {
 
         if (error != null) {
-            model.addAttribute(
-                    MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.invalid.credentials", null, locale));
+            if ("disabled".equals(error)) {
+                // Don't set MODEL_LABEL_ERROR here as it would override the template's handling
+            } else if ("locked".equals(error)) {
+                model.addAttribute(
+                        MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.account.locked", null, locale));
+            } else {
+                model.addAttribute(
+                        MODEL_LABEL_ERROR, messageSource.getMessage("auth.error.invalid.credentials", null, locale));
+            }
         }
         if (logout != null) {
             model.addAttribute(
