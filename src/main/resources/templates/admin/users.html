@@ -14,12 +14,16 @@
                 <p th:if="${from == 'edit'}" th:text="#{admin.editUser.success.title}"></p>
                 <p th:if="${from == 'pw'}" th:text="#{admin.changePw.success.title}"></p>
                 <p th:if="${from == 'delete'}" th:text="#{admin.deleteUser.success.title}"></p>
+                <p th:if="${from == 'enable-user'}" th:text="#{admin.enableUser.success.title}"></p>
+                <p th:if="${from == 'disable-user'}" th:text="#{admin.disableUser.success.title}"></p>
                 <button class="delete" aria-label="delete" onclick="hideMessage()"></button>
             </div>
             <div th:if="${from == 'add'}" class="message-body" th:text="#{admin.newUser.success.text}"></div>
             <div th:if="${from == 'edit'}" class="message-body" th:text="#{admin.editUser.success.text}"></div>
             <div th:if="${from == 'pw'}" class="message-body" th:text="#{admin.changePw.success.text}"></div>
             <div th:if="${from == 'delete'}" class="message-body" th:text="#{admin.deleteUser.success.text}"></div>
+            <div th:if="${from == 'enable-user'}" class="message-body" th:text="#{admin.enableUser.success.text}"></div>
+            <div th:if="${from == 'disable-user'}" class="message-body" th:text="#{admin.disableUser.success.text}"></div>
         </article>
         <a th:href="@{/admin/add-user}">
             <span class="icon">
@@ -42,6 +46,8 @@
                               th:text="#{admin.users.tags.label.admin}"></span>
                         <span class="tag is-warning" th:if="${user.isOrganisationAdmin}"
                               th:text="#{admin.users.tags.label.Orgadmin}"></span>
+                        <span class="tag is-info" th:if="${!user.isEnabled()}"
+                              th:text="#{admin.users.tags.label.disabled}"></span>
                         <div class="content">
                             <hr>
                             <p>
@@ -60,6 +66,10 @@
                            th:text="#{form.button.label.edit}"></a>
                         <a th:href="@{/admin/delete-user-confirmation(id=${user.id})}" th:id="${user.id + ''}" class="card-footer-item"
                            th:text="#{form.button.label.delete}"></a>
+                        <a th:if="${user.isEnabled()}" th:href="@{/admin/disable-user(id=${user.id})}" th:id="${user.id + ''}" class="card-footer-item"
+                           th:text="#{form.button.label.disableUser}"></a>
+                        <a th:unless="${user.isEnabled()}" th:href="@{/admin/enable-user(id=${user.id})}" th:id="${user.id + ''}" class="card-footer-item"
+                           th:text="#{form.button.label.enableUser}"></a>
                     </footer>
                 </div>
             </div>

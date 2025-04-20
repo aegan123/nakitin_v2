@@ -53,4 +53,31 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByVerificationToken_Token(String verificationTokenToken);
 
     List<EmailProjection> readAllByExpirationDateIs(LocalDate expirationDate);
+
+    @Modifying
+    @NativeQuery(
+            """
+            UPDATE users
+            SET enabled = false, locked = true
+            WHERE expiration_date = :today
+        """)
+    void disableUsersThatExpireToday(@Param(("today")) LocalDate today);
+
+    @Modifying
+    @NativeQuery(
+            """
+            UPDATE users
+            SET enabled = true, locked = false
+            WHERE id = :id
+        """)
+    void enableUser(@Param(("id")) UUID id);
+
+    @Modifying
+    @NativeQuery(
+            """
+            UPDATE users
+            SET enabled = false, locked = true
+            WHERE id = :id
+        """)
+    void disableUser(@Param("id") UUID id);
 }

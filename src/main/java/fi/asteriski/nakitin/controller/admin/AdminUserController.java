@@ -164,6 +164,30 @@ public class AdminUserController {
         return "redirect:/admin/users?success=true&from=delete";
     }
 
+    @GetMapping("/admin/enable-user")
+    public String adminEnableUser(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
+        setCommonUserAttributes(model, user);
+        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
+        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
+        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+
+        adminUserService.enableUser(id);
+
+        return "redirect:/admin/users?success=true&from=enable-user";
+    }
+
+    @GetMapping("/admin/disable-user")
+    public String adminDisableUser(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
+        setCommonUserAttributes(model, user);
+        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
+        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
+        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+
+        adminUserService.disableUser(id);
+
+        return "redirect:/admin/users?success=true&from=disable-user";
+    }
+
     private void addCustomErrorIfNeeded(BindingResult result, Model model) {
         var errorMsg = "";
         if (isPasswordError(result)) {
