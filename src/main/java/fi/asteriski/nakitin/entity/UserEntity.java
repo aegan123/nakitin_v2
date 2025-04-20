@@ -6,6 +6,7 @@ package fi.asteriski.nakitin.entity;
 
 import static fi.asteriski.nakitin.entity.UserRole.*;
 
+import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.dto.UserDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -220,5 +221,9 @@ public class UserEntity implements UserDetails {
 
     public boolean isEmailVerified() {
         return emailVerified;
+    }
+
+    public boolean isUserInOrganization(OrganizationDto organization) {
+        return organizations.stream().anyMatch(org -> Objects.equals(org.getId(), organization.id()));
     }
 }

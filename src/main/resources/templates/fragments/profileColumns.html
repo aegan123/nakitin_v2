@@ -112,7 +112,17 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div><br/><br/>
+            <a class="button is-danger" th:if="${!userIsTheOnlyAdmin && !userIsOrganisationAdmin}" th:text="#{form.button.label.delete-user}" th:href="@{/profile/remove-user(id=${user.id})}"></a>
+            <article class="message is-warning" th:if="${userIsOrganisationAdmin}">
+                <div class="message-body" th:utext="#{profile.label.delete.notPossible.orgAdmin}"></div>
+            </article>
+            <article class="message is-warning" th:if="${userIsTheOnlyAdmin}">
+                <div class="message-body" th:utext="#{profile.label.delete.notPossible.onlyAdmin}"></div>
+            </article>
+            <article class="message is-warning" th:if="${!userIsTheOnlyAdmin && userIsAdmin}">
+                <div class="message-body" th:text="#{profile.label.delete.notPossible.admin}"></div>
+            </article>
         </div>
     </div>
     <div class="column">

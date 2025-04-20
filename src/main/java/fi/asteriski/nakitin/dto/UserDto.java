@@ -34,6 +34,7 @@ public final class UserDto {
 
     public static UserDto fromUserDetailsProjection(UserDetailsProjection userDetailsProjection) {
         return builder()
+                .id(userDetailsProjection.getId())
                 .username(userDetailsProjection.getUsername())
                 .firstName(userDetailsProjection.getFirstName())
                 .lastName(userDetailsProjection.getLastName())

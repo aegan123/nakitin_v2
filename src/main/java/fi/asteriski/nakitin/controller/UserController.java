@@ -7,12 +7,14 @@ package fi.asteriski.nakitin.controller;
 import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttributes;
 import static fi.asteriski.nakitin.utils.Constants.*;
 
+import fi.asteriski.nakitin.dto.DeleteForm;
 import fi.asteriski.nakitin.dto.PasswordForm;
 import fi.asteriski.nakitin.dto.SignupForm;
 import fi.asteriski.nakitin.dto.UserDto;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.Locale;
 import java.util.Objects;
@@ -20,6 +22,8 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -82,6 +86,7 @@ public class UserController {
         model.addAttribute(
                 MODEL_LABEL_USER_PASSWORD_FORM,
                 PasswordForm.builder().userId(loggedInUser.getId()).build());
+        model.addAttribute(MODEL_LABEL_USER_IS_THE_ONLY_ADMIN, userService.userIsTheOnlyAdmin(loggedInUser.getId()));
 
         return "profile";
     }
@@ -100,6 +105,7 @@ public class UserController {
             model.addAttribute(MODEL_LABEL_USERS_TASKS, eventTaskService.fetchUsersEventTasks(user));
             model.addAttribute(MODEL_LABEL_USER, userService.fetchUserDetails(user.getId()));
             model.addAttribute(MODEL_LABEL_FAILED, true);
+            model.addAttribute(MODEL_LABEL_USER_IS_THE_ONLY_ADMIN, userService.userIsTheOnlyAdmin(user.getId()));
             return "profile";
         }
         userDto.setId(user.getId());
@@ -235,6 +241,43 @@ public class UserController {
 
         model.addAttribute(MODEL_LABEL_USER_IS_LOGGED_IN, false);
         return "auth/login";
+    }
+
+    @GetMapping("/profile/remove-user")
+    public String showRemoveUserConfirmationPage(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
+        setCommonUserAttributes(model, user);
+        model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(id));
+        model.addAttribute(MODEL_LABEL_USER_IS_THE_ONLY_ADMIN, userService.userIsTheOnlyAdmin(user.getId()));
+        model.addAttribute(MODEL_LABEL_DELETE_FORM, DeleteForm.builder().id(id).build());
+
+        return "deleteUserConfirmation";
+    }
+
+    @PostMapping("/profile/remove-user")
+    public String removeUser(
+            @Valid @ModelAttribute(MODEL_LABEL_DELETE_FORM) DeleteForm deleteUserForm,
+            BindingResult result,
+            Model model,
+            @AuthenticationPrincipal UserEntity user,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        if (result.hasErrors()) {
+            setCommonUserAttributes(model, user);
+            model.addAttribute(MODEL_LABEL_USER, userService.fetchUserById(deleteUserForm.id()));
+            model.addAttribute(MODEL_LABEL_USER_IS_THE_ONLY_ADMIN, userService.userIsTheOnlyAdmin(user.getId()));
+            model.addAttribute(MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, user.isOrganisationAdmin());
+            model.addAttribute(MODEL_LABEL_USER_IS_ADMIN, user.isAdmin());
+            model.addAttribute(MODEL_LABEL_DELETE_FORM, deleteUserForm);
+            return "deleteUserConfirmation";
+        }
+
+        userService.deleteUser(deleteUserForm.id());
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+
+        return "redirect:/success?from=remove-user";
     }
 
     private void addCustomErrorIfNeeded(BindingResult result, Model model) {

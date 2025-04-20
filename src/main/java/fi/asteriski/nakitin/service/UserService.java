@@ -55,6 +55,9 @@ public class UserService implements UserDetailsService {
     @NonNull
     private final EmailService emailService;
 
+    @NonNull
+    private final EventTaskService eventTaskService;
+
     @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
     private Long maxPasswordAgeInDays;
 
@@ -365,5 +368,21 @@ public class UserService implements UserDetailsService {
 
     public void enableUser(UUID id) {
         userDao.enableUser(id);
+    }
+
+    @Transactional
+    public void deleteUser(UUID id) {
+        final var user = userDao.fetchUsersByIds(List.of(id)).getFirst();
+
+        handleEventTasks(user);
+
+        deleteUser(user);
+    }
+
+    private void handleEventTasks(UserEntity user) {
+        var taskIds = user.getEventTasks().stream().map(EventTaskEntity::getId).toList();
+        if (!taskIds.isEmpty()) {
+            eventTaskService.fetchEventTasksById(taskIds).forEach(user::removeEventTask);
+        }
     }
 }
