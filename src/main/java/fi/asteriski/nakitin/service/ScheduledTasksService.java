@@ -23,6 +23,7 @@ public class ScheduledTasksService {
     private final VerificationTokenDao verificationTokenDao;
     private final UserDao userDao;
     private final PasswordResetTokenDao passwordResetTokenDao;
+    private final UserService userService;
 
     @Scheduled(cron = "${fi.asteriski.config.cleanup.unverifiedUsersCron}")
     @Transactional
@@ -50,5 +51,12 @@ public class ScheduledTasksService {
             log.info("Deleting {} expired tokens.", toDelete.size());
             passwordResetTokenDao.deleteAll(toDelete);
         }
+    }
+
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.expiringPasswordCron}")
+    @Transactional
+    public void sendReminderAboutExpiringPassword() {
+        log.info("Starting sending reminders about expiring passwords.");
+        userService.sendReminderEmailAboutExpiringPasswords();
     }
 }

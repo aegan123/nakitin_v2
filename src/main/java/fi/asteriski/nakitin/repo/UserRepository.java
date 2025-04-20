@@ -6,8 +6,10 @@ package fi.asteriski.nakitin.repo;
 
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.UserRole;
+import fi.asteriski.nakitin.repo.projection.EmailProjection;
 import fi.asteriski.nakitin.repo.projection.IdFirstLastNameProjection;
 import fi.asteriski.nakitin.repo.projection.UserDetailsProjection;
+import java.time.LocalDate;
 import java.util.*;
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -49,4 +51,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     void deleteUsersById(@Param("toDelete") List<UUID> toDelete);
 
     Optional<UserEntity> findByVerificationToken_Token(String verificationTokenToken);
+
+    List<EmailProjection> readAllByExpirationDateIs(LocalDate expirationDate);
 }

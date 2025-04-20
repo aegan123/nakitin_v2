@@ -13,6 +13,8 @@ import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.repo.UserRepository;
+import fi.asteriski.nakitin.repo.projection.EmailProjection;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -141,5 +143,11 @@ public class UserDao {
 
     public Optional<UserEntity> findByVerificationToken(String token) {
         return userRepository.findByVerificationToken_Token(token);
+    }
+
+    public List<String> fetchUsersWithExpiringPassword(LocalDate localDate) {
+        return userRepository.readAllByExpirationDateIs(localDate).stream()
+                .map(EmailProjection::getEmail)
+                .toList();
     }
 }
