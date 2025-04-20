@@ -8,8 +8,8 @@ import static fi.asteriski.nakitin.controller.ControllerHelper.setCommonUserAttr
 import static fi.asteriski.nakitin.utils.Constants.*;
 
 import fi.asteriski.nakitin.dto.DeleteForm;
+import fi.asteriski.nakitin.dto.PasswordForm;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
-import fi.asteriski.nakitin.dto.admin.PasswordForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.admin.AdminUserService;

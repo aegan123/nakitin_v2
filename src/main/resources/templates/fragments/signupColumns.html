@@ -8,15 +8,12 @@
             <div class="content">
                 <p th:utext="#{register.label.helpText}"></p>
             </div>
-            <!--/*@thymesVar id="customValidationError" type="java.lang.Boolean"*/-->
-            <article class="message is-danger" th:if="${customValidationError}">
-                <div class="message-header">
-                    <p th:text="#{register.label.validationError}"></p>
-                </div>
-                <!--/*@thymesVar id="errorMessage" type="java.lang.String"*/-->
-                <div class="message-body" th:utext="${customValidationErrorMessage}">
-                </div>
-            </article>
+            <div th:replace="~{error-message :: error-message(
+                hasError=${validationError},
+                errorTitle=#{register.label.validationError},
+                errorMessage=${errorMessage}
+            )}">
+            </div>
             <!--/*@thymesVar id="signupForm" type="fi.asteriski.nakitin.dto.SignupForm"*/-->
             <form class="box" th:action="@{/signup}" method="post" th:object="${signupForm}">
                 <div class="field is-horizontal">

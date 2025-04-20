@@ -1,0 +1,9 @@
+<div th:fragment="error-message(hasError, errorTitle, errorMessage)">
+    <article class="message is-danger" th:if="${hasError}">
+        <div class="message-header">
+            <p th:text="${errorTitle}"></p>
+        </div>
+        <div class="message-body" th:utext="${errorMessage}">
+        </div>
+    </article>
+</div>

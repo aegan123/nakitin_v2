@@ -309,6 +309,13 @@ public class UserService implements UserDetailsService {
         emailService.sendEmailVerification(user.getEmail(), verificationUrl);
     }
 
+    @Transactional
+    public void changePassword(PasswordForm passwordForm) {
+        var user = userDao.findById(passwordForm.getUserId());
+        user.setPassword(passwordEncoder.encode(passwordForm.getPassword()));
+        userDao.save(user);
+    }
+
     private String getBaseUrl(HttpServletRequest request) {
         var scheme = request.getScheme();
         var serverName = request.getServerName();
