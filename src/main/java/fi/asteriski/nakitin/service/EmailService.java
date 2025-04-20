@@ -56,7 +56,7 @@ public class EmailService {
         }
     }
 
-    public void sendPasswordExpirationWarning(String toEmail, int daysUntilExpiration) {
+    public void sendPasswordExpirationWarning(String toEmail, long daysUntilExpiration) {
         var subject =
                 messageSource.getMessage("email.subject.password-expiration", null, LocaleContextHolder.getLocale());
         var message = messageSource.getMessage(

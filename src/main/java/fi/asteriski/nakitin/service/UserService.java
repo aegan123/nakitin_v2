@@ -66,6 +66,9 @@ public class UserService implements UserDetailsService {
     @Value("${server.port:8080}")
     private String serverPort;
 
+    @Value("${fi.asteriski.config.user.daysBeforeExpireToRemind}")
+    private Long daysBeforeExpireToRemind;
+
     /**
      * Fetches a user from database on login. Called automatically by Spring.
      *
@@ -334,5 +337,10 @@ public class UserService implements UserDetailsService {
                 .email(email)
                 .status(status)
                 .build();
+    }
+
+    public void sendReminderEmailAboutExpiringPasswords() {
+        userDao.fetchUsersWithExpiringPassword(LocalDate.now().plusDays(daysBeforeExpireToRemind))
+                .forEach(email -> emailService.sendPasswordExpirationWarning(email, daysBeforeExpireToRemind));
     }
 }
