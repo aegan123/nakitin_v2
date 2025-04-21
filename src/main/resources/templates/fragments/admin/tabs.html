@@ -6,6 +6,7 @@
         <!--/*@thymesVar id="isUserManagementTab" type="java.lang.Boolean"*/-->
         <!--/*@thymesVar id="isOrganizationManagementTab" type="java.lang.Boolean"*/-->
         <!--/*@thymesVar id="isEventManagementTab" type="java.lang.Boolean"*/-->
+        <!--/*@thymesVar id="isErrorTab" type="java.lang.Boolean"*/-->
         <ul>
             <li class="" th:classappend="${isUserManagementTab} ? 'is-active' : ''">
                 <a th:href="@{/admin/users}">
@@ -29,6 +30,14 @@
             <i class="fa-solid fa-calendar"></i>
         </span>
                     <span th:text="#{admin.tabs.label.eventManagement}"></span>
+                </a>
+            </li>
+            <li class="" th:classappend="${isErrorTab} ? 'is-active' : ''">
+                <a th:href="@{/admin/errors}">
+        <span class="icon is-small">
+            <i class="fa-solid fa-bug"></i>
+        </span>
+                    <span th:text="#{admin.tabs.label.errors}"></span>
                 </a>
             </li>
         </ul>

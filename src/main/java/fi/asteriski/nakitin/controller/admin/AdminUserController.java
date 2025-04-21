@@ -34,9 +34,7 @@ public class AdminUserController {
     public String adminFrontpage(
             Model model, @AuthenticationPrincipal UserEntity user, Boolean success, String from, Integer page) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
         model.addAttribute(MODEL_LABEL_USERS, adminUserService.fetchAllUsersForAdmin(page == null ? 0 : page - 1));
         model.addAttribute(MODEL_LABEL_SUCCESS, success);
         model.addAttribute(MODEL_LABEL_FROM, from);
@@ -47,9 +45,7 @@ public class AdminUserController {
     @GetMapping("/admin/edit-user")
     public String adminEditUser(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
         model.addAttribute(MODEL_LABEL_ADMIN_USER_INFO, adminUserService.fetchUserForm(id));
         model.addAttribute(MODEL_LABEL_ADMIN_PASSWORD_FORM, adminUserService.fetchPasswordForm(id));
         model.addAttribute(MODEL_LABEL_ADMIN_ADD_USER_ORGANIZATIONS, adminUserService.fetchAllOrganizations());
@@ -65,9 +61,7 @@ public class AdminUserController {
             @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
         if (result.hasErrors()) {
-            model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-            model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+            setCommonTabConfigs(model);
             model.addAttribute(MODEL_LABEL_ADMIN_USER_INFO, userInfoForm);
             model.addAttribute(
                     MODEL_LABEL_ADMIN_PASSWORD_FORM, adminUserService.fetchPasswordForm(userInfoForm.getId()));
@@ -83,9 +77,7 @@ public class AdminUserController {
     @GetMapping("/admin/add-user")
     public String adminAddUser(Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
         model.addAttribute(MODEL_LABEL_ADMIN_ADD_USER_FORM, new AddUserForm());
         model.addAttribute(MODEL_LABEL_ADMIN_ADD_USER_ORGANIZATIONS, adminUserService.fetchAllOrganizations());
 
@@ -100,9 +92,7 @@ public class AdminUserController {
             @AuthenticationPrincipal UserEntity user) {
         if (result.hasErrors()) {
             setCommonUserAttributes(model, user);
-            model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-            model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+            setCommonTabConfigs(model);
             model.addAttribute(MODEL_LABEL_ADMIN_ADD_USER_FORM, addUserForm);
             model.addAttribute(MODEL_LABEL_ADMIN_ADD_USER_ORGANIZATIONS, adminUserService.fetchAllOrganizations());
             addCustomErrorIfNeeded(result, model);
@@ -121,9 +111,7 @@ public class AdminUserController {
             @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
         if (result.hasErrors()) {
-            model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-            model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+            setCommonTabConfigs(model);
             model.addAttribute(MODEL_LABEL_ADMIN_PASSWORD_FORM, passwordForm);
             return "admin/editUser";
         }
@@ -135,9 +123,7 @@ public class AdminUserController {
     @GetMapping("/admin/delete-user-confirmation")
     public String adminDeleteUserConfirmation(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
         model.addAttribute(MODEL_LABEL_USER, adminUserService.fetchUser(id));
         model.addAttribute(MODEL_LABEL_USER_IS_THE_ONLY_ADMIN, adminUserService.userIsTheOnlyAdmin(user.getId()));
         model.addAttribute(MODEL_LABEL_DELETE_FORM, DeleteForm.builder().id(id).build());
@@ -153,9 +139,7 @@ public class AdminUserController {
             @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
         if (result.hasErrors()) {
-            model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-            model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+            setCommonTabConfigs(model);
             model.addAttribute(MODEL_LABEL_DELETE_FORM, deleteUserForm);
             return "admin/deleteUserConfirmation";
         }
@@ -167,9 +151,7 @@ public class AdminUserController {
     @GetMapping("/admin/enable-user")
     public String adminEnableUser(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
 
         adminUserService.enableUser(id);
 
@@ -179,9 +161,7 @@ public class AdminUserController {
     @GetMapping("/admin/disable-user")
     public String adminDisableUser(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
 
         adminUserService.disableUser(id);
 
@@ -209,5 +189,12 @@ public class AdminUserController {
     private boolean isAdminAndOrgAdminError(BindingResult result) {
         return result.getAllErrors().stream()
                 .anyMatch(a -> Objects.equals(CANNOT_BE_ADMIN_AND_ORG_ADMIN, a.getDefaultMessage()));
+    }
+
+    private static void setCommonTabConfigs(Model model) {
+        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, true);
+        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, false);
+        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        model.addAttribute(MODEL_LABEL_IS_ERRORS_TAB, false);
     }
 }

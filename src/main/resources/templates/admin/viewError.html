@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns is-gapless">
+    <div class="column is-2 is-desktop"></div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <h4 class="sub-title is-4 " th:text="#{admin.errors.table.timestamp}"></h4>
+        <div class="box text-wrap" th:text="${errorInfo.timestamp}"></div>
+        <h4 class="sub-title is-4" th:text="#{admin.errors.table.errorMessage}"></h4>
+        <div class="box text-wrap" th:text="${errorInfo.errorMessage}"></div>
+        <h4 class="sub-title is-4" th:text="#{admin.errors.table.errorClass}"></h4>
+        <div class="box text-wrap" th:text="${errorInfo.errorClass}"></div>
+        <h4 class="sub-title is-4" th:text="#{admin.errors.table.stackTrace}"></h4>
+        <div class="box text-wrap" th:utext="${errorInfo.stackTrace}"></div>
+        <div class="has-text-centered mt-4">
+            <a th:href="@{/{path}(path=${path},page=${page})}" class="is-size-5">
+                                <span class="icon">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                <span th:text="#{auth.button.back}"></span>
+            </a>
+        </div>
+    </div>
+    <div class="column is-2 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>

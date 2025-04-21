@@ -14,6 +14,7 @@ public class Constants {
     public static final Sort SORT_BY_LASTNAME_ASC = Sort.by(Sort.Direction.ASC, "lastName");
     public static final Sort SORT_BY_ID_ASC = Sort.by(Sort.Direction.ASC, "id");
     public static final Sort SORT_BY_NAME_ASC = Sort.by(Sort.Direction.ASC, "name");
+    public static final Sort SORT_BY_TIMESTAMP_DESC = Sort.by(Sort.Direction.DESC, "timestamp");
     public static final int MAX_PAGE_SIZE = 20;
     public static final String DUMMY_PASSWORD = Base64.getEncoder().encodeToString("dummyPassword".getBytes());
     public static final String PASSWORDS_MUST_MATCH = "Salasanojen tulee täsmätä";
@@ -23,6 +24,11 @@ public class Constants {
     public static final String ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME = "Tämän niminen järjestö on jo olemassa.";
     public static final String ERROR_MESSAGE_PASSWORDS_DO_NOT_MATCH = "Salasanat eivät täsmää.";
     public static final String LOG_ERROR_MESSAGE_TEMPLATE = "Error with email. Error was: %s";
+
+    public static final String HTML_BREAK = "<br/>";
+    public static final String HTML_TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
+    public static final String NEWLINE = "\n";
+    public static final String TAB = "\t";
 
     public static final String MODEL_LABEL_EVENT_TASK_FORM = "eventTaskForm";
     public static final String MODEL_LABEL_USER_IS_LOGGED_IN = "userIsLoggedIn";
@@ -40,6 +46,7 @@ public class Constants {
     public static final String MODEL_LABEL_IS_USER_MANAGEMENT_TAB = "isUserManagementTab";
     public static final String MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB = "isOrganizationManagementTab";
     public static final String MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB = "isEventManagementTab";
+    public static final String MODEL_LABEL_IS_ERRORS_TAB = "isErrorTab";
     public static final String MODEL_LABEL_USER_DTO = "userDto";
     public static final String MODEL_LABEL_ADMIN_USER_INFO = "adminUserInfo";
     public static final String MODEL_LABEL_ADMIN_PASSWORD_FORM = "adminPasswordForm";
@@ -54,6 +61,7 @@ public class Constants {
     public static final String MODEL_LABEL_USERS = "data";
     public static final String MODEL_LABEL_EVENTS = "data";
     public static final String MODEL_LABEL_ORGANIZATIONS = "data";
+    public static final String MODEL_LABEL_ERRORS = "data";
     public static final String MODEL_LABEL_USER_ORGANIZATIONS = "userOrganizations";
     public static final String MODEL_LABEL_USERS_ORGANIZATIONS = "usersOrganizations";
     public static final String MODEL_LABEL_USERS_TASKS = "usersTasks";
@@ -62,4 +70,8 @@ public class Constants {
     public static final String MODEL_LABEL_MESSAGE = "message";
     public static final String MODEL_LABEL_TOKEN = "token";
     public static final String MODEL_LABEL_USER_PASSWORD_FORM = "userPasswordForm";
+    public static final String MODEL_LABEL_ERROR_INFO = "errorInfo";
+    public static final String MODEL_LABEL_ERROR_TITLE = "errorTitle";
+    public static final String MODEL_LABEL_ERROR_TEXT = "errorText";
+    public static final String MODEL_LABEL_CONTACT_ADMIN = "contactAdmin";
 }

@@ -32,9 +32,7 @@ public class AdminOrganizationController {
     public String adminOrganizations(
             Model model, @AuthenticationPrincipal UserEntity user, Boolean success, String from, Integer page) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
         model.addAttribute(
                 MODEL_LABEL_ORGANIZATIONS, adminOrganizationService.fetchAllOrganizations(page == null ? 0 : page - 1));
         model.addAttribute(MODEL_LABEL_SUCCESS, success);
@@ -44,11 +42,9 @@ public class AdminOrganizationController {
     }
 
     @GetMapping("/admin/add-organization")
-    public String adminAddUser(Model model, @AuthenticationPrincipal UserEntity user) {
+    public String adminAddOrganization(Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
         model.addAttribute(
                 MODEL_LABEL_ADMIN_ADD_EDIT_ORGANIZATION_FORM, adminOrganizationService.fetchOrganizationAddForm());
         model.addAttribute(MODEL_LABEL_IS_EDIT, false);
@@ -57,7 +53,7 @@ public class AdminOrganizationController {
     }
 
     @PostMapping("/admin/add-organization")
-    public String adminAddUser(
+    public String adminAddOrganization(
             @Valid @ModelAttribute(MODEL_LABEL_ADMIN_ADD_EDIT_ORGANIZATION_FORM)
                     AddEditOrganizationForm addOrganizationForm,
             BindingResult result,
@@ -65,9 +61,7 @@ public class AdminOrganizationController {
             @AuthenticationPrincipal UserEntity user) {
         if (result.hasErrors()) {
             setCommonUserAttributes(model, user);
-            model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
-            model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+            setCommonTabConfigs(model);
             model.addAttribute(MODEL_LABEL_ADMIN_ADD_EDIT_ORGANIZATION_FORM, addOrganizationForm);
             model.addAttribute(MODEL_LABEL_IS_EDIT, false);
             return "admin/addEditOrganization";
@@ -78,11 +72,9 @@ public class AdminOrganizationController {
     }
 
     @GetMapping("/admin/edit-organization")
-    public String adminEditUser(Model model, @AuthenticationPrincipal UserEntity user, UUID id) {
+    public String adminEditOrganization(Model model, @AuthenticationPrincipal UserEntity user, UUID id) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
         model.addAttribute(
                 MODEL_LABEL_ADMIN_ADD_EDIT_ORGANIZATION_FORM, adminOrganizationService.fetchOrganizationEditForm(id));
         model.addAttribute(MODEL_LABEL_IS_EDIT, true);
@@ -91,7 +83,7 @@ public class AdminOrganizationController {
     }
 
     @PostMapping("/admin/edit-organization")
-    public String adminEditUser(
+    public String adminEditOrganization(
             @Valid @ModelAttribute(MODEL_LABEL_ADMIN_ADD_EDIT_ORGANIZATION_FORM)
                     AddEditOrganizationForm editOrganizationForm,
             BindingResult result,
@@ -100,9 +92,7 @@ public class AdminOrganizationController {
         if (isOrganizationNameValidationError(result) && result.hasErrors()) {
             adminOrganizationService.addUsersToAddEditOrganizationForm(editOrganizationForm);
             setCommonUserAttributes(model, user);
-            model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
-            model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+            setCommonTabConfigs(model);
             model.addAttribute(MODEL_LABEL_IS_EDIT, true);
             addCustomErrorIfNeeded(result, model);
             return "admin/addEditOrganization";
@@ -116,9 +106,7 @@ public class AdminOrganizationController {
     @GetMapping("/admin/delete-organization-confirmation")
     public String adminDeleteUserConfirmation(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
-        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
-        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
-        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        setCommonTabConfigs(model);
         model.addAttribute(MODEL_LABEL_ORGANIZATION, adminOrganizationService.fetchOrganization(id));
         model.addAttribute(MODEL_LABEL_DELETE_FORM, DeleteForm.builder().id(id).build());
 
@@ -126,16 +114,14 @@ public class AdminOrganizationController {
     }
 
     @PostMapping("/admin/delete-organization")
-    public String adminDeleteUser(
+    public String adminDeleteOrganizationConfirmation(
             @Valid @ModelAttribute(MODEL_LABEL_DELETE_FORM) DeleteForm deleteOrganizationForm,
             BindingResult result,
             Model model,
             @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
         if (result.hasErrors()) {
-            model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
-            model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
-            model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+            setCommonTabConfigs(model);
             model.addAttribute(MODEL_LABEL_DELETE_FORM, deleteOrganizationForm);
             return "admin/deleteOrganizationConfirmation";
         }
@@ -156,5 +142,12 @@ public class AdminOrganizationController {
     private boolean isOrganizationNameValidationError(BindingResult result) {
         return result.getAllErrors().stream()
                 .anyMatch(f -> Objects.equals(f.getDefaultMessage(), ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME));
+    }
+
+    private static void setCommonTabConfigs(Model model) {
+        model.addAttribute(MODEL_LABEL_IS_USER_MANAGEMENT_TAB, false);
+        model.addAttribute(MODEL_LABEL_IS_ORGANIZATION_MANAGEMENT_TAB, true);
+        model.addAttribute(MODEL_LABEL_IS_EVENT_MANAGEMENT_TAB, false);
+        model.addAttribute(MODEL_LABEL_IS_ERRORS_TAB, false);
     }
 }
