@@ -4,6 +4,8 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.controller;
 
+import static fi.asteriski.nakitin.utils.Constants.*;
+
 import fi.asteriski.nakitin.exceptions.CsvExportException;
 import fi.asteriski.nakitin.exceptions.EventNotFoundException;
 import fi.asteriski.nakitin.service.ErrorService;
@@ -28,15 +30,12 @@ class NakitinControllerAdvice {
     @ExceptionHandler(EventNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     String eventNotFoundHandler(EventNotFoundException ex, Model model) {
-        //        var errorId = errorService.logError(ex);
+        errorService.logError(ex);
         model.addAttribute(
-                "errorTitle", messageSource.getMessage("error.event.not-found.title", null, Locale.getDefault()));
-        model.addAttribute("errorText", ex.getMessage());
-        model.addAttribute("contactAdmin", false);
-        //        model.addAttribute(
-        //            "contactAdminText",
-        //            String.format(messageSource.getMessage("error.contact.admin", null, Locale.getDefault()),
-        // errorId));
+                MODEL_LABEL_ERROR_TITLE,
+                messageSource.getMessage("error.event.not-found.title", null, Locale.getDefault()));
+        model.addAttribute(MODEL_LABEL_ERROR_TEXT, ex.getMessage());
+        model.addAttribute(MODEL_LABEL_CONTACT_ADMIN, false);
 
         return "error";
     }
@@ -44,10 +43,12 @@ class NakitinControllerAdvice {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     String methodArgumentTypeMismatchHandler(MethodArgumentTypeMismatchException ex, Model model) {
+        errorService.logError(ex);
         model.addAttribute(
-                "errorTitle", messageSource.getMessage("error.page.not-found.title", null, Locale.getDefault()));
-        model.addAttribute("errorText", "");
-        model.addAttribute("contactAdmin", false);
+                MODEL_LABEL_ERROR_TITLE,
+                messageSource.getMessage("error.page.not-found.title", null, Locale.getDefault()));
+        model.addAttribute(MODEL_LABEL_ERROR_TEXT, "");
+        model.addAttribute(MODEL_LABEL_CONTACT_ADMIN, false);
 
         return "error";
     }
@@ -56,6 +57,7 @@ class NakitinControllerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     String csvExportHandler(CsvExportException ex) {
+        errorService.logError(ex);
         return ex.getMessage();
     }
 
@@ -63,9 +65,11 @@ class NakitinControllerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     String genericErrorHandler(RuntimeException ex, Model model) {
         var id = errorService.logError(ex);
-        model.addAttribute("errorTitle", messageSource.getMessage("error.generic.title", null, Locale.getDefault()));
-        model.addAttribute("errorText", messageSource.getMessage("error.generic.text", null, Locale.getDefault()));
-        model.addAttribute("contactAdmin", true);
+        model.addAttribute(
+                MODEL_LABEL_ERROR_TITLE, messageSource.getMessage("error.generic.title", null, Locale.getDefault()));
+        model.addAttribute(
+                MODEL_LABEL_ERROR_TEXT, messageSource.getMessage("error.generic.text", null, Locale.getDefault()));
+        model.addAttribute(MODEL_LABEL_CONTACT_ADMIN, true);
         model.addAttribute(
                 "contactAdminText",
                 String.format(messageSource.getMessage("error.contact.admin", null, Locale.getDefault()), id));

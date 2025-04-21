@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" data-theme="dark" class="has-navbar-fixed-top">
+<head th:replace="~{fragments/header.html :: header}">
+</head>
+<body>
+<nav th:replace="~{fragments/navbar.html  ::  navbar}"></nav>
+<div class="columns is-gapless">
+    <div class="column is-2 is-desktop"></div>
+    <div class="column">
+        <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
+        <nav th:replace="~{fragments/admin/pagination.html :: pagination(path='errors')}"></nav>
+        <span th:if="${data.getContent().isEmpty()}" th:text="#{admin.errors.noErrors}"></span>
+        <table class="table is-hoverable is-narrow is-striped" th:if="${!data.getContent().isEmpty()}">
+            <thead>
+            <tr>
+                <th><abbr title="errors" th:text="#{admin.errors.table.timestamp}"></abbr></th>
+                <th><abbr title="errors" th:text="#{admin.errors.table.errorMessage}"></abbr></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="error : ${data.getContent()}">
+                <!--/*@thymesVar id="event" type="fi.asteriski.nakitin.entity.ErrorEntity"*/-->
+                <td><a th:href="@{/admin/view-error(id=${error.id})}" th:text="${error.timestamp}"></a></td>
+                <td class="text-wrap" th:text="${error.errorMessage}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="column is-2 is-desktop"></div>
+</div>
+<script th:src="@{/js/nakitin.js}"></script>
+</body>
+</html>
