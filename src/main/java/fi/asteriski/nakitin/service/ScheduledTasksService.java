@@ -66,4 +66,18 @@ public class ScheduledTasksService {
         log.info("Starting disabling expired users.");
         userService.disableExpiredUsers();
     }
+
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.expiredUsersCron}")
+    @Transactional
+    public void deleteExpiredUsers() {
+        log.info("Starting delete expired users.");
+        userService.deleteExpiredUsers();
+    }
+
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.expiredUsersCron}")
+    @Transactional
+    public void sendReminderToExpiringUsers() {
+        log.info("Starting send reminder to expiring users.");
+        userService.sendReminderToExpiringUser();
+    }
 }

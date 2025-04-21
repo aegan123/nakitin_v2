@@ -83,6 +83,19 @@ public class EmailService {
         }
     }
 
+    public void sendAccountDeletionWarning(String email, Long monthsToDeleteExpiredUsers) {
+        var subject = messageSource.getMessage("email.subject.account-deletion", null, LocaleContextHolder.getLocale());
+        var message = messageSource.getMessage(
+                "email.message.email-account-deletion",
+                new Object[] {monthsToDeleteExpiredUsers},
+                LocaleContextHolder.getLocale());
+        try {
+            sendEmail(email, defaultSender, subject, message);
+        } catch (MessagingException e) {
+            log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(e));
+        }
+    }
+
     private void sendEmail(String recipient, String sender, String messageSubject, String messageText)
             throws MessagingException {
         var msg = mailSender.createMimeMessage();

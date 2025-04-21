@@ -73,6 +73,9 @@ public class UserService implements UserDetailsService {
     @Value("${fi.asteriski.config.user.daysBeforeExpireToRemind}")
     private Long daysBeforeExpireToRemind;
 
+    @Value("${fi.asteriski.config.user.monthsToDeleteExpiredUsers}")
+    private Long monthsToDeleteExpiredUsers;
+
     /**
      * Fetches a user from database on login. Called automatically by Spring.
      *
@@ -377,6 +380,40 @@ public class UserService implements UserDetailsService {
         handleEventTasks(user);
 
         deleteUser(user);
+    }
+
+    @Transactional
+    public void deleteExpiredUsers() {
+        var expiryDate = LocalDate.now().minusMonths(monthsToDeleteExpiredUsers);
+        userDao.deleteExpiredUsers(expiryDate);
+        deleteExpiredOrganizationAdmins(expiryDate);
+        deleteExpiredAdmins(expiryDate);
+    }
+
+    public void sendReminderToExpiringUser() {
+        userDao.fetchUsersThatAreAboutToExpire(LocalDate.now().minusMonths(monthsToDeleteExpiredUsers - 1))
+                .forEach(email -> emailService.sendAccountDeletionWarning(email, daysBeforeExpireToRemind));
+    }
+
+    private void deleteExpiredAdmins(LocalDate expiryDate) {
+        var users = userDao.fetchExpiredAdmins(expiryDate).stream()
+                .filter(this::userIsNotTheOnlyAdmin)
+                .toList();
+        if (!users.isEmpty()) {
+            userDao.deleteUsers(users);
+        }
+    }
+
+    private boolean userIsNotTheOnlyAdmin(UserEntity user) {
+        return !userIsTheOnlyAdmin(user.getId());
+    }
+
+    private void deleteExpiredOrganizationAdmins(LocalDate expiryDate) {
+        var users = userDao.fetchExpiredOrganizationAdmins(expiryDate);
+        users.forEach(user -> user.getOrganizations().forEach(organization -> organization.removeUser(user)));
+        if (!users.isEmpty()) {
+            userDao.deleteUsers(users);
+        }
     }
 
     private void handleEventTasks(UserEntity user) {
