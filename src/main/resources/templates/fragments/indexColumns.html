@@ -24,17 +24,10 @@
     </div>
     <div class="column is-desktop">
         <div class="content">
-            <h3>Tervetuloa Nakittimeen!</h3>
-            <p>
-                Nakitin on tapahtumajärjestäjille suunniteltu työkalu, jossa käyttäjät voivat ilmoittautua
-                vapaaehtoisiksi tapahtumiin.
-                Ensisijaisesti Nakitin on kehitetty Asteriskin tarpeisiin.
-            </p>
-            <p>
-                Mikäli haluat oman yhdistyksesi mukaan Nakittimeen ota yhteyttä <a
-                href="https://www.asteriski.fi/virallista/yhteystiedot/">Asteriskin</a> hallitukseen.
-            </p>
-            <p>Teknisissä ongelmissa tai -kysymyksissä ota yhteyttä ylläpitäjiin: palvelinvastaava[ät]asteriski.fi.</p>
+            <h3 th:text="#{index.welcome.title}"></h3>
+            <p th:text="#{index.welcome.p1}"></p>
+            <p th:utext="#{index.welcome.p2}"></p>
+            <p th:text="#{index.welcome.p3}"></p>
 
         </div>
     </div>

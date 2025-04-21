@@ -9,16 +9,16 @@
             <div class="columns is-centered">
                 <div class="column is-5-tablet is-4-desktop is-3-widescreen">
                     <div class="box">
-                        <h1 class="title" th:text="#{auth.login.title}">Login</h1>
+                        <h1 class="title" th:text="#{auth.login.title}"></h1>
                         
                         <div th:if="${error}" class="notification is-danger">
                             <button class="delete"></button>
-                            <span th:text="${error}">Error message</span>
+                            <span th:text="${error}"></span>
                         </div>
                         
                         <div th:if="${message}" class="notification is-info">
                             <button class="delete"></button>
-                            <span th:text="${message}">Info message</span>
+                            <span th:text="${message}"></span>
                         </div>
                         <div th:if="${param.verificationSent}" class="notification is-info"
                              th:text="#{verification.notification.sent}">
@@ -29,9 +29,9 @@
 
                         <form th:action="@{/login}" method="post">
                             <div class="field">
-                                <label class="label" th:text="#{auth.login.username}">Username</label>
+                                <label class="label" th:text="#{auth.login.username}"></label>
                                 <div class="control has-icons-left">
-                                    <input class="input has-background-grey-dark has-text-white" type="text" name="username" required>
+                                    <input class="input has-background-grey-dark has-text-white" type="text" name="username" required="required">
                                     <span class="icon is-small is-left has-text-grey-lighter">
                                         <i class="fas fa-user"></i>
                                     </span>
@@ -41,7 +41,7 @@
                             <div class="field">
                                 <label class="label" th:text="#{auth.login.password}">Password</label>
                                 <div class="control has-icons-left">
-                                    <input class="input has-background-grey-dark has-text-white" type="password" name="password" required>
+                                    <input class="input has-background-grey-dark has-text-white" type="password" name="password" required="required">
                                     <span class="icon is-small is-left has-text-grey-lighter">
                                         <i class="fas fa-lock"></i>
                                     </span>
@@ -51,7 +51,7 @@
                             <div class="field">
                                 <label class="checkbox">
                                     <input type="checkbox" name="remember-me">
-                                    <span class="has-text-white ml-2" th:text="#{auth.login.remember-me}">Remember me</span>
+                                    <span class="has-text-white ml-2" th:text="#{auth.login.remember-me}"></span>
                                 </label>
                             </div>
 
@@ -63,9 +63,7 @@
                         </form>
                         
                         <div class="has-text-centered mt-4">
-                            <a th:href="@{/forgot-password}" class="is-size-7 has-text-info" th:text="#{auth.login.forgot-password}">
-                                Forgot Password?
-                            </a>
+                            <a th:href="@{/forgot-password}" class="is-size-7 has-text-info" th:text="#{auth.login.forgot-password}"></a>
                         </div>
                     </div>
                 </div>

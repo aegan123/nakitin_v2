@@ -20,16 +20,10 @@
 
     <div id="navbar" class="navbar-menu">
         <div class="navbar-start">
-            <a class="navbar-item" th:href="@{/}" th:text="#{index.label.link}">
-                Etusivu
-            </a>
+            <a class="navbar-item" th:href="@{/}" th:text="#{index.label.link}"></a>
 
-            <a class="navbar-item" th:href="@{/organizations}" th:text="#{index.label.organisations}">
-                Yhdistykset
-            </a>
-            <a class="navbar-item" th:href="@{/privacy}" th:text="#{index.label.privacy}">
-                Tietosuoja
-            </a>
+            <a class="navbar-item" th:href="@{/organizations}" th:text="#{index.label.organisations}"></a>
+            <a class="navbar-item" th:href="@{/privacy}" th:text="#{index.label.privacy}"></a>
         </div>
 
         <div class="navbar-end">
@@ -52,12 +46,8 @@
                     </form>
                 </div>
                 <div class="buttons" th:unless="${userIsLoggedIn}">
-                    <a class="button is-primary" th:text="#{form.button.label.sign-up}" th:href="@{/signup}">
-                        <strong>Rekisteröidy</strong>
-                    </a>
-                    <a class="button is-light" th:text="#{form.button.label.login}" th:href="@{/login}">
-                        Kirjaudu sisään
-                    </a>
+                    <a class="button is-primary" th:text="#{form.button.label.sign-up}" th:href="@{/signup}"></a>
+                    <a class="button is-light" th:text="#{form.button.label.login}" th:href="@{/login}"></a>
                 </div>
             </div>
         </div>

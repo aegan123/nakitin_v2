@@ -22,7 +22,8 @@
                     <div class="select is-fullwidth">
                         <select th:field="*{organizer}" id="organizer">
                             <!--/*@thymesVar id="user" type="fi.asteriski.nakitin.entity.UserEntity"*/-->
-                            <option th:each="organization : ${user.organizations}" th:value="${organization.name}"
+                            <!--/*@thymesVar id="userOrganizations" type="java.util.List<fi.asteriski.nakitin.repo.projection.IdAndNameProjection>"*/-->
+                            <option th:each="organization : ${userOrganizations}" th:value="${organization.name}"
                                     th:text="${organization.name}" th:selected="${eventForm.organizer}"></option>
                         </select>
                     </div>

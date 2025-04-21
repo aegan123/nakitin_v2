@@ -4,9 +4,9 @@
 <!--/*@thymesVar id="event" type="fi.asteriski.nakitin.dto.EventDto"*/-->
 <h1 th:fragment="title" class="title" th:text="${event.name}"></h1>
 <div th:fragment="infoBox" class="block">
-    Järjestäjä: <b th:text="${event.organizer.name}"></b><br>
-    Päivämäärä: <b th:text="${#temporals.format(event.date, 'dd.MM.yyyy')}"></b><br>
-    Venue: <b th:text="${event.venue}"></b><br>
+    <span th:text="#{event.page.label.description.organizer} + ' ' + ${event.organizer.name}"></span><br>
+    <span th:text="#{event.page.label.description.date} + ' ' + ${#temporals.format(event.date, 'dd.MM.yyyy')}"></span><br>
+    <span th:text="#{event.page.label.description.venue} + ' ' + ${event.venue}"></span><br>
 </div>
 <div th:fragment="description" class="block">
     <p th:text="${event.description}"></p><br>
@@ -16,7 +16,7 @@
     <h2 class="subtitle" th:text="#{event.page.label.tasks}"></h2><br>
 
     <!--/*@thymesVar id="userIsOrganisationAdmin" type="java.lang.Boolean"*/-->
-    <div class="field has-addons" th:if="${userIsOrganisationAdmin && event.organizer.id == user.id}">
+    <div class="field has-addons" th:if="${userIsOrganisationAdmin && user.isUserInOrganization(event.organizer)}">
         <p class="control">
             <a th:href="@{/task/add(eventId=${event.id})}" class="button">
       <span class="icon is-small">
@@ -35,8 +35,8 @@
         </p>
     </div>
 
-    <div class="content" th:if="${userIsOrganisationAdmin && event.organizer.id == user.id}">
-        <p th:utext="'Huom! Nakittautuneiden tietoja saa käyttää vain <i>'+ ${event.name} +'</i> nakkeihin liittyvässä tiedoituksessa. Tiedot tulee hävittää tapahtuman jälkeen.'"></p>
+    <div class="content" th:if="${userIsOrganisationAdmin && user.isUserInOrganization(event.organizer)}">
+        <p th:utext="#{event.page.label.description.export.info1} + ${event.name} + #{event.page.label.description.export.info2}"></p>
         <br>
     </div>
 
@@ -51,19 +51,19 @@
                     <div class="media-content">
                         <p class="sub-title is-4" th:text="${#temporals.format(task.date, 'E dd.MM.yyyy')}"></p>
                         <p class="sub-title is-4"
-                           th:text="'klo ' +${#temporals.format(task.startTime, 'HH:mm')} +' - ' + ${#temporals.format(task.endTime, 'HH:mm')}"></p>
+                           th:text="#{event.page.label.description.time} + ' ' +${#temporals.format(task.startTime, 'HH:mm')} +' - ' + ${#temporals.format(task.endTime, 'HH:mm')}"></p>
                     </div>
                     <div class="content">
                         <hr>
-                        <p th:text="'Nakissa: ' + ${task.volunteers.size()} + ' / ' + ${task.personCount}"></p>
+                        <p th:text="#{event.page.label.description.volunteered.title} + ' ' + ${task.volunteers.size()} + ' / ' + ${task.personCount}"></p>
                         <br>
                         <!--/*@thymesVar id="user" type="fi.asteriski.nakitin.entity.UserEntity"*/-->
                         <p th:text="${userIsLoggedIn && task.userHasVolunteered(user)} ? #{event.task.label.user-has-volunteered} : #{event.task.label.user-has-not-volunteered}"/>
                         <br>
                         <!--/*@thymesVar id="userIsLoggedIn" type="java.lang.Boolean"*/-->
+                        <span th:if="${userIsLoggedIn && !task.volunteers().isEmpty()}" th:text="#{event.page.label.description.volunteered.people}"></span><br>
                         <p th:if="${userIsLoggedIn}" th:each="volunteer : ${task.volunteers}">
                             <!--/*@thymesVar id="volunteer" type="fi.asteriski.nakitin.entity.UserEntity"*/-->
-                            Henkilöt:<br>
                             <b th:unless="${volunteer eq null}"
                                th:text="${volunteer.firstName} + ' ' + ${volunteer.lastName}"></b>
                             <br>
@@ -89,7 +89,7 @@
                         </article>
                     </div>
                 </div>
-                <footer class="card-footer" th:if="${userIsOrganisationAdmin && event.organizer.id == user.id}">
+                <footer class="card-footer" th:if="${userIsOrganisationAdmin && user.isUserInOrganization(event.organizer)}">
                     <a th:href="@{/task/edit(eventId=${event.id},taskId=${task.id})}" th:id="${task.id + ''}" class="card-footer-item"
                        th:text="#{form.button.label.edit}"></a>
                     <a th:href="@{/task/delete(eventId=${event.id},taskId=${task.id})}" th:id="${task.id + ''}" class="card-footer-item"

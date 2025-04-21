@@ -17,7 +17,7 @@
     </div>
     <div class="column">
         <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
-        <div th:replace="~{error-message :: error-message(
+        <div th:replace="~{fragments/messages.html :: error-message(
             hasError=${validationError},
             errorTitle=#{register.label.validationError},
             errorMessage=${errorMessage}
