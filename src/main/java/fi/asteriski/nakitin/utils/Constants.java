@@ -4,7 +4,6 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.utils;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Sort;
@@ -23,7 +22,6 @@ public class Constants {
     public static final String EMAIL_IN_USE_BY_ANOTHER_USER = "Sähköpostiosoite on jo käytössä toisella käyttäjällä";
     public static final String ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME = "Tämän niminen järjestö on jo olemassa.";
     public static final String ERROR_MESSAGE_PASSWORDS_DO_NOT_MATCH = "Salasanat eivät täsmää.";
-    public static final DateTimeFormatter DATE_FORMAT_FINLAND = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     public static final String LOG_ERROR_MESSAGE_TEMPLATE = "Error with email. Error was: %s";
 
     public static final String MODEL_LABEL_EVENT_TASK_FORM = "eventTaskForm";

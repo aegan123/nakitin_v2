@@ -18,7 +18,7 @@
             </ul>
             <p th:if="${!organization.events.isEmpty()}" th:text="#{admin.deleteOrganization.text.p3}"></p>
             <ul th:if="${!organization.events.isEmpty()}" th:each="event : ${organization.events()}">
-                <li th:text="${event.name} + ' (' + ${#temporals.format(event.date, 'dd.MM.yyyy')} + ')'"></li>
+                <li th:text="${event.name} + ' (' + ${event.localeFormattedDate()} + ')'"></li>
             </ul>
             <p th:text="#{admin.deleteOrganization.text.p4}"></p>
             <ul>

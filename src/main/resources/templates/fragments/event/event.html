@@ -5,7 +5,7 @@
 <h1 th:fragment="title" class="title" th:text="${event.name}"></h1>
 <div th:fragment="infoBox" class="block">
     <span th:text="#{event.page.label.description.organizer} + ' ' + ${event.organizer.name}"></span><br>
-    <span th:text="#{event.page.label.description.date} + ' ' + ${#temporals.format(event.date, 'dd.MM.yyyy')}"></span><br>
+    <span th:text="#{event.page.label.description.date} + ' ' + ${event.localeFormattedDate()}"></span><br>
     <span th:text="#{event.page.label.description.venue} + ' ' + ${event.venue}"></span><br>
 </div>
 <div th:fragment="description" class="block">
@@ -49,9 +49,9 @@
                 </header>
                 <div class="card-content">
                     <div class="media-content">
-                        <p class="sub-title is-4" th:text="${#temporals.format(task.date, 'E dd.MM.yyyy')}"></p>
+                        <p class="sub-title is-4" th:text="${task.localeFormattedDate()}"></p>
                         <p class="sub-title is-4"
-                           th:text="#{event.page.label.description.time} + ' ' +${#temporals.format(task.startTime, 'HH:mm')} +' - ' + ${#temporals.format(task.endTime, 'HH:mm')}"></p>
+                           th:text="#{event.page.label.description.time} + ' ' +${task.localeFormattedStartTime()} +' - ' + ${task.localeFormattedEndTime()}"></p>
                     </div>
                     <div class="content">
                         <hr>

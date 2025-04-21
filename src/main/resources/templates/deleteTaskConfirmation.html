@@ -10,7 +10,7 @@
         <div class="content">
             <h1 class="title has-text-centered" th:text="#{deleteTask.title}"></h1>
             <p th:text="#{deleteTask.text.p1}"></p>
-            <div class="block" th:utext="${task.deleteInfo()}"></div>
+            <div class="block" th:utext="${deleteInfo}"></div>
             <div th:if="${!task.volunteers.isEmpty()}" class="block" th:text="#{deleteTask.text.p2}"></div>
             <ul th:if="${!task.volunteers.isEmpty()}" th:each="user : ${task.volunteers}">
                 <li th:text="${user.firstName} + ' ' + ${user.lastName}"></li>

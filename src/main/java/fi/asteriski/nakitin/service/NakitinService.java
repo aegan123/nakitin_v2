@@ -17,6 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class NakitinService {
     private final NakitinDao nakitinDao;
+    private final MessageSource messageSource;
 
     public List<UpcomingEventDto> fetchUpcomingEvents() {
         return nakitinDao.fetchUpcomingEvents();
@@ -84,7 +87,13 @@ public class NakitinService {
 
         var csvFormat = CSVFormat.EXCEL
                 .builder()
-                .setHeader("Nakki", "Pvm", "Klo", "Etunimi", "Sukunimi", "Sähköposti")
+                .setHeader(
+                        getHeaderName(ExportHeader.TASK),
+                        getHeaderName(ExportHeader.DATE),
+                        getHeaderName(ExportHeader.TIME),
+                        getHeaderName(ExportHeader.FIRST_NAME),
+                        getHeaderName(ExportHeader.LAST_NAME),
+                        getHeaderName(ExportHeader.EMAIL))
                 .get();
 
         try (final var printer = new CSVPrinter(sw, csvFormat)) {
@@ -92,8 +101,8 @@ public class NakitinService {
                 try {
                     printer.printRecord(
                             dto.taskName(),
-                            dto.date(),
-                            String.format("%s - %s", dto.startTime(), dto.endTime()),
+                            dto.localeFormattedDate(),
+                            "%s - %s".formatted(dto.localeFormattedStartTime(), dto.localeFormattedEndTime()),
                             volunteer.getFirstName(),
                             volunteer.getLastName(),
                             volunteer.getEmail());
@@ -115,5 +124,26 @@ public class NakitinService {
 
     public List<NameAndDateDto> fetchPastEvents(UUID organizationId) {
         return nakitinDao.fetchPastEvents(organizationId);
+    }
+
+    private String getHeaderName(ExportHeader header) {
+        return switch (header) {
+            case TASK -> messageSource.getMessage("export.header.task", null, LocaleContextHolder.getLocale());
+            case DATE -> messageSource.getMessage("export.header.date", null, LocaleContextHolder.getLocale());
+            case TIME -> messageSource.getMessage("export.header.time", null, LocaleContextHolder.getLocale());
+            case FIRST_NAME -> messageSource.getMessage(
+                    "export.header.firstName", null, LocaleContextHolder.getLocale());
+            case LAST_NAME -> messageSource.getMessage("export.header.lastName", null, LocaleContextHolder.getLocale());
+            case EMAIL -> messageSource.getMessage("export.header.email", null, LocaleContextHolder.getLocale());
+        };
+    }
+
+    private enum ExportHeader {
+        TASK,
+        DATE,
+        TIME,
+        FIRST_NAME,
+        LAST_NAME,
+        EMAIL
     }
 }
