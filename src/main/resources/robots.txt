@@ -1,0 +1,39 @@
+# Major search engines
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Yahoo! Slurp
+Allow: /$
+Allow: /index.html$
+Disallow: /
+
+# Alternative search engines
+User-agent: Brave
+User-agent: QwantBot
+User-agent: DuckDuckBot
+User-agent: Baiduspider
+User-agent: YandexBot
+User-agent: SeznamBot
+User-agent: Applebot
+User-agent: Ecosia
+Allow: /$
+Allow: /index.html$
+Disallow: /
+
+# Block AI and data crawlers
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: Google-Extended
+User-agent: CCBot
+User-agent: anthropic-ai
+User-agent: Claude-Web
+User-agent: Omgilibot
+User-agent: FacebookBot
+User-agent: Bytespider
+Disallow: /
+
+# All other bots
+User-agent: *
+Disallow: /
+
+# Additional hints for crawlers
+Crawl-delay: 10

@@ -106,7 +106,11 @@ public class SecurityConfig {
                                     "/reset-password/**",
                                     "/css/**",
                                     "/verify-email/**",
-                                    "/resend-verification/**")
+                                    "/resend-verification/**",
+                                    "/robots.txt",
+                                    "/robot.txt",
+                                    "/Robots.txt",
+                                    "/Robot.txt")
                             .permitAll())
                     .formLogin(form -> form.loginPage("/login")
                             .failureHandler(authenticationFailureHandler)
