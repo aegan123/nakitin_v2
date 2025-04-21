@@ -162,4 +162,27 @@ public class UserDao {
     public void disableUser(UUID id) {
         userRepository.disableUser(id);
     }
+
+    public void deleteExpiredUsers(LocalDate expiryDate) {
+        userRepository.deleteTasksOfExpiredUsers(expiryDate);
+        userRepository.deleteExpiredUsers(expiryDate, ROLE_USER.label);
+    }
+
+    public List<String> fetchUsersThatAreAboutToExpire(LocalDate localDate) {
+        return userRepository.readAllByExpirationDateIs(localDate).stream()
+                .map(EmailProjection::getEmail)
+                .toList();
+    }
+
+    public List<UserEntity> fetchExpiredOrganizationAdmins(LocalDate date) {
+        return userRepository.findAllByUserRoleAndExpirationDate(ROLE_ORG_ADMIN, date);
+    }
+
+    public void deleteUsers(List<UserEntity> users) {
+        userRepository.deleteAll(users);
+    }
+
+    public List<UserEntity> fetchExpiredAdmins(LocalDate expiryDate) {
+        return userRepository.findAllByUserRoleAndExpirationDate(ROLE_ADMIN, expiryDate);
+    }
 }

@@ -80,4 +80,21 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             WHERE id = :id
         """)
     void disableUser(@Param("id") UUID id);
+
+    @Modifying
+    @NativeQuery(
+            """
+            DELETE from nakittautuneet WHERE user_id in (SELECT u.id from users u WHERE expiration_date = :expiryDate)
+        """)
+    void deleteTasksOfExpiredUsers(@Param("expiryDate") LocalDate expiryDate);
+
+    @Modifying
+    @NativeQuery(
+            """
+            DELETE from users WHERE user_role = :role
+             AND id in (SELECT u.id from users u WHERE expiration_date = :expiryDate)
+        """)
+    void deleteExpiredUsers(@Param("expiryDate") LocalDate expiryDate, @Param("role") String role);
+
+    List<UserEntity> findAllByUserRoleAndExpirationDate(UserRole userRole, LocalDate expirationDate);
 }
