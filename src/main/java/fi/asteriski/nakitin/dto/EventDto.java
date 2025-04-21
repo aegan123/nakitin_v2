@@ -7,8 +7,11 @@ package fi.asteriski.nakitin.dto;
 import fi.asteriski.nakitin.entity.EventEntity;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.*;
 import lombok.Builder;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 @Builder
 public record EventDto(
@@ -61,5 +64,12 @@ public record EventDto(
                 .organizer(org)
                 .createdAt(createdAt)
                 .build();
+    }
+
+    public String localeFormattedDate() {
+        var formatter =
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());
+
+        return date.format(formatter);
     }
 }

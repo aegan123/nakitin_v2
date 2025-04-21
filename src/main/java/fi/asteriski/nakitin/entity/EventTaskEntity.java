@@ -4,8 +4,6 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.entity;
 
-import static fi.asteriski.nakitin.utils.Constants.DATE_FORMAT_FINLAND;
-
 import fi.asteriski.nakitin.dto.EventTaskDto;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
@@ -13,10 +11,13 @@ import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.*;
 import org.hibernate.annotations.*;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 @Entity
 @Table(name = "tasks")
@@ -83,12 +84,6 @@ public class EventTaskEntity {
                 "%s @ %s by %s", taskName, event.getName(), event.getOrganizer().getName());
     }
 
-    public String deleteInfo() {
-        return String.format(
-                "%s, %s, %s-%s<br/>Tapahtumassa: %s",
-                taskName, date.format(DATE_FORMAT_FINLAND), startTime, endTime, event.toString());
-    }
-
     public EventTaskDto toDto() {
         return EventTaskDto.builder()
                 .id(id)
@@ -116,5 +111,26 @@ public class EventTaskEntity {
     @Override
     public int hashCode() {
         return Objects.hash(taskName);
+    }
+
+    public String localeFormattedDate() {
+        var formatter =
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());
+
+        return date.format(formatter);
+    }
+
+    public String localeFormattedStartTime() {
+        var formatter =
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());
+
+        return startTime.format(formatter);
+    }
+
+    public String localeFormattedEndTime() {
+        var formatter =
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());
+
+        return endTime.format(formatter);
     }
 }

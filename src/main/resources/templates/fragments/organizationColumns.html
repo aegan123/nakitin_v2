@@ -25,12 +25,12 @@
         <div class="content" th:if="${isOrgInfo}">
             <h4 class="title is-4" th:text="#{organizations.label.upcoming-events}"></h4>
             <ul>
-                <li th:each="event : ${upcomingEvents}" th:text="${event.name} + ', ' + ${#temporals.format(event.date, 'dd.MM.yyyy')}"></li>
+                <li th:each="event : ${upcomingEvents}" th:text="${event.name} + ', ' + ${event.localeFormattedDate()}"></li>
                 <li th:if="${upcomingEvents.isEmpty()}" th:text="#{organizations.label.no-upcoming-events}"></li>
             </ul>
             <h4 class="title is-4" th:text="#{organizations.label.past-events}"></h4>
             <ul>
-                <li th:each="event : ${pastEvents}" th:text="${event.name} + ', ' + ${#temporals.format(event.date, 'dd.MM.yyyy')}"></li>
+                <li th:each="event : ${pastEvents}" th:text="${event.name} + ', ' + ${event.localeFormattedDate()}"></li>
                 <li th:if="${pastEvents.isEmpty()}" th:text="#{organizations.label.no-past-events}"></li>
             </ul>
         </div>

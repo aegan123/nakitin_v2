@@ -8,7 +8,7 @@
             <div class="content">
                 <p th:utext="#{register.label.helpText}"></p>
             </div>
-            <div th:replace="~{error-message :: error-message(
+            <div th:replace="~{fragments/messages.html :: error-message(
                 hasError=${validationError},
                 errorTitle=#{register.label.validationError},
                 errorMessage=${errorMessage}
@@ -51,7 +51,6 @@
                             <p class="control is-expanded">
                                 <input th:field="*{lastName}" id="lastName" class="input">
                             <p th:if="${#fields.hasErrors('lastName')}" class="help is-danger" th:errors="*{lastName}"></p>
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -64,7 +63,6 @@
                             <p class="control is-expanded">
                                 <input th:field="*{email}" id="email" type="email" class="input" required="required">
                             <p th:if="${#fields.hasErrors('email')}" class="help is-danger" th:errors="*{email}"></p>
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -77,7 +75,6 @@
                             <p class="control is-expanded">
                                 <input th:field="*{password}" id="password" class="input" type="password" required="required" min="8" oninput="checkPassword(this)">
                             <p th:if="${#fields.hasErrors('password')}" class="help is-danger" th:errors="*{password}"></p>
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -90,7 +87,6 @@
                             <p class="control is-expanded">
                                 <input th:field="*{confirmPassword}" id="confirmPassword" class="input" type="password" required="required" min="8" oninput="checkPassword(this)">
                             <p th:if="${#fields.hasErrors('confirmPassword')}" class="help is-danger" th:errors="*{confirmPassword}"></p>
-                            </p>
                         </div>
                     </div>
                 </div>

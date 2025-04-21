@@ -42,7 +42,6 @@
                         <div class="dropdown-item">
                             <!--/*@thymesVar id="userDto" type="fi.asteriski.nakitin.dto.UserDto"*/-->
                             <form class="box" th:action="@{/profile}" method="post" th:object="${userDto}">
-<!--                                <input type="hidden" id="id" name="id" th:value="*{id}">-->
                                 <div class="field">
                                     <label for="firstName" class="label" th:text="#{register.form.label.firstName}"></label>
                                     <div class="control">

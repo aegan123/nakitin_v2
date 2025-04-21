@@ -10,6 +10,7 @@ import static fi.asteriski.nakitin.utils.Constants.MODEL_LABEL_DELETE_FORM;
 import fi.asteriski.nakitin.dto.DeleteForm;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.EventTaskService;
+import fi.asteriski.nakitin.service.StringFormatter;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -25,12 +26,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class EventTaskController {
     private final EventTaskService eventTaskService;
+    private final StringFormatter formatter;
 
     @GetMapping("/task/delete")
     public String deleteTask(Model model, UUID eventId, UUID taskId, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
+        var task = eventTaskService.readEventTaskById(taskId);
         model.addAttribute(MODEL_LABEL_DELETE_FORM, new DeleteForm(taskId, eventId));
-        model.addAttribute("task", eventTaskService.readEventTaskById(taskId));
+        model.addAttribute("task", task);
+        model.addAttribute("deleteInfo", formatter.formatDeleteInfo(task));
 
         return "deleteTaskConfirmation";
     }

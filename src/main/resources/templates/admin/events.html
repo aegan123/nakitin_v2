@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" data-theme="dark" class="has-navbar-fixed-top">
 <head th:replace="~{fragments/header.html :: header}">
 </head>
 <body>
@@ -34,7 +34,7 @@
                             <p>
                                 <span th:text="#{addEvent.form.label.organizer} + ': ' + ${event.organizer.name}"></span><br/>
                                 <span th:text="#{addEvent.form.label.venue} + ': ' + ${event.venue}"></span><br/>
-                                <span th:text="#{addEvent.form.label.date} + ': ' + ${#temporals.format(event.date, 'dd.MM.yyyy')}"></span><br/>
+                                <span th:text="#{addEvent.form.label.date} + ': ' + ${event.localeFormattedDate()}"></span><br/>
                                 <span th:text="#{addEvent.form.label.description} + ': ' + ${event.abbreviatedDescription}"></span>
                             </p>
                             <p>
@@ -42,7 +42,7 @@
                                 <span th:if="${!event.tasks.isEmpty()}" th:text="#{event.page.label.tasks}"></span>
                                 <span th:unless="${!event.tasks.isEmpty()}" th:text="#{admin.events.noEventTasks}"></span>
                             <ul th:if="${!event.tasks.isEmpty()}" th:each="task : ${event.tasks}">
-                                <li th:text="${task.taskName} + ', ' + ${task.personCount} + ${task.personCount > 1 ? ' hlöä, ' : ' hlö, '} + ${#temporals.format(task.date, 'dd.MM.yyyy')} + ', ' + ${#temporals.format(task.startTime, 'HH:mm')} +' - ' + ${#temporals.format(task.endTime, 'HH:mm')}"></li>
+                                <li th:text="${task.taskName} + ', ' + ${task.personCount} + ${task.personCount > 1 ? #{admin.events.volunteerCount.multiple} : #{admin.events.volunteerCount.single}} + ' , ' + ${task.localeFormattedDate()} + ', ' + ${task.localeFormattedStartTime()} +' - ' + ${task.localeFormattedEndTime()}"></li>
                             </ul>
                             </p>
                         </div>

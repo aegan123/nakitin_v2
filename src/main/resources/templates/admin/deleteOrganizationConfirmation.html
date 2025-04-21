@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" data-theme="dark" class="has-navbar-fixed-top">
 <head th:replace="~{fragments/header.html :: header}">
 </head>
 <body>
@@ -18,7 +18,7 @@
             </ul>
             <p th:if="${!organization.events.isEmpty()}" th:text="#{admin.deleteOrganization.text.p3}"></p>
             <ul th:if="${!organization.events.isEmpty()}" th:each="event : ${organization.events()}">
-                <li th:text="${event.name} + ' (' + ${#temporals.format(event.date, 'dd.MM.yyyy')} + ')'"></li>
+                <li th:text="${event.name} + ' (' + ${event.localeFormattedDate()} + ')'"></li>
             </ul>
             <p th:text="#{admin.deleteOrganization.text.p4}"></p>
             <ul>

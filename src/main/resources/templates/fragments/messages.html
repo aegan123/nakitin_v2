@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fi">
+<head></head>
+<body>
 <div th:fragment="error-message(hasError, errorTitle, errorMessage)">
     <article class="message is-danger" th:if="${hasError}">
         <div class="message-header">
@@ -7,3 +11,5 @@
         </div>
     </article>
 </div>
+</body>
+</html>

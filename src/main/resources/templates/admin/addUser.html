@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="fi" data-theme="dark" class="has-navbar-fixed-top">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" data-theme="dark" class="has-navbar-fixed-top">
 <head th:replace="~{fragments/header.html :: header}">
 </head>
 <body>
@@ -17,7 +17,7 @@
     </div>
     <div class="column">
         <div th:insert="~{fragments/admin/tabs.html :: tabs }"></div>
-        <div th:replace="~{error-message :: error-message(
+        <div th:replace="~{fragments/messages.html :: error-message(
             hasError=${validationError},
             errorTitle=#{register.label.validationError},
             errorMessage=${errorMessage}

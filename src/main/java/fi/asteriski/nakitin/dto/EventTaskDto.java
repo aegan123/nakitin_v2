@@ -7,9 +7,12 @@ package fi.asteriski.nakitin.dto;
 import fi.asteriski.nakitin.entity.UserEntity;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 @Builder
 public record EventTaskDto(
@@ -38,5 +41,26 @@ public record EventTaskDto(
 
     public boolean userHasNotVolunteered(UserEntity user) {
         return !userHasVolunteered(user);
+    }
+
+    public String localeFormattedDate() {
+        var formatter =
+                DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());
+
+        return date.format(formatter);
+    }
+
+    public String localeFormattedStartTime() {
+        var formatter =
+                DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());
+
+        return startTime.format(formatter);
+    }
+
+    public String localeFormattedEndTime() {
+        var formatter =
+                DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());
+
+        return endTime.format(formatter);
     }
 }
