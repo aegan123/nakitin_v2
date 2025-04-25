@@ -16,7 +16,7 @@
     <h2 class="subtitle" th:text="#{event.page.label.tasks}"></h2><br>
 
     <!--/*@thymesVar id="userIsOrganisationAdmin" type="java.lang.Boolean"*/-->
-    <div class="field has-addons" th:if="${userIsOrganisationAdmin && user.isUserInOrganization(event.organizer)}">
+    <div class="field has-addons" th:if="${userIsOrganisationAdmin && user.isInOrganization(event.organizer)}">
         <p class="control">
             <a th:href="@{/task/add(eventId=${event.id})}" class="button">
       <span class="icon is-small">
@@ -35,8 +35,9 @@
         </p>
     </div>
 
-    <div class="content" th:if="${userIsOrganisationAdmin && user.isUserInOrganization(event.organizer)}">
+    <div class="content" th:if="${userIsOrganisationAdmin && user.isInOrganization(event.organizer)}">
         <p th:utext="#{event.page.label.description.export.info1} + ${event.name} + #{event.page.label.description.export.info2}"></p>
+        <p th:text="#{event.page.label.description.pageNotAvailableAfterEvent}"></p>
         <br>
     </div>
 
@@ -89,7 +90,7 @@
                         </article>
                     </div>
                 </div>
-                <footer class="card-footer" th:if="${userIsOrganisationAdmin && user.isUserInOrganization(event.organizer)}">
+                <footer class="card-footer" th:if="${userIsOrganisationAdmin && user.isInOrganization(event.organizer)}">
                     <a th:href="@{/task/edit(eventId=${event.id},taskId=${task.id})}" th:id="${task.id + ''}" class="card-footer-item"
                        th:text="#{form.button.label.edit}"></a>
                     <a th:href="@{/task/delete(eventId=${event.id},taskId=${task.id})}" th:id="${task.id + ''}" class="card-footer-item"

@@ -17,7 +17,7 @@
         <h1 th:replace="~{fragments/event/event.html :: title}"></h1>
         <div th:replace="~{fragments/event/event.html :: infoBox}"></div>
         <div th:replace="~{fragments/event/event.html :: description}"></div>
-        <div class="block" th:if="${userIsOrganisationAdmin && user.isUserInOrganization(event.organizer)}">
+        <div class="block" th:if="${userIsOrganisationAdmin && user.isInOrganization(event.organizer)}">
             <div class="field has-addons">
                 <p class="control">
                     <a th:href="@{/edit-event(eventId=${event.id})}" class="button">
