@@ -34,7 +34,6 @@ class NakitinControllerAdvice {
         model.addAttribute(
                 MODEL_LABEL_ERROR_TITLE,
                 messageSource.getMessage("error.event.not-found.title", null, Locale.getDefault()));
-        model.addAttribute(MODEL_LABEL_ERROR_TEXT, ex.getMessage());
         model.addAttribute(MODEL_LABEL_CONTACT_ADMIN, false);
 
         return "error";

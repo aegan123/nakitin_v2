@@ -10,6 +10,7 @@ import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.dto.UserDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import java.io.Serial;
 import java.time.LocalDate;
 import java.util.*;
 import lombok.*;
@@ -48,6 +49,9 @@ import org.springframework.security.core.userdetails.UserDetails;
                     attributeNodes = {@NamedAttributeNode(value = "events")})
         })
 public class UserEntity implements UserDetails {
+    @Serial
+    private static final long serialVersionUID = 42L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -223,7 +227,7 @@ public class UserEntity implements UserDetails {
         return emailVerified;
     }
 
-    public boolean isUserInOrganization(OrganizationDto organization) {
+    public boolean isInOrganization(OrganizationDto organization) {
         return organizations.stream().anyMatch(org -> Objects.equals(org.getId(), organization.id()));
     }
 }

@@ -49,10 +49,10 @@ public class NakitinDao {
     public EventDto fetchEventForEventPage(UUID eventId) {
         return eventRepository
                 .findById(eventId)
+                .filter(event -> !event.getDate().isBefore(LocalDate.now()))
                 .map(EventEntity::toEventPageDto)
                 .orElseThrow(() -> new EventNotFoundException(
-                        messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + " "
-                                + eventId + "."));
+                        messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + "."));
     }
 
     public EventTaskEntity fetchReference(UUID taskId) {
