@@ -13,6 +13,7 @@ import fi.asteriski.nakitin.dto.admin.AddUserForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.admin.AdminUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Objects;
 import java.util.UUID;
@@ -89,7 +90,8 @@ public class AdminUserController {
             @Valid @ModelAttribute(MODEL_LABEL_ADMIN_ADD_USER_FORM) AddUserForm addUserForm,
             BindingResult result,
             Model model,
-            @AuthenticationPrincipal UserEntity user) {
+            @AuthenticationPrincipal UserEntity user,
+            HttpServletRequest request) {
         if (result.hasErrors()) {
             setCommonUserAttributes(model, user);
             setCommonTabConfigs(model);
@@ -98,7 +100,7 @@ public class AdminUserController {
             addCustomErrorIfNeeded(result, model);
             return "admin/addUser";
         }
-        adminUserService.createNewUser(addUserForm);
+        adminUserService.createNewUser(addUserForm, request);
 
         return "redirect:/admin/users?success=true&from=add";
     }

@@ -223,7 +223,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void createNewUser(AddUserForm addUserForm) {
+    public void createNewUser(AddUserForm addUserForm, HttpServletRequest request) {
         var user = UserEntity.builder()
                 .username(addUserForm.getUsername())
                 .password(passwordEncoder.encode(addUserForm.getPassword()))
@@ -243,6 +243,8 @@ public class UserService implements UserDetailsService {
         if (Boolean.TRUE.equals(addUserForm.getIsAdmin())) {
             user.setUserRole(ROLE_ADMIN);
         }
+        var verificationUrl = setupVerification(user, request);
+        emailService.sendEmailVerificationForAdmin(user.getEmail(), user.getUsername(), verificationUrl);
         userDao.saveNewUser(user);
     }
 
@@ -315,6 +317,12 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void setupEmailVerification(UserEntity user, HttpServletRequest request) {
+        var verificationUrl = setupVerification(user, request);
+        userDao.save(user);
+        emailService.sendEmailVerification(user.getEmail(), verificationUrl);
+    }
+
+    private String setupVerification(UserEntity user, HttpServletRequest request) {
         var token = verificationTokenService.generateVerificationToken();
         var verificationToken = VerificationTokenEntity.builder()
                 .token(token)
@@ -322,10 +330,8 @@ public class UserService implements UserDetailsService {
                 .build();
 
         verificationToken.addUser(user);
-        userDao.save(user);
 
-        var verificationUrl = "%s/verify-email?token=%s".formatted(getBaseUrl(request), token);
-        emailService.sendEmailVerification(user.getEmail(), verificationUrl);
+        return "%s/verify-email?token=%s".formatted(getBaseUrl(request), token);
     }
 
     @Transactional
