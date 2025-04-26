@@ -17,16 +17,22 @@ import fi.asteriski.nakitin.repo.projection.EmailProjection;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserDao {
+    @NonNull
     private final UserRepository userRepository;
+
+    @Value("${fi.asteriski.config.maxPasswordAgeInDays}")
+    private Long maxPasswordAgeInDays;
 
     public void saveNewUser(UserEntity newUserEntity) {
         userRepository.save(newUserEntity);
@@ -93,6 +99,7 @@ public class UserDao {
     public void updatePasswordForUser(UserDto userDto) {
         var user = findById(userDto.getId());
         user.setPassword(userDto.getPassword());
+        user.setExpirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays));
         userRepository.save(user);
     }
 

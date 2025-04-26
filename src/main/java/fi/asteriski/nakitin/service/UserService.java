@@ -332,6 +332,7 @@ public class UserService implements UserDetailsService {
     public void changePassword(PasswordForm passwordForm) {
         var user = userDao.findById(passwordForm.getUserId());
         user.setPassword(passwordEncoder.encode(passwordForm.getPassword()));
+        user.setExpirationDate(LocalDate.now().plusDays(maxPasswordAgeInDays));
         userDao.save(user);
     }
 
