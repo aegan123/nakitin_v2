@@ -13,7 +13,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.repository.query.Param;
@@ -37,4 +40,7 @@ public interface EventRepository extends JpaRepository<EventEntity, UUID> {
     EventDto fetchEventDetails(@Param("eventId") UUID eventId);
 
     Optional<DateProjection> findDateById(UUID id);
+
+    @EntityGraph(value = "graph_event_full")
+    Page<EventEntity> findAll(Pageable pageable);
 }
