@@ -35,8 +35,10 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     long countAllByUserRoleAndIdNot(@NonNull UserRole userRole, UUID id);
 
-    @NativeQuery(value = """
-            select id, first_name, last_name from users
+    @NativeQuery(
+            value =
+                    """
+                select id, first_name, last_name from users where user_role != 'ROLE_ADMIN'
             """)
     Set<IdFirstLastNameProjection> fetchAllUsers();
 
