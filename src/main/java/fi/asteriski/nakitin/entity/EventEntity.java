@@ -6,16 +6,14 @@ package fi.asteriski.nakitin.entity;
 
 import fi.asteriski.nakitin.dto.EventDto;
 import fi.asteriski.nakitin.dto.UpcomingEventDto;
+import fi.asteriski.nakitin.utils.LocaleDateFormattable;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 @Entity
 @Table(
@@ -45,7 +43,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
                                 attributeNodes = {@NamedAttributeNode("volunteers")})
                     })
         })
-public class EventEntity {
+public class EventEntity implements LocaleDateFormattable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -153,12 +151,5 @@ public class EventEntity {
             abbreviatedDescription += "...";
         }
         return abbreviatedDescription;
-    }
-
-    public String localeFormattedDate() {
-        var formatter =
-                DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());
-
-        return date.format(formatter);
     }
 }

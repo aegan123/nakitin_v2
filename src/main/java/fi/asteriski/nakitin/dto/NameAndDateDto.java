@@ -4,16 +4,12 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
+import fi.asteriski.nakitin.utils.LocaleDateFormattable;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import org.springframework.context.i18n.LocaleContextHolder;
 
-public record NameAndDateDto(String name, LocalDate date) {
-    public String localeFormattedDate() {
-        var formatter =
-                DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());
-
-        return date.format(formatter);
+public record NameAndDateDto(String name, LocalDate date) implements LocaleDateFormattable {
+    @Override
+    public LocalDate getDate() {
+        return date;
     }
 }
