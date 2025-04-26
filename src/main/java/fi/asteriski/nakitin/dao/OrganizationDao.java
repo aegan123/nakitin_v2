@@ -34,13 +34,9 @@ public class OrganizationDao {
         return organizationRepository.findAll(PageRequest.of(page, MAX_PAGE_SIZE, SORT_BY_NAME_ASC));
     }
 
-    public OrganizationDto fetchOrganizationByName(String organizer) {
+    public OrganizationEntity fetchOrganizationByName(String organizer) {
         return organizationRepository
                 .findByName(organizer)
-                .map(org -> OrganizationDto.builder()
-                        .id(org.getId())
-                        .name(org.getName())
-                        .build())
                 .orElseThrow(() ->
                         new OrganizationNotFoundException(String.format("Organization %s not found.", organizer)));
     }
@@ -51,7 +47,7 @@ public class OrganizationDao {
 
     public OrganizationEntity fetchOrganizationById(UUID id) {
         return organizationRepository
-                .findById(id)
+                .findByIdWithUsers(id)
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization not found."));
     }
 

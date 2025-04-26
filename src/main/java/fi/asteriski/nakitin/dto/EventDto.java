@@ -54,18 +54,6 @@ public record EventDto(
                 .build();
     }
 
-    public EventDto copy(EventForm eventForm, OrganizationDto org) {
-        return EventDto.builder()
-                .id(eventForm.getEventId())
-                .name(eventForm.getName())
-                .venue(eventForm.getVenue())
-                .description(eventForm.getDescription())
-                .date(eventForm.getDate())
-                .organizer(org)
-                .createdAt(createdAt)
-                .build();
-    }
-
     public String localeFormattedDate() {
         var formatter =
                 DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(LocaleContextHolder.getLocale());

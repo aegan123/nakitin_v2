@@ -35,9 +35,14 @@ public class EventService {
     @Transactional
     public UUID editEvent(EventForm eventForm, UserEntity user) {
         var org = organizationDao.fetchOrganizationByName(eventForm.getOrganizer());
-        var event = fetchEventById(eventForm.getEventId()).copy(eventForm, org);
-
-        return eventDao.saveEvent(event, org, user);
+        var event = eventDao.fetchEventEntityById(eventForm.getEventId());
+        event.setName(eventForm.getName());
+        event.setVenue(eventForm.getVenue());
+        event.setDescription(eventForm.getDescription());
+        event.setDate(eventForm.getDate());
+        org.addEvent(event);
+        event.setCreatedBy(user);
+        return eventDao.save(event);
     }
 
     public EventForm generateEventFormForEvent(UUID eventId) {

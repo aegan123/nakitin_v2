@@ -32,7 +32,18 @@ import org.springframework.context.i18n.LocaleContextHolder;
                     attributeNodes = {@NamedAttributeNode(value = "organizer")}),
             @NamedEntityGraph(
                     name = "graph_event_eventTasks",
-                    attributeNodes = {@NamedAttributeNode(value = "tasks")})
+                    attributeNodes = {@NamedAttributeNode(value = "tasks")}),
+            @NamedEntityGraph(
+                    name = "graph_event_full",
+                    attributeNodes = {
+                        @NamedAttributeNode(value = "organizer"),
+                        @NamedAttributeNode(value = "tasks", subgraph = "tasks-subgraph")
+                    },
+                    subgraphs = {
+                        @NamedSubgraph(
+                                name = "tasks-subgraph",
+                                attributeNodes = {@NamedAttributeNode("volunteers")})
+                    })
         })
 public class EventEntity {
     @Id
