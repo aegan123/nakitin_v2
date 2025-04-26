@@ -34,6 +34,9 @@ public class EmailService {
     @Value("${fi.asteriski.config.email.default-sender-address}")
     private String defaultSender;
 
+    @Value("${fi.asteriski.config.passwordResetTokenExpirationHours}")
+    private Integer tokenExpirationHours;
+
     public void sendPasswordResetEmail(String toEmail, String resetUrl) {
         var subject = messageSource.getMessage("email.subject.password-reset", null, LocaleContextHolder.getLocale());
         var message = messageSource.getMessage(
@@ -88,6 +91,19 @@ public class EmailService {
         var message = messageSource.getMessage(
                 "email.message.email-account-deletion",
                 new Object[] {monthsToDeleteExpiredUsers},
+                LocaleContextHolder.getLocale());
+        try {
+            sendEmail(email, defaultSender, subject, message);
+        } catch (MessagingException e) {
+            log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(e));
+        }
+    }
+
+    public void sendEmailVerificationForAdmin(String email, String userName, String verificationUrl) {
+        var subject = messageSource.getMessage("email.subject.verification", null, LocaleContextHolder.getLocale());
+        var message = messageSource.getMessage(
+                "email.message.verificationAdmin",
+                new Object[] {userName, verificationUrl, tokenExpirationHours},
                 LocaleContextHolder.getLocale());
         try {
             sendEmail(email, defaultSender, subject, message);

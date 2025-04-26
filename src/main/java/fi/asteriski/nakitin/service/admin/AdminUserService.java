@@ -17,6 +17,7 @@ import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.service.EventTaskService;
 import fi.asteriski.nakitin.service.OrganizationService;
 import fi.asteriski.nakitin.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -83,8 +84,8 @@ public class AdminUserService {
     }
 
     @Transactional
-    public void createNewUser(final AddUserForm addUserForm) {
-        userService.createNewUser(addUserForm);
+    public void createNewUser(final AddUserForm addUserForm, HttpServletRequest request) {
+        userService.createNewUser(addUserForm, request);
     }
 
     public UserEntity fetchUser(final UUID id) {
