@@ -10,13 +10,13 @@ import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.exceptions.CsvExportException;
 import fi.asteriski.nakitin.exceptions.EventNotFoundException;
 import jakarta.validation.Valid;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.QuoteMode;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -82,7 +82,7 @@ public class NakitinService {
                 .build();
     }
 
-    private String generateCsv(List<EventTaskDto> tasks) {
+    private String generateCsv(final List<EventTaskDto> tasks) {
         var sw = new StringWriter();
 
         var csvFormat = CSVFormat.EXCEL
@@ -94,6 +94,9 @@ public class NakitinService {
                         getHeaderName(ExportHeader.FIRST_NAME),
                         getHeaderName(ExportHeader.LAST_NAME),
                         getHeaderName(ExportHeader.EMAIL))
+                .setQuoteMode(QuoteMode.ALL)
+                .setEscape('\\')
+                .setNullString("")
                 .get();
 
         try (final var printer = new CSVPrinter(sw, csvFormat)) {
@@ -127,14 +130,14 @@ public class NakitinService {
     }
 
     private String getHeaderName(ExportHeader header) {
+        var locale = LocaleContextHolder.getLocale();
         return switch (header) {
-            case TASK -> messageSource.getMessage("export.header.task", null, LocaleContextHolder.getLocale());
-            case DATE -> messageSource.getMessage("export.header.date", null, LocaleContextHolder.getLocale());
-            case TIME -> messageSource.getMessage("export.header.time", null, LocaleContextHolder.getLocale());
-            case FIRST_NAME -> messageSource.getMessage(
-                    "export.header.firstName", null, LocaleContextHolder.getLocale());
-            case LAST_NAME -> messageSource.getMessage("export.header.lastName", null, LocaleContextHolder.getLocale());
-            case EMAIL -> messageSource.getMessage("export.header.email", null, LocaleContextHolder.getLocale());
+            case TASK -> messageSource.getMessage("export.header.task", null, locale);
+            case DATE -> messageSource.getMessage("export.header.date", null, locale);
+            case TIME -> messageSource.getMessage("export.header.time", null, locale);
+            case FIRST_NAME -> messageSource.getMessage("export.header.firstName", null, locale);
+            case LAST_NAME -> messageSource.getMessage("export.header.lastName", null, locale);
+            case EMAIL -> messageSource.getMessage("export.header.email", null, locale);
         };
     }
 

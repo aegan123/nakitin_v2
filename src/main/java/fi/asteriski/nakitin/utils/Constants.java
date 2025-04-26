@@ -29,6 +29,7 @@ public class Constants {
     public static final String HTML_TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
     public static final String NEWLINE = "\n";
     public static final String TAB = "\t";
+    public static final String MEDIA_TYPE_TEXT_CSV_CHARSET_UTF_8 = "text/csv;charset=UTF-8";
 
     public static final String MODEL_LABEL_EVENT_TASK_FORM = "eventTaskForm";
     public static final String MODEL_LABEL_USER_IS_LOGGED_IN = "userIsLoggedIn";
