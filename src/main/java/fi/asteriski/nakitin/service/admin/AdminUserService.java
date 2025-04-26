@@ -11,9 +11,11 @@ import fi.asteriski.nakitin.dto.IdAndNameDto;
 import fi.asteriski.nakitin.dto.PasswordForm;
 import fi.asteriski.nakitin.dto.admin.AddUserForm;
 import fi.asteriski.nakitin.dto.admin.UserInfoForm;
+import fi.asteriski.nakitin.entity.EventEntity;
 import fi.asteriski.nakitin.entity.EventTaskEntity;
 import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.UserEntity;
+import fi.asteriski.nakitin.service.EventService;
 import fi.asteriski.nakitin.service.EventTaskService;
 import fi.asteriski.nakitin.service.OrganizationService;
 import fi.asteriski.nakitin.service.UserService;
@@ -31,6 +33,7 @@ public class AdminUserService {
     private final UserService userService;
     private final OrganizationService organizationService;
     private final EventTaskService eventTaskService;
+    private final EventService eventService;
 
     public UserInfoForm fetchUserForm(final UUID id) {
         final var user = userService.fetchUserById(id);
@@ -106,6 +109,20 @@ public class AdminUserService {
             tasks.forEach(user::removeEventTask);
         }
 
+        eventService
+                .fetchEventsById(
+                        user.getEvents().stream().map(EventEntity::getId).toList())
+                .stream()
+                .map(event ->
+                        event.getTasks().stream().map(EventTaskEntity::getId).toList())
+                .map(eventTaskService::fetchEventTasksById)
+                .flatMap(List::stream)
+                .forEach(task -> userService
+                        .fetchUsersByIds(task.getVolunteers().stream()
+                                .map(UserEntity::getId)
+                                .toList())
+                        .forEach(user1 -> user1.removeEventTask(task)));
+
         if (!user.getOrganizations().isEmpty()) {
             var organizationIds = user.getOrganizations().stream()
                     .map(OrganizationEntity::getId)
@@ -113,12 +130,6 @@ public class AdminUserService {
             if (!organizationIds.isEmpty()) {
                 var organizations = organizationService.fetchOrganizationsByIds(organizationIds);
                 organizations.forEach(organization -> organization.removeUser(user));
-                var organizationsToRemove = organizations.stream()
-                        .filter(OrganizationEntity::hasNoUsers)
-                        .toList();
-                if (!organizationsToRemove.isEmpty()) {
-                    organizationService.deleteOrganizations(organizationsToRemove);
-                }
             }
         }
 

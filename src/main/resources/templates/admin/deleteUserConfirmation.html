@@ -26,7 +26,6 @@
             <ul>
                 <li th:text="#{admin.deleteUser.text.tasks}"></li>
                 <li th:if="${user.isOrganisationAdmin}" th:text="#{admin.deleteUser.text.events}"></li>
-                <li th:if="${user.isOrganisationAdmin}" th:text="#{admin.deleteUser.text.organization}"></li>
             </ul>
             <p th:utext="#{deleteConfirmation.text}"></p>
             <form th:action="@{/admin/delete-user}" method="post" th:object="${deleteForm}">
