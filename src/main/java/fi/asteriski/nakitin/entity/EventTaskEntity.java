@@ -79,8 +79,8 @@ public class EventTaskEntity implements LocaleDateFormattable, LocaleTimeFormatt
 
     @Override
     public String toString() {
-        return String.format(
-                "%s @ %s by %s", taskName, event.getName(), event.getOrganizer().getName());
+        return "%s @ %s by %s"
+                .formatted(taskName, event.getName(), event.getOrganizer().getName());
     }
 
     public EventTaskDto toDto() {

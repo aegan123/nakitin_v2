@@ -87,7 +87,7 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userDao.findByUsername(username);
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found.", username));
+            throw new UsernameNotFoundException("User '%s' not found.".formatted(username));
         }
 
         if (!user.isEnabled()) {

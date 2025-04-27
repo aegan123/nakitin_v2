@@ -73,8 +73,7 @@ class NakitinControllerAdvice {
         model.addAttribute(MODEL_LABEL_CONTACT_ADMIN, true);
         model.addAttribute(
                 "contactAdminText",
-                String.format(
-                        messageSource.getMessage("error.contact.admin", null, LocaleContextHolder.getLocale()), id));
+                messageSource.getMessage("error.contact.admin", new Object[] {id}, LocaleContextHolder.getLocale()));
 
         return "error";
     }

@@ -89,7 +89,7 @@ public class EventEntity implements LocaleDateFormattable {
 
     @Override
     public String toString() {
-        return String.format("%s: %s", organizer.getName(), name);
+        return "%s: %s".formatted(organizer.getName(), name);
     }
 
     public void addTask(EventTaskEntity task) {

@@ -73,7 +73,7 @@ public class NakitinController {
         }
         nakitinService.addEventTask(eventTaskForm);
 
-        return String.format("redirect:/event/%s", eventTaskForm.getEventId());
+        return "redirect:/event/%s".formatted(eventTaskForm.getEventId());
     }
 
     @GetMapping("/task/edit")
@@ -117,7 +117,7 @@ public class NakitinController {
         }
         nakitinService.editEventTask(eventTaskForm);
 
-        return String.format("redirect:/event/%s", eventTaskForm.getEventId());
+        return "redirect:/event/%s".formatted(eventTaskForm.getEventId());
     }
 
     @PostMapping("/volunteer/{eventId}/task/{taskId}")
@@ -132,7 +132,7 @@ public class NakitinController {
             nakitinService.volunteerToTask(taskId, loggedInUser);
         }
 
-        return String.format("redirect:/event/%s", eventId);
+        return "redirect:/event/%s".formatted(eventId);
     }
 
     @GetMapping("/success")
