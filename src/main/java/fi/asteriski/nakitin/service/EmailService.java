@@ -7,6 +7,7 @@ package fi.asteriski.nakitin.service;
 import static fi.asteriski.nakitin.utils.Constants.LOG_ERROR_MESSAGE_TEMPLATE;
 
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -59,7 +60,7 @@ public class EmailService {
         }
     }
 
-    public void sendPasswordExpirationWarning(String toEmail, long daysUntilExpiration) {
+    public void sendPasswordExpirationWarning(final String[] recipients, final Long daysUntilExpiration) {
         var subject =
                 messageSource.getMessage("email.subject.password-expiration", null, LocaleContextHolder.getLocale());
         var message = messageSource.getMessage(
@@ -67,7 +68,7 @@ public class EmailService {
                 new Object[] {daysUntilExpiration},
                 LocaleContextHolder.getLocale());
         try {
-            sendEmail(toEmail, defaultSender, subject, message);
+            sendEmail(recipients, defaultSender, subject, message);
         } catch (MessagingException e) {
             log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(e));
         }
@@ -86,14 +87,14 @@ public class EmailService {
         }
     }
 
-    public void sendAccountDeletionWarning(String email, Long monthsToDeleteExpiredUsers) {
+    public void sendAccountDeletionWarning(final String[] recipients, final Long monthsToDeleteExpiredUsers) {
         var subject = messageSource.getMessage("email.subject.account-deletion", null, LocaleContextHolder.getLocale());
         var message = messageSource.getMessage(
                 "email.message.email-account-deletion",
                 new Object[] {monthsToDeleteExpiredUsers},
                 LocaleContextHolder.getLocale());
         try {
-            sendEmail(email, defaultSender, subject, message);
+            sendEmail(recipients, defaultSender, subject, message);
         } catch (MessagingException e) {
             log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(e));
         }
@@ -121,12 +122,29 @@ public class EmailService {
         helper.setSubject(messageSubject);
         helper.setText(messageText, true);
 
+        sendMessage(msg);
+    }
+
+    private void sendEmail(
+            final String[] recipients, final String sender, final String messageSubject, final String messageText)
+            throws MessagingException {
+        var msg = mailSender.createMimeMessage();
+        var helper = new MimeMessageHelper(msg);
+        helper.setBcc(recipients);
+        helper.setFrom(sender);
+        helper.setSubject(messageSubject);
+        helper.setText(messageText, true);
+
+        sendMessage(msg);
+    }
+
+    private void sendMessage(final MimeMessage msg) {
         try {
             mailSender.send(msg);
         } catch (MailAuthenticationException mailAuthenticationException) {
-            log.error("Error authenticating to smtp server. Error was: {}.", mailAuthenticationException.toString());
+            log.error("Error authenticating to smtp server.", mailAuthenticationException);
         } catch (MailSendException mailSendException) {
-            log.error("Error sending email to '{}'. Error was: {}.", recipient, mailSendException);
+            log.error("Error sending email.", mailSendException);
         } catch (MailException mailException) {
             log.error(LOG_ERROR_MESSAGE_TEMPLATE.formatted(mailException));
         }

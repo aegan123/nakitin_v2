@@ -363,8 +363,11 @@ public class UserService implements UserDetailsService {
     }
 
     public void sendReminderEmailAboutExpiringPasswords() {
-        userDao.fetchUsersWithExpiringPassword(LocalDate.now().plusDays(daysBeforeExpireToRemind))
-                .forEach(email -> emailService.sendPasswordExpirationWarning(email, daysBeforeExpireToRemind));
+        var emails = userDao.fetchUsersWithExpiringPassword(LocalDate.now().plusDays(daysBeforeExpireToRemind))
+                .toArray(String[]::new);
+        if (emails.length > 0) {
+            emailService.sendPasswordExpirationWarning(emails, daysBeforeExpireToRemind);
+        }
     }
 
     @Transactional
@@ -398,8 +401,11 @@ public class UserService implements UserDetailsService {
     }
 
     public void sendReminderToExpiringUser() {
-        userDao.fetchUsersThatAreAboutToExpire(LocalDate.now().minusMonths(monthsToDeleteExpiredUsers - 1))
-                .forEach(email -> emailService.sendAccountDeletionWarning(email, daysBeforeExpireToRemind));
+        var emails = userDao.fetchUsersThatAreAboutToExpire(LocalDate.now().minusMonths(monthsToDeleteExpiredUsers - 1))
+                .toArray(String[]::new);
+        if (emails.length > 0) {
+            emailService.sendAccountDeletionWarning(emails, daysBeforeExpireToRemind);
+        }
     }
 
     private void deleteExpiredAdmins(LocalDate expiryDate) {

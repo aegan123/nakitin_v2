@@ -25,7 +25,7 @@ public class ScheduledTasksService {
     private final PasswordResetTokenDao passwordResetTokenDao;
     private final UserService userService;
 
-    @Scheduled(cron = "${fi.asteriski.config.cleanup.unverifiedUsersCron}")
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.deleteUnverifiedUsersCron}")
     @Transactional
     public void cleanupUnverifiedUsers() {
         log.info("Starting cleanup of unverified users with expired tokens.");
@@ -42,7 +42,7 @@ public class ScheduledTasksService {
         }
     }
 
-    @Scheduled(cron = "${fi.asteriski.config.cleanup.passwordResetCron}")
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.passwordResetTokensCron}")
     @Transactional
     public void cleanupPasswordResetTokens() {
         log.info("Starting cleanup of expired password reset tokens.");
@@ -53,31 +53,31 @@ public class ScheduledTasksService {
         }
     }
 
-    @Scheduled(cron = "${fi.asteriski.config.cleanup.expiringPasswordCron}")
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.expiringPasswordReminderCron}")
     @Transactional
     public void sendReminderAboutExpiringPassword() {
         log.info("Starting sending reminders about expiring passwords.");
         userService.sendReminderEmailAboutExpiringPasswords();
     }
 
-    @Scheduled(cron = "${fi.asteriski.config.cleanup.expiringUsersCron}")
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.disableExpiringUsersCron}")
     @Transactional
     public void disableExpiredUsers() {
         log.info("Starting disabling expired users.");
         userService.disableExpiredUsers();
     }
 
-    @Scheduled(cron = "${fi.asteriski.config.cleanup.expiredUsersCron}")
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.deleteExpiredUsersCron}")
     @Transactional
     public void deleteExpiredUsers() {
         log.info("Starting delete expired users.");
         userService.deleteExpiredUsers();
     }
 
-    @Scheduled(cron = "${fi.asteriski.config.cleanup.expiredUsersCron}")
+    @Scheduled(cron = "${fi.asteriski.config.cleanup.accountDeletionReminderCron}")
     @Transactional
-    public void sendReminderToExpiringUsers() {
-        log.info("Starting send reminder to expiring users.");
+    public void sendReminderToUsersAboutAccountDeletion() {
+        log.info("Starting send reminder to users about account deletion.");
         userService.sendReminderToExpiringUser();
     }
 }
