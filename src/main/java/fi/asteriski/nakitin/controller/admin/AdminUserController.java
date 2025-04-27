@@ -164,6 +164,9 @@ public class AdminUserController {
     public String adminDisableUser(UUID id, Model model, @AuthenticationPrincipal UserEntity user) {
         setCommonUserAttributes(model, user);
         setCommonTabConfigs(model);
+        if (user.isAdmin() && adminUserService.userIsTheOnlyAdmin(id)) {
+            return "redirect:/admin/users?success=false&from=disable-user";
+        }
 
         adminUserService.disableUser(id);
 

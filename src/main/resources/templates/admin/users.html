@@ -25,6 +25,12 @@
             <div th:if="${from == 'enable-user'}" class="message-body" th:text="#{admin.enableUser.success.text}"></div>
             <div th:if="${from == 'disable-user'}" class="message-body" th:text="#{admin.disableUser.success.text}"></div>
         </article>
+        <article th:if="${success == false}" id="success-message" class="message is-danger">
+            <div class="message-header">
+                <p th:if="${from == 'disable-user'}" th:text="#{admin.disableUser.failure.title}"></p>
+            </div>
+            <div th:if="${from == 'disable-user'}" class="message-body" th:text="#{admin.disableUser.failure.text}"></div>
+        </article>
         <a th:href="@{/admin/add-user}">
             <span class="icon">
   <i class="fa-solid fa-plus"></i>
