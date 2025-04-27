@@ -18,6 +18,8 @@ import jakarta.validation.Valid;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class AdminUserController {
     private final AdminUserService adminUserService;
+    private final MessageSource messageSource;
 
     @GetMapping({"/admin", "/admin/users"})
     public String adminFrontpage(
@@ -177,23 +180,28 @@ public class AdminUserController {
         var errorMsg = "";
         if (isPasswordError(result)) {
             model.addAttribute(MODEL_LABEL_CUSTOM_VALIDATION_ERROR, true);
-            errorMsg += ERROR_MESSAGE_PASSWORDS_DO_NOT_MATCH;
+            errorMsg +=
+                    messageSource.getMessage("validation.passwords.mustMatch", null, LocaleContextHolder.getLocale());
         }
         if (isAdminAndOrgAdminError(result)) {
+            var message = messageSource.getMessage(
+                    "validation.user.notOrgAdminAndAdmin", null, LocaleContextHolder.getLocale());
+
             model.addAttribute(MODEL_LABEL_CUSTOM_VALIDATION_ERROR, true);
-            errorMsg += "<br/>" + CANNOT_BE_ADMIN_AND_ORG_ADMIN;
+            errorMsg += "<br/>" + message;
         }
         model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, errorMsg);
     }
 
     private boolean isPasswordError(BindingResult result) {
-        return result.getAllErrors().stream()
-                .anyMatch(a -> Objects.equals(PASSWORDS_MUST_MATCH, a.getDefaultMessage()));
+        var message = messageSource.getMessage("validation.passwords.mustMatch", null, LocaleContextHolder.getLocale());
+        return result.getAllErrors().stream().anyMatch(a -> Objects.equals(message, a.getDefaultMessage()));
     }
 
     private boolean isAdminAndOrgAdminError(BindingResult result) {
-        return result.getAllErrors().stream()
-                .anyMatch(a -> Objects.equals(CANNOT_BE_ADMIN_AND_ORG_ADMIN, a.getDefaultMessage()));
+        var message =
+                messageSource.getMessage("validation.user.notOrgAdminAndAdmin", null, LocaleContextHolder.getLocale());
+        return result.getAllErrors().stream().anyMatch(a -> Objects.equals(message, a.getDefaultMessage()));
     }
 
     private static void setCommonTabConfigs(Model model) {

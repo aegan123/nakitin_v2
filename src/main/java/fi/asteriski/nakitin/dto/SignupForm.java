@@ -4,8 +4,6 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
-import static fi.asteriski.nakitin.utils.Constants.PASSWORDS_MUST_MATCH;
-
 import fi.asteriski.nakitin.validation.EmailNotInUse;
 import fi.asteriski.nakitin.validation.IsNotAllTheSameCharacter;
 import fi.asteriski.nakitin.validation.PasswordMatch;
@@ -18,30 +16,30 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@PasswordMatch(message = PASSWORDS_MUST_MATCH)
+@PasswordMatch(message = "{validation.passwords.mustMatch}")
 public class SignupForm extends FormWithPassword {
-    @NotBlank(message = "Käyttäjänimi on pakollinen tieto")
-    @UsernameNotInUse(message = "Käyttäjätunnus on jo varattu")
-    String username;
+    @NotBlank(message = "{validation.user.username.notBlank}")
+    @UsernameNotInUse(message = "{validation.user.username.inuse}")
+    private String username;
 
-    @NotBlank(message = "Etunimi on pakollinen tieto")
-    String firstName;
+    @NotBlank(message = "{validation.user.firstname.notBlank}")
+    private String firstName;
 
-    @NotBlank(message = "Sukunimi on pakollinen tieto")
-    String lastName;
+    @NotBlank(message = "{validation.user.lastname.notBlank}")
+    private String lastName;
 
-    @Email(message = "Virheellinen sähköpostiosoite")
-    @NotBlank(message = "Sähköpostiosoite on pakollinen tieto")
-    @EmailNotInUse(message = "Sähköpostiosoitteella on jo rekisteröity")
-    String email;
+    @Email(message = "{validation.user.email.invalid}")
+    @NotBlank(message = "{validation.user.email.notBlank}")
+    @EmailNotInUse(message = "{validation.user.email.inUse}")
+    private String email;
 
-    @NotBlank(message = "Salasana on pakollinen tieto")
-    @Size(min = 8, message = "Salasanan tulee olla vähintään kahdeksan merkkiä pitkä")
-    @IsNotAllTheSameCharacter(message = "Salasana ei saa koostua pelkästään yhdestä ja samasta merkistä")
-    String password;
+    @NotBlank(message = "{validation.password.notBlank}")
+    @Size(min = 8, message = "{validation.password.size}")
+    @IsNotAllTheSameCharacter(message = "{validation.password.notSameChar}")
+    private String password;
 
-    @NotBlank(message = "Salasana on pakollinen tieto")
-    @Size(min = 8, message = "Salasanan tulee olla vähintään kahdeksan merkkiä pitkä")
-    @IsNotAllTheSameCharacter(message = "Salasana ei saa koostua pelkästään yhdestä ja samasta merkistä")
-    String confirmPassword;
+    @NotBlank(message = "{validation.password.notBlank}")
+    @Size(min = 8, message = "{validation.password.size}")
+    @IsNotAllTheSameCharacter(message = "{validation.password.notSameChar}")
+    private String confirmPassword;
 }

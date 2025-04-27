@@ -17,12 +17,6 @@ public class Constants {
     public static final Sort SORT_BY_TIMESTAMP_DESC = Sort.by(Sort.Direction.DESC, "timestamp");
     public static final int MAX_PAGE_SIZE = 20;
     public static final String DUMMY_PASSWORD = Base64.getEncoder().encodeToString("dummyPassword".getBytes());
-    public static final String PASSWORDS_MUST_MATCH = "Salasanojen tulee täsmätä";
-    public static final String CANNOT_BE_ADMIN_AND_ORG_ADMIN =
-            "Käyttäjä ei voi olla sekä nakittimen admin että järjestöadmin";
-    public static final String EMAIL_IN_USE_BY_ANOTHER_USER = "Sähköpostiosoite on jo käytössä toisella käyttäjällä";
-    public static final String ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME = "Tämän niminen järjestö on jo olemassa.";
-    public static final String ERROR_MESSAGE_PASSWORDS_DO_NOT_MATCH = "Salasanat eivät täsmää.";
     public static final String LOG_ERROR_MESSAGE_TEMPLATE = "Error with email. Error was: %s";
 
     public static final String HTML_BREAK = "<br/>";

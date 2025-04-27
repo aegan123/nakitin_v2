@@ -19,20 +19,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventForm {
-    @NotBlank(message = "Nimi on pakollinen tieto")
+    @NotBlank(message = "{validation.name.notBlank}")
     private String name;
 
-    @NotBlank(message = "Venue on pakollinen tieto")
+    @NotBlank(message = "{validation.event.venue.notBlank}")
     private String venue;
 
-    @NotBlank(message = "Kuvaus on pakollinen tieto")
+    @NotBlank(message = "{validation.event.description.notBlank}")
     private String description;
 
-    @NotNull(message = "Ajankohta täytyy antaa")
-    @DateMustBeInTheFuture(message = "Tapahtumapäivän tulee olla tulevaisuudessa")
+    @NotNull(message = "{validation.event.date.notBlank}")
+    @DateMustBeInTheFuture(message = "{validation.event.date.inTheFuture}")
     private LocalDate date;
 
-    @NotBlank(message = "Järjestäjä on pakollinen tieto")
+    @NotBlank(message = "{validation.event.organizer.notBlank}")
     private String organizer;
 
     private UUID eventId;

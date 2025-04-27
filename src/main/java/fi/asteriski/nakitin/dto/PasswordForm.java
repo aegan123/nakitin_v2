@@ -4,8 +4,6 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto;
 
-import static fi.asteriski.nakitin.utils.Constants.PASSWORDS_MUST_MATCH;
-
 import fi.asteriski.nakitin.validation.IsNotAllTheSameCharacter;
 import fi.asteriski.nakitin.validation.PasswordMatch;
 import jakarta.validation.constraints.NotBlank;
@@ -18,18 +16,18 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
-@PasswordMatch(message = PASSWORDS_MUST_MATCH)
+@PasswordMatch(message = "{validation.passwords.mustMatch}")
 public class PasswordForm extends FormWithPassword {
     private UUID userId;
 
-    @NotBlank(message = "Salasana on pakollinen tieto")
-    @Size(min = 8, message = "Salasanan tulee olla vähintään kahdeksan merkkiä pitkä")
-    @IsNotAllTheSameCharacter(message = "Salasana ei saa koostua pelkästään yhdestä ja samasta merkistä")
+    @NotBlank(message = "{validation.password.notBlank}")
+    @Size(min = 8, message = "{validation.password.size}")
+    @IsNotAllTheSameCharacter(message = "{validation.password.notSameChar}")
     private String password;
 
-    @NotBlank(message = "Salasana on pakollinen tieto")
-    @Size(min = 8, message = "Salasanan tulee olla vähintään kahdeksan merkkiä pitkä")
-    @IsNotAllTheSameCharacter(message = "Salasana ei saa koostua pelkästään yhdestä ja samasta merkistä")
+    @NotBlank(message = "{validation.password.notBlank}")
+    @Size(min = 8, message = "{validation.password.size}")
+    @IsNotAllTheSameCharacter(message = "{validation.password.notSameChar}")
     private String confirmPassword;
 
     public UserDto toUserDto() {

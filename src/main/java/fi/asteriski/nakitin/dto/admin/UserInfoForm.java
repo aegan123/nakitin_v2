@@ -4,8 +4,6 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto.admin;
 
-import static fi.asteriski.nakitin.utils.Constants.EMAIL_IN_USE_BY_ANOTHER_USER;
-
 import fi.asteriski.nakitin.validation.EmailNotInUseByAnotherUser;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,18 +13,18 @@ import lombok.Data;
 
 @Data
 @Builder
-@EmailNotInUseByAnotherUser(message = EMAIL_IN_USE_BY_ANOTHER_USER)
+@EmailNotInUseByAnotherUser(message = "{validation.user.email.inUseByAnother}")
 public class UserInfoForm {
     private UUID id;
 
-    @NotBlank(message = "Etunimi on pakollinen tieto")
+    @NotBlank(message = "{validation.user.firstname.notBlank}")
     private String firstName;
 
-    @NotBlank(message = "Sukunimi on pakollinen tieto")
+    @NotBlank(message = "{validation.user.lastname.notBlank}")
     private String lastName;
 
-    @Email(message = "Virheellinen sähköpostiosoite")
-    @NotBlank(message = "Sähköpostiosoite on pakollinen tieto")
+    @Email(message = "{validation.user.email.invalid}")
+    @NotBlank(message = "{validation.user.email.notBlank=}")
     private String email;
 
     private UUID newOrganization;

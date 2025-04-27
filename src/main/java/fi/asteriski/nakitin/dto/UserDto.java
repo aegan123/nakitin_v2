@@ -22,14 +22,14 @@ public final class UserDto {
     private String username;
     private String password;
 
-    @NotBlank(message = "Etunimi on pakollinen tieto")
+    @NotBlank(message = "{validation.user.firstname.notBlank}")
     private String firstName;
 
-    @NotBlank(message = "Sukunimi on pakollinen tieto")
+    @NotBlank(message = "{validation.user.lastname.notBlank}")
     private String lastName;
 
-    @Email(message = "Virheellinen sähköpostiosoite")
-    @NotBlank(message = "Sähköpostiosoite on pakollinen tieto")
+    @Email(message = "{validation.user.email.invalid}")
+    @NotBlank(message = "{validation.user.email.notBlank}")
     private String email;
 
     public static UserDto fromUserDetailsProjection(UserDetailsProjection userDetailsProjection) {

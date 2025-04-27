@@ -282,13 +282,14 @@ public class UserController {
 
     private void addCustomErrorIfNeeded(BindingResult result, Model model) {
         if (isPasswordError(result)) {
+            var message = messageSource.getMessage("validation.passwords.mustMatch", null, Locale.getDefault());
             model.addAttribute(MODEL_LABEL_CUSTOM_VALIDATION_ERROR, true);
-            model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, PASSWORDS_MUST_MATCH);
+            model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, message);
         }
     }
 
     private boolean isPasswordError(BindingResult result) {
-        return result.getAllErrors().stream()
-                .anyMatch(a -> Objects.equals(PASSWORDS_MUST_MATCH, a.getDefaultMessage()));
+        var message = messageSource.getMessage("validation.passwords.mustMatch", null, Locale.getDefault());
+        return result.getAllErrors().stream().anyMatch(a -> Objects.equals(message, a.getDefaultMessage()));
     }
 }
