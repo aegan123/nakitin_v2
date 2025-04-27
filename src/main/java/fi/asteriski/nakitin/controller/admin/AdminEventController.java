@@ -43,6 +43,7 @@ public class AdminEventController {
         setCommonUserAttributes(model, user);
         setCommonTabConfigs(model);
         model.addAttribute(MODEL_LABEL_EVENT, adminEventService.fetchEvent(id));
+        model.addAttribute(MODEL_LABEL_USER, user);
 
         return "admin/viewEvent";
     }

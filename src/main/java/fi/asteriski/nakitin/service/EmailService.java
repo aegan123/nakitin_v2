@@ -41,7 +41,9 @@ public class EmailService {
     public void sendPasswordResetEmail(String toEmail, String resetUrl) {
         var subject = messageSource.getMessage("email.subject.password-reset", null, LocaleContextHolder.getLocale());
         var message = messageSource.getMessage(
-                "email.message.password-reset", new Object[] {resetUrl}, LocaleContextHolder.getLocale());
+                "email.message.password-reset",
+                new Object[] {resetUrl, tokenExpirationHours},
+                LocaleContextHolder.getLocale());
         try {
             sendEmail(toEmail, defaultSender, subject, message);
         } catch (MessagingException e) {
@@ -52,7 +54,9 @@ public class EmailService {
     public void sendEmailVerification(String toEmail, String verificationUrl) {
         var subject = messageSource.getMessage("email.subject.verification", null, LocaleContextHolder.getLocale());
         var message = messageSource.getMessage(
-                "email.message.verification", new Object[] {verificationUrl}, LocaleContextHolder.getLocale());
+                "email.message.verification",
+                new Object[] {verificationUrl, tokenExpirationHours},
+                LocaleContextHolder.getLocale());
         try {
             sendEmail(toEmail, defaultSender, subject, message);
         } catch (MessagingException e) {
@@ -78,7 +82,7 @@ public class EmailService {
         var subject = messageSource.getMessage("email.subject.verification", null, LocaleContextHolder.getLocale());
         var message = messageSource.getMessage(
                 "email.message.email-change-verification",
-                new Object[] {verificationUrl},
+                new Object[] {verificationUrl, tokenExpirationHours},
                 LocaleContextHolder.getLocale());
         try {
             sendEmail(toEmail, defaultSender, subject, message);
