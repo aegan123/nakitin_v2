@@ -64,7 +64,7 @@ public class EventEntity implements LocaleDateFormattable {
     @Column(nullable = false)
     private LocalDate date;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private OrganizationEntity organizer;
 
     @ManyToOne(fetch = FetchType.LAZY)

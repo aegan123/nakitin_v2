@@ -51,7 +51,7 @@ public class EventDao {
     private EventEntity fetchById(UUID id) {
         return eventRepository
                 .findById(id)
-                .orElseThrow(() -> new EventNotFoundException(String.format("Event not found with id '%s'.", id)));
+                .orElseThrow(() -> new EventNotFoundException("Event not found with id '%s'.".formatted(id)));
     }
 
     public void deleteEvent(UUID event) {

@@ -29,8 +29,6 @@ public class NakitinController {
     public String index(Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
         setCommonUserAttributes(model, loggedInUser);
         model.addAttribute(MODEL_LABEL_UPCOMING_EVENTS, nakitinService.fetchUpcomingEvents());
-        model.addAttribute(
-                MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, loggedInUser != null && loggedInUser.isOrganisationAdmin());
 
         return "index";
     }

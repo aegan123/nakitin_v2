@@ -84,7 +84,7 @@ public class AdminOrganizationService {
 
     public AddEditOrganizationForm fetchOrganizationEditForm(final UUID id) {
         var org = organizationService.fetchOrganizationByIdForAdmin(id);
-        var adminId = org.users().stream().findFirst().orElseThrow().getId();
+        var adminId = org.users().stream().findFirst().map(UserEntity::getId).orElse(null);
         return AddEditOrganizationForm.builder()
                 .organizationId(id)
                 .name(org.name())
