@@ -56,7 +56,7 @@ public class SecurityConfig {
                             .requestMatchers(POST, "/logout")
                             .hasAnyRole(ROLE_USER.label, ROLE_ADMIN.label, ROLE_ORG_ADMIN.label)
                             .requestMatchers(POST, "/volunteer/**")
-                            .hasAnyRole(ROLE_USER.label, ROLE_ADMIN.label, ROLE_ORG_ADMIN.label)
+                            .hasAnyRole(ROLE_USER.label, ROLE_ORG_ADMIN.label)
                             .requestMatchers(POST, "/task/add")
                             .hasRole(ROLE_ORG_ADMIN.label)
                             .requestMatchers(GET, "/task/add")
