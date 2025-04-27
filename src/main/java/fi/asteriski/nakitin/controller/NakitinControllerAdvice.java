@@ -9,9 +9,9 @@ import static fi.asteriski.nakitin.utils.Constants.*;
 import fi.asteriski.nakitin.exceptions.CsvExportException;
 import fi.asteriski.nakitin.exceptions.EventNotFoundException;
 import fi.asteriski.nakitin.service.ErrorService;
-import java.util.Locale;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -33,7 +33,7 @@ class NakitinControllerAdvice {
         errorService.logError(ex);
         model.addAttribute(
                 MODEL_LABEL_ERROR_TITLE,
-                messageSource.getMessage("error.event.not-found.title", null, Locale.getDefault()));
+                messageSource.getMessage("error.event.not-found.title", null, LocaleContextHolder.getLocale()));
         model.addAttribute(MODEL_LABEL_CONTACT_ADMIN, false);
 
         return "error";
@@ -45,7 +45,7 @@ class NakitinControllerAdvice {
         errorService.logError(ex);
         model.addAttribute(
                 MODEL_LABEL_ERROR_TITLE,
-                messageSource.getMessage("error.page.not-found.title", null, Locale.getDefault()));
+                messageSource.getMessage("error.page.not-found.title", null, LocaleContextHolder.getLocale()));
         model.addAttribute(MODEL_LABEL_ERROR_TEXT, "");
         model.addAttribute(MODEL_LABEL_CONTACT_ADMIN, false);
 
@@ -65,13 +65,16 @@ class NakitinControllerAdvice {
     String genericErrorHandler(RuntimeException ex, Model model) {
         var id = errorService.logError(ex);
         model.addAttribute(
-                MODEL_LABEL_ERROR_TITLE, messageSource.getMessage("error.generic.title", null, Locale.getDefault()));
+                MODEL_LABEL_ERROR_TITLE,
+                messageSource.getMessage("error.generic.title", null, LocaleContextHolder.getLocale()));
         model.addAttribute(
-                MODEL_LABEL_ERROR_TEXT, messageSource.getMessage("error.generic.text", null, Locale.getDefault()));
+                MODEL_LABEL_ERROR_TEXT,
+                messageSource.getMessage("error.generic.text", null, LocaleContextHolder.getLocale()));
         model.addAttribute(MODEL_LABEL_CONTACT_ADMIN, true);
         model.addAttribute(
                 "contactAdminText",
-                String.format(messageSource.getMessage("error.contact.admin", null, Locale.getDefault()), id));
+                String.format(
+                        messageSource.getMessage("error.contact.admin", null, LocaleContextHolder.getLocale()), id));
 
         return "error";
     }
