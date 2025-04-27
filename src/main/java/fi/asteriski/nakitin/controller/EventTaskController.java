@@ -53,6 +53,6 @@ public class EventTaskController {
         }
         eventTaskService.deleteTask(deleteForm.id());
 
-        return String.format("redirect:/event/%s?success=true", deleteForm.id2());
+        return "redirect:/event/%s?success=true".formatted(deleteForm.id2());
     }
 }

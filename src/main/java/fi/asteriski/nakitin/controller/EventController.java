@@ -48,7 +48,7 @@ public class EventController {
         }
         var eventId = eventService.createNewEvent(eventForm, user);
 
-        return String.format("redirect:/event/%s", eventId);
+        return "redirect:/event/%s".formatted(eventId);
     }
 
     @GetMapping("/edit-event")
@@ -72,7 +72,7 @@ public class EventController {
         }
         var eventId = eventService.editEvent(eventForm, user);
 
-        return String.format("redirect:/event/%s", eventId);
+        return "redirect:/event/%s".formatted(eventId);
     }
 
     @GetMapping("/delete-event")

@@ -41,13 +41,13 @@ public class UserDao {
     public UserEntity findById(UUID id) {
         return userRepository
                 .findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", id)));
+                .orElseThrow(() -> new UsernameNotFoundException("User '%s' not found.".formatted(id)));
     }
 
     public UserEntity findByUsername(String username) {
         return userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", username)));
+                .orElseThrow(() -> new UsernameNotFoundException("User '%s' not found.".formatted(username)));
     }
 
     public boolean existsByEmail(String email) {
@@ -81,10 +81,6 @@ public class UserDao {
                     });
         }
 
-        userRepository.save(user);
-    }
-
-    public void editUser(UserEntity user) {
         userRepository.save(user);
     }
 
@@ -137,7 +133,7 @@ public class UserDao {
         return userRepository
                 .findUserEntityById(id)
                 .map(UserDto::fromUserDetailsProjection)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User '%s' not found.", id)));
+                .orElseThrow(() -> new UsernameNotFoundException("User '%s' not found.".formatted(id)));
     }
 
     public Optional<UserEntity> findByEmail(String email) {

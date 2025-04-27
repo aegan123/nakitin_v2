@@ -9,7 +9,6 @@ import fi.asteriski.nakitin.entity.VerificationTokenEntity;
 import fi.asteriski.nakitin.repo.VerificationTokenRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +23,6 @@ public class VerificationTokenDao {
 
     public void save(VerificationTokenEntity verificationToken) {
         verificationTokenRepository.save(verificationToken);
-    }
-
-    public Optional<VerificationTokenEntity> findByToken(String token) {
-        return verificationTokenRepository.findByToken(token);
     }
 
     public List<VerificationTokenEntity> findUnverifiedUsersWithExpiredTokens() {

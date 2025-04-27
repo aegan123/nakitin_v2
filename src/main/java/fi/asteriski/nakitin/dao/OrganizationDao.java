@@ -37,8 +37,8 @@ public class OrganizationDao {
     public OrganizationEntity fetchOrganizationByName(String organizer) {
         return organizationRepository
                 .findByName(organizer)
-                .orElseThrow(() ->
-                        new OrganizationNotFoundException(String.format("Organization %s not found.", organizer)));
+                .orElseThrow(
+                        () -> new OrganizationNotFoundException("Organization %s not found.".formatted(organizer)));
     }
 
     public void deleteOrganizations(List<OrganizationEntity> organizationsToDelete) {

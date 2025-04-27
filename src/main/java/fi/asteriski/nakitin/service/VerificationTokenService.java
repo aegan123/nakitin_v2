@@ -4,6 +4,8 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.service;
 
+import static fi.asteriski.nakitin.utils.Constants.TOKEN_EXPIRY_HOURS;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.extern.log4j.Log4j2;
@@ -12,7 +14,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Log4j2
 public class VerificationTokenService {
-    private static final int TOKEN_EXPIRY_HOURS = 24;
 
     public String generateVerificationToken() {
         return UUID.randomUUID().toString();

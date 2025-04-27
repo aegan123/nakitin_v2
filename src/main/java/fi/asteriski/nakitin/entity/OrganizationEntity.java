@@ -76,10 +76,6 @@ public class OrganizationEntity {
         event.setOrganizer(null);
     }
 
-    public boolean hasNoUsers() {
-        return users.isEmpty();
-    }
-
     public OrganizationDto toDto() {
         return OrganizationDto.builder()
                 .id(id)

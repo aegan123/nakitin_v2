@@ -29,8 +29,6 @@ public class NakitinController {
     public String index(Model model, @AuthenticationPrincipal UserEntity loggedInUser) {
         setCommonUserAttributes(model, loggedInUser);
         model.addAttribute(MODEL_LABEL_UPCOMING_EVENTS, nakitinService.fetchUpcomingEvents());
-        model.addAttribute(
-                MODEL_LABEL_USER_IS_ORGANISATION_ADMIN, loggedInUser != null && loggedInUser.isOrganisationAdmin());
 
         return "index";
     }
@@ -75,7 +73,7 @@ public class NakitinController {
         }
         nakitinService.addEventTask(eventTaskForm);
 
-        return String.format("redirect:/event/%s", eventTaskForm.getEventId());
+        return "redirect:/event/%s".formatted(eventTaskForm.getEventId());
     }
 
     @GetMapping("/task/edit")
@@ -119,7 +117,7 @@ public class NakitinController {
         }
         nakitinService.editEventTask(eventTaskForm);
 
-        return String.format("redirect:/event/%s", eventTaskForm.getEventId());
+        return "redirect:/event/%s".formatted(eventTaskForm.getEventId());
     }
 
     @PostMapping("/volunteer/{eventId}/task/{taskId}")
@@ -134,7 +132,7 @@ public class NakitinController {
             nakitinService.volunteerToTask(taskId, loggedInUser);
         }
 
-        return String.format("redirect:/event/%s", eventId);
+        return "redirect:/event/%s".formatted(eventId);
     }
 
     @GetMapping("/success")

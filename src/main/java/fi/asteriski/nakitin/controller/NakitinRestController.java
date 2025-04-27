@@ -30,9 +30,8 @@ public class NakitinRestController {
         var headers = new HttpHeaders();
         headers.add(
                 CONTENT_DISPOSITION,
-                String.format(
-                        "attachment; filename*=UTF-8''%s.csv",
-                        URLEncoder.encode(exportDto.eventName().replace(" ", "_"), StandardCharsets.UTF_8)));
+                "attachment; filename*=UTF-8''%s.csv"
+                        .formatted(URLEncoder.encode(exportDto.eventName().replace(" ", "_"), StandardCharsets.UTF_8)));
         headers.add(CACHE_CONTROL, "no-cache, no-store, must-revalidate");
         headers.add(PRAGMA, "no-cache");
         headers.add(EXPIRES, "0");

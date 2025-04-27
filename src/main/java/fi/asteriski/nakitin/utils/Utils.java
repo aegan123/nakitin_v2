@@ -40,8 +40,8 @@ public class Utils {
     }
 
     /**
-     * Converts special characters to their HTML equivalents. Currently handles: - newlines to HTML break tags - tabs to
-     * non-breaking spaces (standard HTML tab equivalent) Input string is trimmed before conversion.
+     * Converts special characters to their HTML equivalents. Currently, handles: - newlines to HTML break tags - tabs
+     * to non-breaking spaces (standard HTML tab equivalent). Input string is trimmed before conversion.
      *
      * @param text the text to convert, may be null
      * @return the converted text with HTML entities, or null if input is null
