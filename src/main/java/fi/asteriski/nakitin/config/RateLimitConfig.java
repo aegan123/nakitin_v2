@@ -9,14 +9,12 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import io.github.bucket4j.Bucket;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableCaching
-@EnableConfigurationProperties(RateLimitProperties.class)
 public class RateLimitConfig {
 
     @Bean
