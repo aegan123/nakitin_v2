@@ -22,11 +22,11 @@ import fi.asteriski.nakitin.repo.projection.DateProjection;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Limit;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -52,7 +52,8 @@ public class NakitinDao {
                 .filter(event -> !event.getDate().isBefore(LocalDate.now()))
                 .map(EventEntity::toEventPageDto)
                 .orElseThrow(() -> new EventNotFoundException(
-                        messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + "."));
+                        messageSource.getMessage("error.event.not-found.label", null, LocaleContextHolder.getLocale())
+                                + "."));
     }
 
     public EventTaskEntity fetchReference(UUID taskId) {
@@ -62,9 +63,9 @@ public class NakitinDao {
     public EventTaskEntity getEventTaskById(UUID taskId) {
         return eventTaskRepository
                 .findById(taskId)
-                .orElseThrow(() -> new EventTaskNotFoundException(
-                        messageSource.getMessage("error.event-task.not-found.label", null, Locale.getDefault()) + " "
-                                + taskId + "."));
+                .orElseThrow(() -> new EventTaskNotFoundException(messageSource.getMessage(
+                                "error.event-task.not-found.label", null, LocaleContextHolder.getLocale())
+                        + " " + taskId + "."));
     }
 
     public void saveUser(UserEntity loggedInUser) {
@@ -81,9 +82,9 @@ public class NakitinDao {
     public void editEventTask(EventTaskForm eventTaskDto) {
         var entity = eventTaskRepository
                 .findById(eventTaskDto.getId())
-                .orElseThrow(() -> new EventTaskNotFoundException(
-                        messageSource.getMessage("error.event-task.not-found.label", null, Locale.getDefault()) + " "
-                                + eventTaskDto.getId() + "."));
+                .orElseThrow(() -> new EventTaskNotFoundException(messageSource.getMessage(
+                                "error.event-task.not-found.label", null, LocaleContextHolder.getLocale())
+                        + " " + eventTaskDto.getId() + "."));
         entity.setDate(eventTaskDto.getDate());
         entity.setTaskName(eventTaskDto.getTaskName());
         entity.setStartTime(eventTaskDto.getStartTime());
@@ -97,8 +98,8 @@ public class NakitinDao {
                 .findById(eventId)
                 .map(EventEntity::toEventPageDto)
                 .orElseThrow(() -> new EventNotFoundException(
-                        messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + " "
-                                + eventId + "."));
+                        messageSource.getMessage("error.event.not-found.label", null, LocaleContextHolder.getLocale())
+                                + " " + eventId + "."));
     }
 
     public UserEntity fetchUser(@NonNull String userName) {
@@ -112,8 +113,8 @@ public class NakitinDao {
                 .findDateById(eventId)
                 .map(DateProjection::getDate)
                 .orElseThrow(() -> new EventNotFoundException(
-                        messageSource.getMessage("error.event.not-found.label", null, Locale.getDefault()) + " "
-                                + eventId + "."));
+                        messageSource.getMessage("error.event.not-found.label", null, LocaleContextHolder.getLocale())
+                                + " " + eventId + "."));
     }
 
     public List<NameAndDateDto> fetchUpcomingEvents(UUID organizationId) {

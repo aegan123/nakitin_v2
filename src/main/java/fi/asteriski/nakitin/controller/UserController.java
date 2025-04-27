@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -282,14 +283,15 @@ public class UserController {
 
     private void addCustomErrorIfNeeded(BindingResult result, Model model) {
         if (isPasswordError(result)) {
-            var message = messageSource.getMessage("validation.passwords.mustMatch", null, Locale.getDefault());
+            var message =
+                    messageSource.getMessage("validation.passwords.mustMatch", null, LocaleContextHolder.getLocale());
             model.addAttribute(MODEL_LABEL_CUSTOM_VALIDATION_ERROR, true);
             model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, message);
         }
     }
 
     private boolean isPasswordError(BindingResult result) {
-        var message = messageSource.getMessage("validation.passwords.mustMatch", null, Locale.getDefault());
+        var message = messageSource.getMessage("validation.passwords.mustMatch", null, LocaleContextHolder.getLocale());
         return result.getAllErrors().stream().anyMatch(a -> Objects.equals(message, a.getDefaultMessage()));
     }
 }
