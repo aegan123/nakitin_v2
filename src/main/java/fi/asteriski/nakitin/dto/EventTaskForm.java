@@ -21,23 +21,23 @@ import lombok.*;
 public class EventTaskForm {
     private UUID id;
 
-    @NotBlank(message = "Tehtävä on pakollinen tieto")
+    @NotBlank(message = "{validation.task.name.notBlank}")
     @NonNull
     private String taskName;
 
     private LocalDate date;
 
-    @NotNull(message = "Aloitusaika on pakollinen tieto")
+    @NotNull(message = "{validation.task.startTime.notBlank}")
     @NonNull
     private LocalTime startTime;
 
-    @NotNull(message = "Lopetusaika on pakollinen tieto")
+    @NotNull(message = "{validation.task.endTime.notBlank}")
     @NonNull
     private LocalTime endTime;
 
     @NonNull
-    @NotNull(message = "Henkilömäärä on pakollinen tieto")
-    @Min(1)
+    @NotNull(message = "{validation.task.personCount.notBlank}")
+    @Min(value = 1, message = "{validation.task.personCount.min}")
     private Integer personCount;
 
     private UUID eventId;

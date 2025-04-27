@@ -4,8 +4,6 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.dto.admin;
 
-import static fi.asteriski.nakitin.utils.Constants.ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME;
-
 import fi.asteriski.nakitin.dto.IdFirstLastNameDto;
 import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.validation.OrganizationDoesNotExist;
@@ -17,11 +15,11 @@ import lombok.Data;
 
 @Data
 @Builder
-@OrganizationDoesNotExist(message = ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME)
+@OrganizationDoesNotExist(message = "{validation.organization.existByName}")
 public class AddEditOrganizationForm {
     private UUID organizationId;
 
-    @NotBlank(message = "Nimi on pakollinen tieto")
+    @NotBlank(message = "{validation.name.notBlank}")
     private String name;
 
     private UUID newAdmin;

@@ -15,6 +15,8 @@ import jakarta.validation.Valid;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @AllArgsConstructor
 public class AdminOrganizationController {
     private final AdminOrganizationService adminOrganizationService;
+    private final MessageSource messageSource;
 
     @GetMapping("/admin/organizations")
     public String adminOrganizations(
@@ -134,14 +137,18 @@ public class AdminOrganizationController {
         var errorMsg = "";
         if (isOrganizationNameValidationError(result)) {
             model.addAttribute(MODEL_LABEL_CUSTOM_VALIDATION_ERROR, true);
-            errorMsg += ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME;
+            errorMsg += messageSource.getMessage(
+                    "validation.organization.existByName", null, LocaleContextHolder.getLocale());
         }
         model.addAttribute(MODEL_LABEL_CUSTOM_ERROR_MESSAGE, errorMsg);
     }
 
     private boolean isOrganizationNameValidationError(BindingResult result) {
         return result.getAllErrors().stream()
-                .anyMatch(f -> Objects.equals(f.getDefaultMessage(), ORGANIZATION_ALREADY_EXISTS_BY_THIS_NAME));
+                .anyMatch(f -> Objects.equals(
+                        f.getDefaultMessage(),
+                        messageSource.getMessage(
+                                "validation.organization.existByName", null, LocaleContextHolder.getLocale())));
     }
 
     private static void setCommonTabConfigs(Model model) {
