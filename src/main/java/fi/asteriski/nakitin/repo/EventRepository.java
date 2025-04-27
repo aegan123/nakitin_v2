@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.NonNull;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,5 +43,6 @@ public interface EventRepository extends JpaRepository<EventEntity, UUID> {
     Optional<DateProjection> findDateById(UUID id);
 
     @EntityGraph(value = "graph_event_full")
-    Page<EventEntity> findAll(Pageable pageable);
+    @NonNull
+    Page<EventEntity> findAll(@NonNull Pageable pageable);
 }

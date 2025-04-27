@@ -60,14 +60,6 @@ public class NakitinDao {
         return eventTaskRepository.getReferenceById(taskId);
     }
 
-    public EventTaskEntity getEventTaskById(UUID taskId) {
-        return eventTaskRepository
-                .findById(taskId)
-                .orElseThrow(() -> new EventTaskNotFoundException(messageSource.getMessage(
-                                "error.event-task.not-found.label", null, LocaleContextHolder.getLocale())
-                        + " " + taskId + "."));
-    }
-
     public void saveUser(UserEntity loggedInUser) {
         userRepository.save(loggedInUser);
     }

@@ -9,14 +9,12 @@ import fi.asteriski.nakitin.entity.VerificationTokenEntity;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VerificationTokenRepository extends JpaRepository<VerificationTokenEntity, UUID> {
-    Optional<VerificationTokenEntity> findByToken(String token);
 
     void deleteByUser(UserEntity user);
 

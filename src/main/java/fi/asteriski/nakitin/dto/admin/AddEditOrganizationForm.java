@@ -5,7 +5,6 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.dto.admin;
 
 import fi.asteriski.nakitin.dto.IdFirstLastNameDto;
-import fi.asteriski.nakitin.dto.OrganizationDto;
 import fi.asteriski.nakitin.validation.OrganizationDoesNotExist;
 import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
@@ -25,8 +24,4 @@ public class AddEditOrganizationForm {
     private UUID newAdmin;
     private Set<IdFirstLastNameDto> users;
     private UUID currentAdmin;
-
-    public OrganizationDto toDto() {
-        return OrganizationDto.builder().id(organizationId).name(name).build();
-    }
 }

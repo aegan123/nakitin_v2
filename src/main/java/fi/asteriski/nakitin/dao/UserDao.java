@@ -84,10 +84,6 @@ public class UserDao {
         userRepository.save(user);
     }
 
-    public void editUser(UserEntity user) {
-        userRepository.save(user);
-    }
-
     public Page<UserEntity> fetchAllUsersForAdmin(int page) {
         return userRepository.findAll(PageRequest.of(page, MAX_PAGE_SIZE, SORT_BY_LASTNAME_ASC));
     }
