@@ -21,6 +21,7 @@ public class TestUserBuilder {
     private boolean emailVerified = true;
     private LocalDate expirationDate = LocalDate.now().plusDays(1);
     private UserRole userRole = USER;
+    private boolean enabled = true;
 
     public static TestUserBuilder builder() {
         return new TestUserBuilder();
@@ -36,6 +37,7 @@ public class TestUserBuilder {
         withExpirationDate(LocalDate.now().plusDays(1));
         withUserRole(USER);
         withEmailVerified(true);
+        withEnabled(true);
         return this;
     }
 
@@ -79,6 +81,11 @@ public class TestUserBuilder {
         return this;
     }
 
+    public TestUserBuilder withEnabled(boolean enabled) {
+        this.enabled = enabled;
+        return this;
+    }
+
     public UserEntity build() {
         return UserEntity.builder()
                 .username(username)
@@ -89,6 +96,7 @@ public class TestUserBuilder {
                 .emailVerified(emailVerified)
                 .expirationDate(expirationDate)
                 .userRole(userRole)
+                .enabled(enabled)
                 .build();
     }
 }

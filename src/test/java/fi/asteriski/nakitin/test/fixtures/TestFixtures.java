@@ -4,16 +4,16 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.test.fixtures;
 
+import static fi.asteriski.nakitin.entity.UserRole.ROLE_ADMIN;
+
 import fi.asteriski.nakitin.entity.*;
 import fi.asteriski.nakitin.test.builders.TestUserBuilder;
 import fi.asteriski.nakitin.test.builders.TestVerificationTokenBuilder;
+import fi.asteriski.nakitin.test.factory.TestDataFactory;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
-
-import fi.asteriski.nakitin.test.factory.TestDataFactory;
 import org.junit.jupiter.api.TestInstance;
-
-import static fi.asteriski.nakitin.entity.UserRole.ROLE_ADMIN;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class TestFixtures {
@@ -27,9 +27,20 @@ public abstract class TestFixtures {
 
     protected UserEntity[] createMultipleDefaultUsers(int count) {
         return IntStream.range(0, count)
-            .mapToObj(i -> TestUserBuilder.builder().withDefaults().build())
-            .toList()
-            .toArray(UserEntity[]::new);
+                .mapToObj(i -> TestUserBuilder.builder().withDefaults().build())
+                .toList()
+                .toArray(UserEntity[]::new);
+    }
+
+    protected UserEntity createExpiringUsers(LocalDate expiryDate) {
+        return TestUserBuilder.builder()
+                .withDefaults()
+                .withExpirationDate(expiryDate)
+                .build();
+    }
+
+    protected UserEntity createUserWithEmail(String email) {
+        return TestUserBuilder.builder().withDefaults().withEmail(email).build();
     }
 
     protected VerificationTokenEntity createToken(UserEntity user, LocalDateTime expiryDate) {
@@ -49,13 +60,13 @@ public abstract class TestFixtures {
 
     protected PasswordResetToken createPasswordResetToken(UserEntity user, LocalDateTime expiryDate) {
         return PasswordResetToken.builder()
-            .token(TestDataFactory.generateRandomString(30))
-            .user(user)
-            .expiryDate(expiryDate)
-            .build();
+                .token(TestDataFactory.generateRandomString(30))
+                .user(user)
+                .expiryDate(expiryDate)
+                .build();
     }
 
-    protected OrganizationEntity createDefaultOrganization() {
-        return OrganizationEntity.builder().name("Test Organization").build();
+    protected OrganizationEntity createOrganization(String name) {
+        return OrganizationEntity.builder().name(name).build();
     }
 }

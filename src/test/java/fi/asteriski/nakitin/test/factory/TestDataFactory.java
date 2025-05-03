@@ -4,19 +4,20 @@ Licenced under EUPL-1.2 or later.
 */
 package fi.asteriski.nakitin.test.factory;
 
+import fi.asteriski.nakitin.entity.OrganizationEntity;
 import fi.asteriski.nakitin.entity.PasswordResetToken;
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.VerificationTokenEntity;
+import fi.asteriski.nakitin.repo.OrganizationRepository;
 import fi.asteriski.nakitin.repo.PasswordResetTokenRepository;
 import fi.asteriski.nakitin.repo.UserRepository;
 import fi.asteriski.nakitin.repo.VerificationTokenRepository;
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 
 @Profile("test")
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class TestDataFactory {
     private final UserRepository userRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final OrganizationRepository organizationRepository;
 
     public UserEntity persistUser(UserEntity user) {
         return userRepository.save(user);
@@ -50,6 +52,14 @@ public class TestDataFactory {
         return passwordResetTokenRepository.saveAll(Arrays.asList(tokens));
     }
 
+    public OrganizationEntity persistOrganization(OrganizationEntity organization) {
+        return organizationRepository.save(organization);
+    }
+
+    public List<OrganizationEntity> persistOrganizations(OrganizationEntity... organizations) {
+        return organizationRepository.saveAll(Arrays.asList(organizations));
+    }
+
     public void cleanUp() {
         if (verificationTokenRepository != null) {
             verificationTokenRepository.deleteAll();
@@ -73,5 +83,4 @@ public class TestDataFactory {
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
     }
-
 }
