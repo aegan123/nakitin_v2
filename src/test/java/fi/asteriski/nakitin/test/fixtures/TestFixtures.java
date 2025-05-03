@@ -69,4 +69,11 @@ public abstract class TestFixtures {
     protected OrganizationEntity createOrganization(String name) {
         return OrganizationEntity.builder().name(name).build();
     }
+
+    protected OrganizationEntity[] createMultipleOrganizations(int count) {
+        return IntStream.range(0, count)
+                .mapToObj(i -> createOrganization("Org" + i))
+                .toList()
+                .toArray(OrganizationEntity[]::new);
+    }
 }
