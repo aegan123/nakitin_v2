@@ -21,10 +21,6 @@ public class VerificationTokenDao {
         verificationTokenRepository.deleteByUser(user);
     }
 
-    public void save(VerificationTokenEntity verificationToken) {
-        verificationTokenRepository.save(verificationToken);
-    }
-
     public List<VerificationTokenEntity> findUnverifiedUsersWithExpiredTokens() {
         return verificationTokenRepository.findAllByExpiryDateIsBefore(LocalDateTime.now());
     }
