@@ -15,6 +15,7 @@ import fi.asteriski.nakitin.test.factory.TestDataFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Random;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.TestInstance;
@@ -105,6 +106,8 @@ public abstract class TestFixtures {
                 .personCount(personCount)
                 .startTime(startTime)
                 .endTime(endTime)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .build();
     }
 
