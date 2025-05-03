@@ -6,12 +6,16 @@ package fi.asteriski.nakitin.test.fixtures;
 
 import static fi.asteriski.nakitin.entity.UserRole.ROLE_ADMIN;
 
+import fi.asteriski.nakitin.dto.EventTaskForm;
 import fi.asteriski.nakitin.entity.*;
+import fi.asteriski.nakitin.test.builders.TestEventBuilder;
 import fi.asteriski.nakitin.test.builders.TestUserBuilder;
 import fi.asteriski.nakitin.test.builders.TestVerificationTokenBuilder;
 import fi.asteriski.nakitin.test.factory.TestDataFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Random;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.TestInstance;
 
@@ -75,5 +79,46 @@ public abstract class TestFixtures {
                 .mapToObj(i -> createOrganization("Org" + i))
                 .toList()
                 .toArray(OrganizationEntity[]::new);
+    }
+
+    protected OrganizationEntity createDefaultOrganization() {
+        return createOrganization("Default Org");
+    }
+
+    protected EventEntity createEvent(String name, LocalDate date, OrganizationEntity organizer, UserEntity createdBy) {
+        return TestEventBuilder.builder()
+                .withDefaults()
+                .withDate(date)
+                .withName(name)
+                .withOrganizer(organizer)
+                .withCreatedBy(createdBy)
+                .build();
+    }
+
+    protected EventTaskEntity createEventTask(String name, LocalDate date, int personCount) {
+        var rnd = new Random();
+        var startTime = LocalTime.of(rnd.nextInt(9, 16), 0);
+        var endTime = startTime.plusHours(rnd.nextInt(3, 5));
+        return EventTaskEntity.builder()
+                .taskName(name)
+                .date(date)
+                .personCount(personCount)
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
+    }
+
+    protected EventTaskForm createEventTaskForm(EventEntity event) {
+        var rnd = new Random();
+        var startTime = LocalTime.of(rnd.nextInt(9, 16), 0);
+        var endTime = startTime.plusHours(rnd.nextInt(3, 5));
+        return EventTaskForm.builder()
+                .eventId(event.getId())
+                .taskName("TestTask")
+                .date(LocalDate.now())
+                .startTime(startTime)
+                .endTime(endTime)
+                .personCount(2)
+                .build();
     }
 }

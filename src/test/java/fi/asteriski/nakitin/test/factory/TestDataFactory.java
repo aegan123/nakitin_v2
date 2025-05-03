@@ -4,14 +4,8 @@ Licenced under EUPL-1.2 or later.
 */
 package fi.asteriski.nakitin.test.factory;
 
-import fi.asteriski.nakitin.entity.OrganizationEntity;
-import fi.asteriski.nakitin.entity.PasswordResetToken;
-import fi.asteriski.nakitin.entity.UserEntity;
-import fi.asteriski.nakitin.entity.VerificationTokenEntity;
-import fi.asteriski.nakitin.repo.OrganizationRepository;
-import fi.asteriski.nakitin.repo.PasswordResetTokenRepository;
-import fi.asteriski.nakitin.repo.UserRepository;
-import fi.asteriski.nakitin.repo.VerificationTokenRepository;
+import fi.asteriski.nakitin.entity.*;
+import fi.asteriski.nakitin.repo.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -27,6 +21,8 @@ public class TestDataFactory {
     private final VerificationTokenRepository verificationTokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final OrganizationRepository organizationRepository;
+    private final EventRepository eventRepository;
+    private final EventTaskRepository eventTaskRepository;
 
     public UserEntity persistUser(UserEntity user) {
         return userRepository.save(user);
@@ -60,6 +56,22 @@ public class TestDataFactory {
         return organizationRepository.saveAll(Arrays.asList(organizations));
     }
 
+    public List<EventEntity> persistEvents(EventEntity... events) {
+        return eventRepository.saveAll(Arrays.asList(events));
+    }
+
+    public EventEntity persistEvent(EventEntity event) {
+        return eventRepository.save(event);
+    }
+
+    public EventTaskEntity persistEventTask(EventTaskEntity task) {
+        return eventTaskRepository.save(task);
+    }
+
+    public List<EventTaskEntity> persistEventTasks(EventTaskEntity... tasks) {
+        return eventTaskRepository.saveAll(Arrays.asList(tasks));
+    }
+
     public void cleanUp() {
         if (verificationTokenRepository != null) {
             verificationTokenRepository.deleteAll();
@@ -69,6 +81,15 @@ public class TestDataFactory {
         }
         if (userRepository != null) {
             userRepository.deleteAll();
+        }
+        if (organizationRepository != null) {
+            organizationRepository.deleteAll();
+        }
+        if (eventRepository != null) {
+            eventRepository.deleteAll();
+        }
+        if (eventTaskRepository != null) {
+            eventTaskRepository.deleteAll();
         }
     }
 
