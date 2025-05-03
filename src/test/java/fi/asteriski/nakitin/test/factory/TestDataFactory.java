@@ -13,25 +13,18 @@ import fi.asteriski.nakitin.repo.VerificationTokenRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-@Component
 @Profile("test")
 @RequiredArgsConstructor
 @Builder
 public class TestDataFactory {
     private final UserRepository userRepository;
-    @Builder.Default
-    private final VerificationTokenRepository verificationTokenRepository = null;
-    @Builder.Default
-    private final PasswordResetTokenRepository passwordResetTokenRepository = null;
-
-    @Builder.Default
-    private boolean cleanUpAfterTests = true;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     public UserEntity persistUser(UserEntity user) {
         return userRepository.save(user);
@@ -72,7 +65,7 @@ public class TestDataFactory {
     public static String generateRandomString(int targetStringLength) {
         int leftLimit = 48; // numeral '0'
         int rightLimit = 122; // letter 'z'
-        Random random = new Random();
+        var random = new Random();
 
         return random.ints(leftLimit, rightLimit + 1)
                 .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
@@ -81,9 +74,4 @@ public class TestDataFactory {
                 .toString();
     }
 
-
-    public TestDataFactory withoutCleanUp() {
-        this.cleanUpAfterTests = false;
-        return this;
-    }
 }
