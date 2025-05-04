@@ -168,7 +168,7 @@ public class UserDao {
 
     public void deleteExpiredUsers(LocalDate expiryDate) {
         userRepository.deleteTasksOfExpiredUsers(expiryDate);
-        userRepository.deleteExpiredUsers(expiryDate, ROLE_USER.label);
+        userRepository.deleteExpiredUsers(expiryDate, ROLE_USER);
     }
 
     public List<String> fetchUsersThatAreAboutToExpire(LocalDate localDate) {
