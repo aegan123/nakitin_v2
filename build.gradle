@@ -41,6 +41,7 @@ dependencies {
     implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
+    implementation 'org.flywaydb:flyway-maven-plugin:10.21.0'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -59,6 +60,17 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.register("bootRunDev") {
+    group = "application"
+    description = "Runs the Spring Boot application with the dev profile"
+    doFirst {
+        tasks.bootRun.configure {
+            systemProperty("spring.profiles.active", "dev")
+        }
+    }
+    finalizedBy("bootRun")
 }
 
 bootJar {
