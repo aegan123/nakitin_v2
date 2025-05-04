@@ -76,6 +76,7 @@ For production these variables are needed.
 |    CACHE_PASSWORD_RESET_EXPIRY_HOURS    |      How long are password reset attempts cached in hours      |             12              |   12    |                         N                         |
 |      REMEMBER_ME_VALIDITY_SECONDS       |       How long rememberMe (session) is valid in seconds        |             365             |         |                         Y                         |
 |             REMEMBER_ME_KEY             |           Securely generated string to use as a key            | somethingMoreSecureThenThis |         |                         Y                         |
+|     VERIFICATION_TOKEN_EXPIRY_HOURS     |         How many hours the verification token is valid         |             24              |   24    |                         N                         |
 |          ENABLE_ADMIN_CREATION          |               Enable initial admin user creation               |            false            |  false  | Only if an initial admin user needs to be created |
 |             ADMIN_USERNAME              |                        Admin's username                        |            admin            |         |     Only if an initial admin user is created      |
 |             ADMIN_PASSWORD              |                        Admin's password                        | somethingMoreSecureThenThis |         |     Only if an initial admin user is created      |

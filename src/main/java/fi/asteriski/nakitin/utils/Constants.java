@@ -18,7 +18,6 @@ public class Constants {
     public static final int MAX_PAGE_SIZE = 20;
     public static final String DUMMY_PASSWORD = Base64.getEncoder().encodeToString("dummyPassword".getBytes());
     public static final String LOG_ERROR_MESSAGE_TEMPLATE = "Error with email. Error was: %s";
-    public static final int TOKEN_EXPIRY_HOURS = 24;
 
     public static final String HTML_BREAK = "<br/>";
     public static final String HTML_TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
