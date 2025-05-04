@@ -92,7 +92,8 @@ public class UserEntity implements UserDetails {
     private Set<OrganizationEntity> organizations = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<EventEntity> events;
+    @Builder.Default
+    private Set<EventEntity> events = new LinkedHashSet<>();
 
     @ManyToMany(
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
