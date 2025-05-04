@@ -8,15 +8,20 @@ import fi.asteriski.nakitin.dto.EventTaskDto;
 import fi.asteriski.nakitin.utils.LocaleDateFormattable;
 import fi.asteriski.nakitin.utils.LocaleTimeFormattable;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.*;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.NaturalIdCache;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "tasks")
@@ -91,7 +96,8 @@ public class EventTaskEntity implements LocaleDateFormattable, LocaleTimeFormatt
                 .endTime(endTime)
                 .personCount(personCount)
                 .taskName(taskName)
-                .volunteers(volunteers.stream().map(UserEntity::toDto).collect(Collectors.toSet()))
+                .volunteers(
+                        volunteers.stream().map(UserEntity::toDto).collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
     }
 

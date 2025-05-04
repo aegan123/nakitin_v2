@@ -16,6 +16,7 @@ import fi.asteriski.nakitin.test.builders.TestEventBuilder;
 import fi.asteriski.nakitin.test.builders.TestUserBuilder;
 import fi.asteriski.nakitin.test.fixtures.TestFixtures;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -216,7 +217,7 @@ class NakitinServiceTest extends TestFixtures {
                 .build();
 
         var task = createEventTask("Popular Task", LocalDate.parse("2024-03-15"), 3);
-        task.setVolunteers(Set.copyOf(volunteers));
+        task.setVolunteers(new LinkedHashSet<>(volunteers));
 
         var eventDto = EventDto.builder()
                 .id(eventId)
