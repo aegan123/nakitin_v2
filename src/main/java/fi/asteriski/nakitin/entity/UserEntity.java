@@ -85,7 +85,7 @@ public class UserEntity implements UserDetails {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             fetch = FetchType.EAGER)
     @JoinTable(
-            name = "organizationadmins",
+            name = "organization_admins",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "organization_id"))
     @Builder.Default
