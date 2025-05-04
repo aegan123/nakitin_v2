@@ -4,13 +4,14 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.test.builders;
 
-import static fi.asteriski.nakitin.entity.UserRole.USER;
+import static fi.asteriski.nakitin.entity.UserRole.ROLE_USER;
 import static fi.asteriski.nakitin.test.factory.TestDataFactory.generateRandomString;
 
 import fi.asteriski.nakitin.entity.UserEntity;
 import fi.asteriski.nakitin.entity.UserRole;
 import java.time.LocalDate;
 import java.util.Random;
+import java.util.UUID;
 
 public class TestUserBuilder {
     private String username = generateRandomString(10);
@@ -20,8 +21,9 @@ public class TestUserBuilder {
     private String email = generateRandomString(10) + "@example.com";
     private boolean emailVerified = true;
     private LocalDate expirationDate = LocalDate.now().plusDays(1);
-    private UserRole userRole = USER;
+    private UserRole userRole = ROLE_USER;
     private boolean enabled = true;
+    private UUID id = null;
 
     public static TestUserBuilder builder() {
         return new TestUserBuilder();
@@ -35,9 +37,14 @@ public class TestUserBuilder {
         withLastName("User");
         withEmail(rnd.nextBoolean() ? "user@example.com" : "user@example.org");
         withExpirationDate(LocalDate.now().plusDays(1));
-        withUserRole(USER);
+        withUserRole(ROLE_USER);
         withEmailVerified(true);
         withEnabled(true);
+        return this;
+    }
+
+    public TestUserBuilder withId(UUID id) {
+        this.id = id;
         return this;
     }
 
@@ -88,6 +95,7 @@ public class TestUserBuilder {
 
     public UserEntity build() {
         return UserEntity.builder()
+                .id(id)
                 .username(username)
                 .password(password)
                 .firstName(firstName)

@@ -5,6 +5,7 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.test.fixtures;
 
 import static fi.asteriski.nakitin.entity.UserRole.ROLE_ADMIN;
+import static fi.asteriski.nakitin.entity.UserRole.ROLE_ORG_ADMIN;
 
 import fi.asteriski.nakitin.dto.EventTaskForm;
 import fi.asteriski.nakitin.entity.*;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.TestInstance;
 
@@ -25,6 +27,25 @@ import org.junit.jupiter.api.TestInstance;
 public abstract class TestFixtures {
     protected UserEntity createDefaultUser() {
         return TestUserBuilder.builder().withDefaults().build();
+    }
+
+    protected UserEntity createUserWithId(UUID id) {
+        return TestUserBuilder.builder().withDefaults().withId(id).build();
+    }
+
+    protected UserEntity createDefaultOrgAdminUser() {
+        return TestUserBuilder.builder()
+                .withDefaults()
+                .withUserRole(ROLE_ORG_ADMIN)
+                .build();
+    }
+
+    protected UserEntity createDefaultOrgAdminUserWithId(UUID id) {
+        return TestUserBuilder.builder()
+                .withDefaults()
+                .withUserRole(ROLE_ORG_ADMIN)
+                .withId(id)
+                .build();
     }
 
     protected UserEntity createDefaultAdminUser() {
@@ -91,9 +112,30 @@ public abstract class TestFixtures {
         return createOrganization("Default Org");
     }
 
+    protected OrganizationEntity createDefaultOrganizationWithId(UUID id) {
+        return OrganizationEntity.builder()
+                .id(id)
+                .name("Default Org")
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
+                .build();
+    }
+
     protected EventEntity createEvent(String name, LocalDate date, OrganizationEntity organizer, UserEntity createdBy) {
         return TestEventBuilder.builder()
                 .withDefaults()
+                .withDate(date)
+                .withName(name)
+                .withOrganizer(organizer)
+                .withCreatedBy(createdBy)
+                .build();
+    }
+
+    protected EventEntity createEventWithId(
+            String name, LocalDate date, OrganizationEntity organizer, UserEntity createdBy, UUID id) {
+        return TestEventBuilder.builder()
+                .withDefaults()
+                .withId(id)
                 .withDate(date)
                 .withName(name)
                 .withOrganizer(organizer)
@@ -106,6 +148,22 @@ public abstract class TestFixtures {
         var startTime = LocalTime.of(rnd.nextInt(9, 16), 0);
         var endTime = startTime.plusHours(rnd.nextInt(3, 5));
         return EventTaskEntity.builder()
+                .taskName(name)
+                .date(date)
+                .personCount(personCount)
+                .startTime(startTime)
+                .endTime(endTime)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
+                .build();
+    }
+
+    protected EventTaskEntity createEventTaskWithId(String name, LocalDate date, int personCount, UUID id) {
+        var rnd = new Random();
+        var startTime = LocalTime.of(rnd.nextInt(9, 16), 0);
+        var endTime = startTime.plusHours(rnd.nextInt(3, 5));
+        return EventTaskEntity.builder()
+                .id(id)
                 .taskName(name)
                 .date(date)
                 .personCount(personCount)

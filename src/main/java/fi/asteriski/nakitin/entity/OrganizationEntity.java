@@ -40,10 +40,12 @@ public class OrganizationEntity {
 
     @ManyToMany(mappedBy = "organizations", fetch = FetchType.LAZY)
     @Builder.Default
+    @ToString.Exclude
     private Set<UserEntity> users = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "organizer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EventEntity> events;
+    @Builder.Default
+    private List<EventEntity> events = new ArrayList<>();
 
     @UpdateTimestamp
     @Column(nullable = false)

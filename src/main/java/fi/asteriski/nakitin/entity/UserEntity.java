@@ -89,10 +89,12 @@ public class UserEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "organization_id"))
     @Builder.Default
+    @ToString.Exclude
     private Set<OrganizationEntity> organizations = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<EventEntity> events;
+    @Builder.Default
+    private Set<EventEntity> events = new LinkedHashSet<>();
 
     @ManyToMany(
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
@@ -223,7 +225,9 @@ public class UserEntity implements UserDetails {
     }
 
     public void removeOrganizationAdminRights() {
-        setUserRole(ROLE_USER);
+        if (userRole == ROLE_ORG_ADMIN) {
+            setUserRole(ROLE_USER);
+        }
     }
 
     public boolean isEmailVerified() {
