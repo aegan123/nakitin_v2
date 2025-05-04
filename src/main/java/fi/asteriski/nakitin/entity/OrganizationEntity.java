@@ -40,6 +40,7 @@ public class OrganizationEntity {
 
     @ManyToMany(mappedBy = "organizations", fetch = FetchType.LAZY)
     @Builder.Default
+    @ToString.Exclude
     private Set<UserEntity> users = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "organizer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

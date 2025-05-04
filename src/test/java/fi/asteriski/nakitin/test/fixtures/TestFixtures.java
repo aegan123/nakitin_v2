@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.TestInstance;
 
@@ -25,6 +26,10 @@ import org.junit.jupiter.api.TestInstance;
 public abstract class TestFixtures {
     protected UserEntity createDefaultUser() {
         return TestUserBuilder.builder().withDefaults().build();
+    }
+
+    protected UserEntity createUserWithId(UUID id) {
+        return TestUserBuilder.builder().withDefaults().withId(id).build();
     }
 
     protected UserEntity createDefaultAdminUser() {
@@ -106,6 +111,22 @@ public abstract class TestFixtures {
         var startTime = LocalTime.of(rnd.nextInt(9, 16), 0);
         var endTime = startTime.plusHours(rnd.nextInt(3, 5));
         return EventTaskEntity.builder()
+                .taskName(name)
+                .date(date)
+                .personCount(personCount)
+                .startTime(startTime)
+                .endTime(endTime)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
+                .build();
+    }
+
+    protected EventTaskEntity createEventTaskWithId(String name, LocalDate date, int personCount, UUID id) {
+        var rnd = new Random();
+        var startTime = LocalTime.of(rnd.nextInt(9, 16), 0);
+        var endTime = startTime.plusHours(rnd.nextInt(3, 5));
+        return EventTaskEntity.builder()
+                .id(id)
                 .taskName(name)
                 .date(date)
                 .personCount(personCount)

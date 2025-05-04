@@ -89,6 +89,7 @@ public class UserEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "organization_id"))
     @Builder.Default
+    @ToString.Exclude
     private Set<OrganizationEntity> organizations = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
