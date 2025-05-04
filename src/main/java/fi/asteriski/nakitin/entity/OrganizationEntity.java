@@ -44,7 +44,8 @@ public class OrganizationEntity {
     private Set<UserEntity> users = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "organizer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EventEntity> events;
+    @Builder.Default
+    private List<EventEntity> events = new ArrayList<>();
 
     @UpdateTimestamp
     @Column(nullable = false)

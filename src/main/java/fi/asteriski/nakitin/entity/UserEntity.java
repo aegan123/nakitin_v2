@@ -225,7 +225,9 @@ public class UserEntity implements UserDetails {
     }
 
     public void removeOrganizationAdminRights() {
-        setUserRole(ROLE_USER);
+        if (userRole == ROLE_ORG_ADMIN) {
+            setUserRole(ROLE_USER);
+        }
     }
 
     public boolean isEmailVerified() {

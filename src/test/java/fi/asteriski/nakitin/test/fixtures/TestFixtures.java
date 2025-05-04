@@ -5,6 +5,7 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.test.fixtures;
 
 import static fi.asteriski.nakitin.entity.UserRole.ROLE_ADMIN;
+import static fi.asteriski.nakitin.entity.UserRole.ROLE_ORG_ADMIN;
 
 import fi.asteriski.nakitin.dto.EventTaskForm;
 import fi.asteriski.nakitin.entity.*;
@@ -30,6 +31,21 @@ public abstract class TestFixtures {
 
     protected UserEntity createUserWithId(UUID id) {
         return TestUserBuilder.builder().withDefaults().withId(id).build();
+    }
+
+    protected UserEntity createDefaultOrgAdminUser() {
+        return TestUserBuilder.builder()
+                .withDefaults()
+                .withUserRole(ROLE_ORG_ADMIN)
+                .build();
+    }
+
+    protected UserEntity createDefaultOrgAdminUserWithId(UUID id) {
+        return TestUserBuilder.builder()
+                .withDefaults()
+                .withUserRole(ROLE_ORG_ADMIN)
+                .withId(id)
+                .build();
     }
 
     protected UserEntity createDefaultAdminUser() {
@@ -96,9 +112,30 @@ public abstract class TestFixtures {
         return createOrganization("Default Org");
     }
 
+    protected OrganizationEntity createDefaultOrganizationWithId(UUID id) {
+        return OrganizationEntity.builder()
+                .id(id)
+                .name("Default Org")
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
+                .build();
+    }
+
     protected EventEntity createEvent(String name, LocalDate date, OrganizationEntity organizer, UserEntity createdBy) {
         return TestEventBuilder.builder()
                 .withDefaults()
+                .withDate(date)
+                .withName(name)
+                .withOrganizer(organizer)
+                .withCreatedBy(createdBy)
+                .build();
+    }
+
+    protected EventEntity createEventWithId(
+            String name, LocalDate date, OrganizationEntity organizer, UserEntity createdBy, UUID id) {
+        return TestEventBuilder.builder()
+                .withDefaults()
+                .withId(id)
                 .withDate(date)
                 .withName(name)
                 .withOrganizer(organizer)

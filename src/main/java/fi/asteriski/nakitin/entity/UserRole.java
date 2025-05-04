@@ -7,10 +7,7 @@ package fi.asteriski.nakitin.entity;
 public enum UserRole {
     ROLE_ADMIN("ADMIN"),
     ROLE_USER("USER"),
-    ROLE_ORG_ADMIN("ORG_ADMIN"),
-    ADMIN("ADMIN"),
-    USER("USER"),
-    ORG_ADMIN("ORG_ADMIN");
+    ROLE_ORG_ADMIN("ORG_ADMIN");
 
     public final String label;
 

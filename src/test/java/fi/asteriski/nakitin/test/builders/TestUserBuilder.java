@@ -4,7 +4,7 @@ Licenced under EUPL-1.2 or later.
  */
 package fi.asteriski.nakitin.test.builders;
 
-import static fi.asteriski.nakitin.entity.UserRole.USER;
+import static fi.asteriski.nakitin.entity.UserRole.ROLE_USER;
 import static fi.asteriski.nakitin.test.factory.TestDataFactory.generateRandomString;
 
 import fi.asteriski.nakitin.entity.UserEntity;
@@ -21,7 +21,7 @@ public class TestUserBuilder {
     private String email = generateRandomString(10) + "@example.com";
     private boolean emailVerified = true;
     private LocalDate expirationDate = LocalDate.now().plusDays(1);
-    private UserRole userRole = USER;
+    private UserRole userRole = ROLE_USER;
     private boolean enabled = true;
     private UUID id = null;
 
@@ -37,7 +37,7 @@ public class TestUserBuilder {
         withLastName("User");
         withEmail(rnd.nextBoolean() ? "user@example.com" : "user@example.org");
         withExpirationDate(LocalDate.now().plusDays(1));
-        withUserRole(USER);
+        withUserRole(ROLE_USER);
         withEmailVerified(true);
         withEnabled(true);
         return this;
