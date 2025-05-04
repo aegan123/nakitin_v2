@@ -23,9 +23,6 @@ public record EventDto(
         List<EventTaskDto> tasks,
         ZonedDateTime createdAt)
         implements LocaleDateFormattable {
-    public EventDto(UUID id, String name, String venue, String description, java.sql.Date date) {
-        this(id, name, venue, description, "", date.toLocalDate(), null, null, null);
-    }
 
     public EventDto sorted() {
         return EventDto.builder()

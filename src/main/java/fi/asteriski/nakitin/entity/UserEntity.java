@@ -178,6 +178,9 @@ public class UserEntity implements UserDetails {
     }
 
     public void addEventTask(EventTaskEntity eventTask) {
+        if (eventTasks == null) {
+            eventTasks = new HashSet<>();
+        }
         eventTasks.add(eventTask);
         eventTask.getVolunteers().add(this);
     }

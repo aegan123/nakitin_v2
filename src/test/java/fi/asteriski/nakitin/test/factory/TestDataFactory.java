@@ -73,23 +73,43 @@ public class TestDataFactory {
     }
 
     public void cleanUp() {
+        if (eventTaskRepository != null) {
+            eventTaskRepository.deleteAll();
+        }
+        if (organizationRepository != null) {
+            organizationRepository.findAll().forEach(org -> {
+                org.getUsers().clear();
+                if (org.getEvents() != null) {
+                    org.getEvents().forEach(event -> event.setOrganizer(null));
+                    org.getEvents().clear();
+                }
+                organizationRepository.save(org);
+            });
+        }
+        if (userRepository != null) {
+            userRepository.findAll().forEach(user -> {
+                if (user.getEvents() != null) {
+                    user.getEvents().forEach(event -> event.setCreatedBy(null));
+                    user.getEvents().clear();
+                }
+                user.getOrganizations().clear();
+                userRepository.save(user);
+            });
+        }
+        if (eventRepository != null) {
+            eventRepository.deleteAll();
+        }
         if (verificationTokenRepository != null) {
             verificationTokenRepository.deleteAll();
         }
         if (passwordResetTokenRepository != null) {
             passwordResetTokenRepository.deleteAll();
         }
-        if (userRepository != null) {
-            userRepository.deleteAll();
-        }
         if (organizationRepository != null) {
             organizationRepository.deleteAll();
         }
-        if (eventRepository != null) {
-            eventRepository.deleteAll();
-        }
-        if (eventTaskRepository != null) {
-            eventTaskRepository.deleteAll();
+        if (userRepository != null) {
+            userRepository.deleteAll();
         }
     }
 

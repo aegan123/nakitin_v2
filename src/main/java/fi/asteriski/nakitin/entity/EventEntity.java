@@ -152,4 +152,20 @@ public class EventEntity implements LocaleDateFormattable {
         }
         return abbreviatedDescription;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, date, venue, description);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EventEntity that = (EventEntity) o;
+        return Objects.equals(name, that.name)
+                && Objects.equals(date, that.date)
+                && Objects.equals(venue, that.venue)
+                && Objects.equals(description, that.description);
+    }
 }

@@ -72,7 +72,11 @@ public abstract class TestFixtures {
     }
 
     protected OrganizationEntity createOrganization(String name) {
-        return OrganizationEntity.builder().name(name).build();
+        return OrganizationEntity.builder()
+                .name(name)
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
+                .build();
     }
 
     protected OrganizationEntity[] createMultipleOrganizations(int count) {

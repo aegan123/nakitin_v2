@@ -19,7 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.NativeQuery;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -34,10 +34,9 @@ public interface EventRepository extends JpaRepository<EventEntity, UUID> {
 
     List<EventEntity> readAllByIdIn(List<UUID> ids);
 
-    @NativeQuery(
-            value = """
-        select id, name, venue, description, date from events where id = :eventId
-        """)
+    @Query(
+            "SELECT new fi.asteriski.nakitin.dto.EventDto(e.id, e.name, e.venue, e.description, '', e.date, null, null, null) "
+                    + "FROM EventEntity e WHERE e.id = :eventId")
     EventDto fetchEventDetails(@Param("eventId") UUID eventId);
 
     Optional<DateProjection> findDateById(UUID id);
