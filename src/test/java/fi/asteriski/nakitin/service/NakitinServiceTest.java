@@ -218,12 +218,13 @@ class NakitinServiceTest extends TestFixtures {
 
         var task = createEventTask("Popular Task", LocalDate.parse("2024-03-15"), 3);
         task.setVolunteers(new LinkedHashSet<>(volunteers));
+        var taskDto = task.toDto();
 
         var eventDto = EventDto.builder()
                 .id(eventId)
                 .name(event.getName())
                 .date(event.getDate())
-                .tasks(List.of(task.toDto()))
+                .tasks(List.of(taskDto))
                 .build();
 
         when(nakitinDao.getEventById(eventId)).thenReturn(eventDto);
@@ -235,12 +236,21 @@ class NakitinServiceTest extends TestFixtures {
                 .allMatch(line -> line.startsWith("\"") && line.endsWith("\""))
                 .contains(
                         "\"Task\",\"Date\",\"Time\",\"First Name\",\"Last Name\",\"Email\"",
-                        "\"Popular Task\",\"15.3.2024\",\"%s - %s\",\"John\",\"Doe\",\"john@example.com\""
-                                .formatted(task.localeFormattedStartTime(), task.localeFormattedEndTime()),
-                        "\"Popular Task\",\"15.3.2024\",\"%s - %s\",\"Jane\",\"Smith\",\"jane@example.com\""
-                                .formatted(task.localeFormattedStartTime(), task.localeFormattedEndTime()),
-                        "\"Popular Task\",\"15.3.2024\",\"%s - %s\",\"Bob\",\"Wilson\",\"bob@example.com\""
-                                .formatted(task.localeFormattedStartTime(), task.localeFormattedEndTime()));
+                        "\"Popular Task\",\"%s\",\"%s - %s\",\"John\",\"Doe\",\"john@example.com\""
+                                .formatted(
+                                        task.localeFormattedDate(),
+                                        task.localeFormattedStartTime(),
+                                        task.localeFormattedEndTime()),
+                        "\"Popular Task\",\"%s\",\"%s - %s\",\"Jane\",\"Smith\",\"jane@example.com\""
+                                .formatted(
+                                        task.localeFormattedDate(),
+                                        task.localeFormattedStartTime(),
+                                        task.localeFormattedEndTime()),
+                        "\"Popular Task\",\"%s\",\"%s - %s\",\"Bob\",\"Wilson\",\"bob@example.com\""
+                                .formatted(
+                                        task.localeFormattedDate(),
+                                        task.localeFormattedStartTime(),
+                                        task.localeFormattedEndTime()));
     }
 
     private void mockCsvHeaders() {
