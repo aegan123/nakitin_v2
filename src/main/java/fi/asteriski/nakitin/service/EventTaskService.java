@@ -42,7 +42,11 @@ public class EventTaskService {
     public void deleteTask(UUID id) {
         var task = eventTaskDao.fetchTask(id);
         task.getEvent().removeTask(task);
-        task.getVolunteers().forEach(volunteer -> volunteer.removeEventTask(task));
+        var iterator = task.getVolunteers().iterator();
+        while (iterator.hasNext()) {
+            iterator.next().getEventTasks().remove(task);
+            iterator.remove();
+        }
         eventTaskDao.deleteTask(task);
     }
 }
