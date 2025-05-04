@@ -8,6 +8,7 @@ import static fi.asteriski.nakitin.entity.UserRole.ROLE_ADMIN;
 
 import fi.asteriski.nakitin.dto.EventTaskForm;
 import fi.asteriski.nakitin.entity.*;
+import fi.asteriski.nakitin.test.builders.TestErrorBuilder;
 import fi.asteriski.nakitin.test.builders.TestEventBuilder;
 import fi.asteriski.nakitin.test.builders.TestUserBuilder;
 import fi.asteriski.nakitin.test.builders.TestVerificationTokenBuilder;
@@ -127,5 +128,20 @@ public abstract class TestFixtures {
                 .endTime(endTime)
                 .personCount(2)
                 .build();
+    }
+
+    protected ErrorEntity createError(String errorMessage) {
+        var rnd = new Random();
+        return TestErrorBuilder.builder()
+                .withErrorMessage(errorMessage)
+                .withTimestamp(ZonedDateTime.now().plusHours(rnd.nextInt(-3, 3)))
+                .build();
+    }
+
+    protected ErrorEntity[] createMultipleErrors(int count) {
+        return IntStream.range(0, count)
+                .mapToObj(i -> createError("Error " + i))
+                .toList()
+                .toArray(ErrorEntity[]::new);
     }
 }

@@ -23,6 +23,7 @@ public class TestDataFactory {
     private final OrganizationRepository organizationRepository;
     private final EventRepository eventRepository;
     private final EventTaskRepository eventTaskRepository;
+    private final ErrorRepository errorRepository;
 
     public UserEntity persistUser(UserEntity user) {
         return userRepository.save(user);
@@ -72,7 +73,18 @@ public class TestDataFactory {
         return eventTaskRepository.saveAll(Arrays.asList(tasks));
     }
 
+    public ErrorEntity persistError(ErrorEntity error) {
+        return errorRepository.save(error);
+    }
+
+    public List<ErrorEntity> persistErrors(ErrorEntity... errors) {
+        return errorRepository.saveAll(Arrays.asList(errors));
+    }
+
     public void cleanUp() {
+        if (errorRepository != null) {
+            errorRepository.deleteAll();
+        }
         if (eventTaskRepository != null) {
             eventTaskRepository.deleteAll();
         }
