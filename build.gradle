@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.2'
+    id 'org.springframework.boot' version '3.4.5'
     id 'io.spring.dependency-management' version '1.1.7'
-    id "com.diffplug.spotless" version "6.25.0"
+    id "com.diffplug.spotless" version "7.0.3"
     id 'idea' // comment out if you don't use IntelliJ IDEA
     //id 'eclipse' // uncomment if you use Eclipse
 }
@@ -37,7 +37,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'com.github.michaelgantman:MgntUtils:1.7.0.1'
-    implementation 'org.apache.commons:commons-csv:1.13.0'
+    implementation 'org.apache.commons:commons-csv:1.14.0'
     implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
@@ -86,6 +86,6 @@ spotless {
     java {
         importOrder()
         removeUnusedImports()
-        palantirJavaFormat('2.47.0').formatJavadoc(true)
+        palantirJavaFormat('2.63.0').formatJavadoc(true)
     }
 }
