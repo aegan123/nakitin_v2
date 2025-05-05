@@ -8,7 +8,6 @@ import com.github.benmanes.caffeine.cache.Cache;
 import fi.asteriski.nakitin.config.RateLimitProperties;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
 import java.time.Duration;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,21 +33,23 @@ public class RateLimitService {
 
     private Bucket createEmailBucket() {
         return Bucket.builder()
-                .addLimit(Bandwidth.classic(
-                        properties.getPasswordReset().getMaxAttempts(),
-                        Refill.intervally(
+                .addLimit(Bandwidth.builder()
+                        .capacity(properties.getPasswordReset().getMaxAttempts())
+                        .refillIntervally(
                                 properties.getPasswordReset().getRefillAmount(),
-                                Duration.ofHours(properties.getPasswordReset().getRefillHours()))))
+                                Duration.ofHours(properties.getPasswordReset().getRefillHours()))
+                        .build())
                 .build();
     }
 
     private Bucket createLoginBucket() {
         return Bucket.builder()
-                .addLimit(Bandwidth.classic(
-                        properties.getLogin().getMaxAttempts(),
-                        Refill.intervally(
+                .addLimit(Bandwidth.builder()
+                        .capacity(properties.getLogin().getMaxAttempts())
+                        .refillIntervally(
                                 properties.getLogin().getRefillAmount(),
-                                Duration.ofMinutes(properties.getLogin().getRefillMinutes()))))
+                                Duration.ofMinutes(properties.getLogin().getRefillMinutes()))
+                        .build())
                 .build();
     }
 }

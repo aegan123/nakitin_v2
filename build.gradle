@@ -38,7 +38,7 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     implementation 'com.github.michaelgantman:MgntUtils:1.7.0.1'
     implementation 'org.apache.commons:commons-csv:1.14.0'
-    implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0'
+    implementation 'com.bucket4j:bucket4j-core:8.10.1'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
 
