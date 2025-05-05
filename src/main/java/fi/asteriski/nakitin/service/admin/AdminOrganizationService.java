@@ -105,32 +105,7 @@ public class AdminOrganizationService {
         final var userIds =
                 organization.getUsers().stream().map(UserEntity::getId).toList();
         final var users = userService.fetchUsersByIds(userIds);
-        final var eventIds =
-                organization.getEvents().stream().map(EventEntity::getId).toList();
-        if (!eventIds.isEmpty()) {
-            var events = eventService.fetchEventsById(eventIds);
-            var eventTaskIds = events.stream()
-                    .map(event -> event.getTasks().stream()
-                            .map(EventTaskEntity::getId)
-                            .toList())
-                    .flatMap(List::stream)
-                    .toList();
-            if (!eventTaskIds.isEmpty()) {
-                var tasks = eventTaskService.fetchEventTasksById(eventTaskIds);
-                var volunteerIds = tasks.stream()
-                        .map(task -> task.getVolunteers().stream()
-                                .map(UserEntity::getId)
-                                .toList())
-                        .flatMap(List::stream)
-                        .toList();
-                if (!volunteerIds.isEmpty()) {
-                    var volunteers = userService.fetchUsersByIds(volunteerIds);
-                    volunteers.forEach(volunteer -> tasks.forEach(volunteer::removeEventTask));
-                }
-            }
-            users.forEach(user -> events.forEach(user::removeEvent));
-            events.forEach(organization::removeEvent);
-        }
+        handleEvents(organization, users);
         users.forEach(UserEntity::removeOrganizationAdminRights);
 
         users.forEach(organization::removeUser);
@@ -145,5 +120,36 @@ public class AdminOrganizationService {
 
     public void addUsersToAddEditOrganizationForm(AddEditOrganizationForm editOrganizationForm) {
         editOrganizationForm.setUsers(fetchUsers());
+    }
+
+    private void handleEvents(final OrganizationEntity organization, final List<UserEntity> users) {
+        final var eventIds =
+                organization.getEvents().stream().map(EventEntity::getId).toList();
+        if (!eventIds.isEmpty()) {
+            final var events = eventService.fetchEventsById(eventIds);
+            handleEventTasks(events);
+            users.forEach(user -> events.forEach(user::removeEvent));
+            events.forEach(organization::removeEvent);
+        }
+    }
+
+    private void handleEventTasks(final List<EventEntity> events) {
+        final var eventTaskIds = events.stream()
+                .map(event ->
+                        event.getTasks().stream().map(EventTaskEntity::getId).toList())
+                .flatMap(List::stream)
+                .toList();
+        if (!eventTaskIds.isEmpty()) {
+            final var tasks = eventTaskService.fetchEventTasksById(eventTaskIds);
+            final var volunteerIds = tasks.stream()
+                    .map(task ->
+                            task.getVolunteers().stream().map(UserEntity::getId).toList())
+                    .flatMap(List::stream)
+                    .toList();
+            if (!volunteerIds.isEmpty()) {
+                final var volunteers = userService.fetchUsersByIds(volunteerIds);
+                volunteers.forEach(volunteer -> tasks.forEach(volunteer::removeEventTask));
+            }
+        }
     }
 }

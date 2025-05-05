@@ -5,7 +5,7 @@ Licenced under EUPL-1.2 or later.
 package fi.asteriski.nakitin.service.admin;
 
 import static fi.asteriski.nakitin.utils.Constants.DUMMY_PASSWORD;
-import static fi.asteriski.nakitin.utils.Utils.*;
+import static fi.asteriski.nakitin.utils.Utils.partition;
 
 import fi.asteriski.nakitin.dto.IdAndNameDto;
 import fi.asteriski.nakitin.dto.PasswordForm;
@@ -103,35 +103,11 @@ public class AdminUserService {
     public void deleteUser(final UUID userId) {
         final var user = fetchUser(userId);
 
-        var taskIds = user.getEventTasks().stream().map(EventTaskEntity::getId).toList();
-        if (!taskIds.isEmpty()) {
-            var tasks = eventTaskService.fetchEventTasksById(taskIds);
-            tasks.forEach(user::removeEventTask);
-        }
+        unVolunteerTheUser(user);
 
-        eventService
-                .fetchEventsById(
-                        user.getEvents().stream().map(EventEntity::getId).toList())
-                .stream()
-                .map(event ->
-                        event.getTasks().stream().map(EventTaskEntity::getId).toList())
-                .map(eventTaskService::fetchEventTasksById)
-                .flatMap(List::stream)
-                .forEach(task -> userService
-                        .fetchUsersByIds(task.getVolunteers().stream()
-                                .map(UserEntity::getId)
-                                .toList())
-                        .forEach(user1 -> user1.removeEventTask(task)));
+        removeOtherUsersFromEventsOfTheUser(user);
 
-        if (!user.getOrganizations().isEmpty()) {
-            var organizationIds = user.getOrganizations().stream()
-                    .map(OrganizationEntity::getId)
-                    .toList();
-            if (!organizationIds.isEmpty()) {
-                var organizations = organizationService.fetchOrganizationsByIds(organizationIds);
-                organizations.forEach(organization -> organization.removeUser(user));
-            }
-        }
+        removeUserFromOrganizations(user);
 
         userService.deleteUser(user);
     }
@@ -153,5 +129,58 @@ public class AdminUserService {
     @Transactional
     public void disableUser(UUID id) {
         userService.disableUser(id);
+    }
+
+    private void unVolunteerTheUser(final UserEntity user) {
+        Optional.ofNullable(user.getEventTasks())
+                .map(tasks -> tasks.stream().map(EventTaskEntity::getId).toList())
+                .filter(taskIds -> !taskIds.isEmpty())
+                .map(eventTaskService::fetchEventTasksById)
+                .ifPresent(tasks -> tasks.forEach(user::removeEventTask));
+    }
+
+    private void removeOtherUsersFromEventsOfTheUser(final UserEntity user) {
+        Optional.ofNullable(user.getEvents())
+                .filter(events -> !events.isEmpty())
+                .ifPresent(events -> {
+                    var eventIds = extractEventIds(events);
+                    var eventTasks = fetchEventTasksForEvents(eventIds);
+                    removeVolunteersFromTasks(eventTasks);
+                });
+    }
+
+    private List<UUID> extractEventIds(final Collection<EventEntity> events) {
+        return events.stream().map(EventEntity::getId).toList();
+    }
+
+    private List<EventTaskEntity> fetchEventTasksForEvents(final List<UUID> eventIds) {
+        return eventService.fetchEventsById(eventIds).stream()
+                .map(this::getEventTaskIds)
+                .map(eventTaskService::fetchEventTasksById)
+                .flatMap(List::stream)
+                .toList();
+    }
+
+    private List<UUID> getEventTaskIds(final EventEntity event) {
+        return event.getTasks().stream().map(EventTaskEntity::getId).toList();
+    }
+
+    private void removeVolunteersFromTasks(final List<EventTaskEntity> tasks) {
+        tasks.forEach(task -> {
+            var volunteerIds =
+                    task.getVolunteers().stream().map(UserEntity::getId).toList();
+            var volunteers = userService.fetchUsersByIds(volunteerIds);
+            volunteers.forEach(volunteer -> volunteer.removeEventTask(task));
+        });
+    }
+
+    private void removeUserFromOrganizations(final UserEntity user) {
+        Optional.ofNullable(user.getOrganizations())
+                .filter(orgs -> !orgs.isEmpty())
+                .map(orgs -> organizationService.fetchOrganizationsByIds(orgs.stream()
+                        .map(OrganizationEntity::getId)
+                        .filter(Objects::nonNull)
+                        .toList()))
+                .ifPresent(organizations -> organizations.forEach(org -> org.removeUser(user)));
     }
 }
