@@ -23,24 +23,24 @@ public class RateLimitProperties {
     @Data
     public static class LoginLimit {
         @Min(1)
-        private int maxAttempts = 5;
+        private long maxAttempts = 5;
 
         @Min(1)
-        private int refillAmount = 5;
+        private long refillAmount = 5;
 
         @Min(1)
-        private int refillMinutes = 15;
+        private long refillMinutes = 15;
     }
 
     @Data
     public static class PasswordResetLimit {
         @Min(1)
-        private int maxAttempts = 3;
+        private long maxAttempts = 3;
 
         @Min(1)
-        private int refillAmount = 3;
+        private long refillAmount = 3;
 
         @Min(1)
-        private int refillHours = 1;
+        private long refillHours = 1;
     }
 }
